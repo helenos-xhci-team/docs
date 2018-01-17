@@ -5,12 +5,13 @@ TEXFLAGS=-halt-on-error -interaction=nonstopmode
 all: $(PROJ).pdf
 .PHONY: all
 
-%.pdf: src/%.tex
-	TEXINPUTS=src:$(TEXINPUTS) $(TEX) $(TEXFLAGS) $^
-
-src/docs.tex: src/01_intro.tex
+$(PROJ).pdf: src/*.tex
+	# First run generates TOC.
+	TEXINPUTS=src:${TEXINPUTS} $(TEX) $(TEXFLAGS) $(PROJ).tex
+	# Second run uses it.
+	TEXINPUTS=src:${TEXINPUTS} $(TEX) $(TEXFLAGS) $(PROJ).tex
 
 clean:
-	rm -f $(PROJ).pdf *.log *.aux
+	rm -f $(PROJ).pdf *.log *.aux *.toc
 .PHONY: clean
 
