@@ -6,9 +6,9 @@ all: $(PROJ).pdf
 .PHONY: all
 
 %.pdf: src/%.tex
-	$(TEX) $(TEXFLAGS) $^
+	TEXINPUTS=src:$(TEXINPUTS) $(TEX) $(TEXFLAGS) $^
 
 clean:
-	rm -f $(PROJ).pdf $(PROJ).log $(PROJ).aux
+	rm -f $(PROJ).pdf *.log *.aux
 .PHONY: clean
 
