@@ -8,6 +8,8 @@ all: $(PROJ).pdf
 %.pdf: src/%.tex
 	TEXINPUTS=src:$(TEXINPUTS) $(TEX) $(TEXFLAGS) $^
 
+src/docs.tex: src/01_intro.tex
+
 clean:
 	rm -f $(PROJ).pdf *.log *.aux
 .PHONY: clean
