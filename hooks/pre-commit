@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+# Redirect output to stderr.
+exec 1>&2
+
+# Check if the doc makes successfully
+exec make
+
