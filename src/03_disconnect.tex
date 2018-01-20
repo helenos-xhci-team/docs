@@ -1,0 +1,127 @@
+\section{Explicit Device Removal}
+
+One of the project goals is to alter the USB subsystem to allow support for
+explicit device removal. Such feature can be found in most modern operating
+systems and is often used to ensure that devices are left in a consistent state
+after a physical port detachment occurs.
+
+The explicit device removal feature usually provides a frontend interface in
+the operating system, through which users can observe currently connected
+devices and, if needed, issue a signal to the operating system that their
+physical detachment is imminent. Following that, the system is expected to
+promptly terminate all ongoing communications with the device and signal the
+user back. After receiving the confirmation, user can then safely unplug the
+device from the system bus without any risk of interrupting communications,
+which could otherwise result in undefined state of the device.
+
+
+\subsection{Considerations}
+
+In the USB protocol, communications between the host and the device take place
+in the form of \textit{transfers}. Depending on its version, the host controller
+may have various roles in the realization of these transfers. For that reason,
+version-specific modifications are carried out separately in host controller
+drivers, whereas common functionality is implemented in the bus module, which is
+a part of \lib{libusbhost}.
+
+The disconnection routine for explicit device removal is implemented as follows:
+~
+\begin{enumerate}
+	\item The user signals the intention to disconnect a USB device.
+	\item The respective device drivers are notified to end their business (e.
+		g. flush buffers or close files), possibly scheduling a multitude of
+		transfers to the device.
+	\item The HC driver disables the capability to schedule new transfers to the
+		device.
+	\item The HC driver aborts all leftover active transfers to the device.
+	\item The device configuration is dropped, leaving it in the
+		\textit{addressed} state, in which it is considered safe to be
+		physically removed from the bus.
+\end{enumerate}
+
+If the user requests that this routine is rolled back, the steps of the
+disconnection routine are just executed in reverse order. The following can
+therefore be labeled as a reconnection routine:
+~
+\begin{enumerate}
+	\item The user signals the intention to resume communications with a USB
+	device, on which the disconnection routine has been previously performed.
+	\item The HC driver configures the device.
+	\item The HC driver enables the capability to schedule new transfers to the
+	device.
+	\item The operating system is notified that the device is reachable and
+	matches it to appropriate drivers, which initiate communications with it.
+\end{enumerate}
+
+The specialization of both routines is performed in the same way as other bus
+module interactions. All HC drivers hand off their DDF and device callbacks to
+the bus module, which then calls them back to perform low-level commands related
+to specific devices, endpoints and transfers. This way, the high-level logic
+contained by the bus module essentially follows the listed descriptions above
+and the version-specific extensions are resolved in the respective HC driver
+implementations.
+
+
+\subsection{Offline and Online DDF Signal}
+
+The HelenOS Device Driver Framework includes two user-initiated signals
+relevant to the implementation of this feature.
+
+\begin{description}
+	\item[Offline Signal]
+		This signal informs a driver attached to a DDF node that its managed
+		device may be removed in the near future. The driver is expected to
+		immediately cease all user operations on the device and unbind its
+		child DDF functions, possibly sending a \textit{Device Remove} signal
+		to all their attached drivers in the process.
+
+	\item[Online Signal]
+		This signal is a logical counterpart to the previous signal.
+		It informs a driver attached to a DDF node that its managed device will
+		not be removed in the near future. The driver is expected to expose all
+		child DDF functions related to the device, possibly sending a
+		\textit{Device Add} signal to all their matched drivers in the process.
+\end{description}
+
+These signals can be easily issued by the user from the system shell by means
+of the \app{devctl} application. See Listing \ref{lst:devctl-offline-online}
+for invocation example.
+
+\begin{listing}[H]
+	\begin{bdsh}
+		# Prepare the unplug high speed device at address 2.
+		devctl offline /hw/pci0/00:04.0/usb2-hs
+
+		# We changed our mind. Bring the device back online.
+		devctl online /hw/pci0/00:04.0/usb2-hs
+	\end{bdsh}
+	\caption[Example usage of \app{devctl} to issue offline and online
+	signal.]{Example usage of the \app{devctl} application to issue offline and
+	online signal to a USB high speed device at address 2. The host controller
+	PCI address is \texttt{00:04.0}.}
+	\label{lst:devctl-offline-online}
+\end{listing}
+
+It follows that these signals can be used for the implementation of the
+explicit device removal at the level of USB host controller drivers.
+
+
+\subsection{Subsystem Changes}
+% TODO
+
+
+\subsection{UHCI Support}
+% TODO
+
+
+\subsection{OHCI Support}
+% TODO
+
+
+\subsection{EHCI Support}
+% TODO
+
+
+\subsection{xHCI Support}
+% TODO
+
