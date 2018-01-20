@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper,twoside,titlepage]{report}
 
+\usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{fancyhdr}
 \usepackage[paper=a4paper,margin=1in]{geometry}
@@ -9,6 +10,13 @@
 \graphicspath{{img/}}
 
 \pagestyle{fancy}
+\fancyhead[LE,RO]{}
+\fancyhead[RE,LO]{\rightmark}
+\fancyfoot[CE,CO]{}
+\fancyfoot[LE,RO]{Page \thepage}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.8pt}
+
 \usemintedstyle{borland}
 
 \author{Ondřej~Hlavatý, Jan~Hrach, Jaroslav~Jindrák,\\Petr~Mánek, Michal~Staruch}
