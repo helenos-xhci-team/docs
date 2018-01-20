@@ -4,30 +4,44 @@
 % TODO
 
 \section{Explicit Device Removal}
-One of the project goals is to alter the USB subsystem to allow support for explicit device removal.
-Such feature can be found in most modern operating systems and is often used to ensure that devices are left in a consistent state after a physical port detachment occurs.
+One of the project goals is to alter the USB subsystem to allow support for
+explicit device removal. Such feature can be found in most modern operating
+systems and is often used to ensure that devices are left in a consistent state
+after a physical port detachment occurs.
 
-The explicit device removal feature usually provides a frontend interface in the operating system, through which users can observe currently connected devices and, if needed, issue a signal to the operating system that their physical detachment is imminent.
-Following that, the system is expected to promptly terminate all ongoing communications with the device and signal the user back.
-After receiving the confirmation, user can then safely unplug the device from the system bus without any risk of interrupting communications, which could otherwise result in undefined state of the device.
+The explicit device removal feature usually provides a frontend interface in
+the operating system, through which users can observe currently connected
+devices and, if needed, issue a signal to the operating system that their
+physical detachment is imminent. Following that, the system is expected to
+promptly terminate all ongoing communications with the device and signal the
+user back. After receiving the confirmation, user can then safely unplug the
+device from the system bus without any risk of interrupting communications,
+which could otherwise result in undefined state of the device.
 
 
 \subsection{Offline and Online Signals}
-The HelenOS Device Driver Framework includes two user-initiated signals relevant to the implementation of this feature.
+The HelenOS Device Driver Framework includes two user-initiated signals
+relevant to the implementation of this feature.
 
 \begin{description}
 	\item[Offline Signal]
-		This signal informs a driver attached to a DDF node that its managed device may be removed in the near future.
-		The driver is expected to immediately cease all user operations on the device and unbind its child DDF functions, possibly sending a \textit{Device Remove} signal to all their attached drivers in the process.
+		This signal informs a driver attached to a DDF node that its managed
+		device may be removed in the near future. The driver is expected to
+		immediately cease all user operations on the device and unbind its
+		child DDF functions, possibly sending a \textit{Device Remove} signal
+		to all their attached drivers in the process.
 
 	\item[Online Signal]
 		This signal is a logical counterpart to the previous signal.
-		It informs a driver attached to a DDF node that its managed device will not be removed in the near future.
-		The driver is expected to expose all child DDF functions related to the device, possibly sending a \textit{Device Add} signal to all their matched drivers in the process.
+		It informs a driver attached to a DDF node that its managed device will
+		not be removed in the near future. The driver is expected to expose all
+		child DDF functions related to the device, possibly sending a
+		\textit{Device Add} signal to all their matched drivers in the process.
 \end{description}
 
-These signals can be easily issued by the user from the system shell by means of the \app{devctl} application.
-See Listing \ref{lst:devctl-offline-online} for invocation example.
+These signals can be easily issued by the user from the system shell by means
+of the \app{devctl} application. See Listing \ref{lst:devctl-offline-online}
+for invocation example.
 
 \begin{listing}[H]
 	\begin{bdsh}
@@ -37,11 +51,15 @@ See Listing \ref{lst:devctl-offline-online} for invocation example.
 		# We changed our mind. Bring the device back online.
 		devctl online /hw/pci0/00:04.0/usb2-hs
 	\end{bdsh}
-	\caption[Example usage of \app{devctl} to issue offline and online signal.]{Example usage of the \app{devctl} application to issue offline and online signal to a USB high speed device at address 2. The host controller PCI address is \texttt{00:04.0}.}
+	\caption[Example usage of \app{devctl} to issue offline and online
+	signal.]{Example usage of the \app{devctl} application to issue offline and
+	online signal to a USB high speed device at address 2. The host controller
+	PCI address is \texttt{00:04.0}.}
 	\label{lst:devctl-offline-online}
 \end{listing}
 
-It follows that these signals can be used for the implementation of the explicit device removal at the level of USB host controller drivers.
+It follows that these signals can be used for the implementation of the
+explicit device removal at the level of USB host controller drivers.
 
 
 \subsection{Subsystem Changes}
