@@ -55,6 +55,15 @@ There was a number of problems with the status quo:
 
 \subsection{Modifications}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{usb-polling}
+	\caption[USB device polling interactions diagram.]{A diagram of interactions
+	between the Device Manager, USB device driver and one of its polling fibrils
+	during its lifecycle.}
+	\label{fig:usb-polling}
+\end{figure}
+
 The configuration structure \struct{usb_device_auto_polling_t} has been renamed
 for simplicity sake to \struct{usb_polling_t}. Instead of serving as a one-time
 configuration structure during polling initiation, its role changed to represent
@@ -86,7 +95,7 @@ terminates. This function addresses the problem of spinning in driver's
 which may result in the polling fibril outliving the device and then accessing
 invalid memory. Calling this function in this context will result in the
 immediate and synchronous termination of the polling mechanism prior to
-deallocation.
+deallocation (as depicted in Figure \ref{fig:usb-polling}).
 
 Furthermore, the exposure of internal polling parameters now gives device
 drivers more creativity in their approach to polling. For instance, drivers can
