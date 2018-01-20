@@ -125,3 +125,35 @@ memory.
 
 % TODO @aearsis: Explain the arcane magic behind aborting commands.
 
+
+\subsection{Usage Examples}
+
+Since the command subsystem is used at a multitude of places in the HC
+component, it has been the focus of the authors to make its usage elegant and
+effortless. For that reason, a dedicated inline notation syntax powered by
+preprocessor macros has been devised and implemented. This is demonstrated in
+Listing \ref{lst:command-usage}.
+
+\begin{listing}
+	\begin{code}
+		xhci_hc_t * const hc;
+
+		/* Issue a "Set TR Dequeue Pointer" command synchronously. */
+		const int result = xhci_cmd_sync_inline(hc, SET_TR_DEQUEUE_POINTER,
+		    /* Command-specific arguments use struct initializer. */
+		    .slot_id = slot_id,
+		    .endpoint_id = dci,
+		    .stream_id = stream_id,
+		    .dequeue_ptr = addr,
+		);
+
+		/* At this point, the command is completed with `result`. */
+	\end{code}
+	\caption[Usage example of xHC driver inline command syntax.]{Usage example
+	of the xHC driver command subsystem inline  syntax. This snippet issues a
+	\textit{Set TR Dequeue Pointer} command to the HC in blocking mode. Note
+	that the command initialization, configuration and finalization is handled
+	by the inline macro syntax.}
+	\label{lst:command-usage}
+\end{listing}
+
