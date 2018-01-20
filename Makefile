@@ -1,6 +1,6 @@
 PROJ=docs
 TEX=pdflatex
-TEXFLAGS=-halt-on-error -interaction=nonstopmode
+TEXFLAGS=-halt-on-error -interaction=nonstopmode -shell-escape
 
 all: $(PROJ).pdf
 .PHONY: all
