@@ -103,11 +103,14 @@ for invocation example.
 \end{listing}
 
 It follows that these signals can be used for the implementation of the
-explicit device removal at the level of USB host controller drivers.
-
-
-\subsection{Subsystem Changes}
-% TODO
+explicit device removal at the level of USB host controller drivers. For that
+reason, \lib{libusbhost} has been extended to handle appropriate DDF callbacks
+for functions corresponding to HC's child devices. Their handling is forwarded
+to the bus module, which executes the disconnection or the reconnection routine
+for the \textit{offline} and \textit{online} signal respectively. In addition,
+the transfer scheduling mechanism of the bus module has been extended to permit
+scheduling new transfers only to devices, which are in the online state. The
+version-specific part of the implementation is discussed in the next sections.
 
 
 \subsection{UHCI Support}
