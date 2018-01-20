@@ -113,19 +113,23 @@ scheduling new transfers only to devices, which are in the online state. The
 version-specific part of the implementation is discussed in the next sections.
 
 
-\subsection{UHCI Support}
+\subsection{UHCI Specifics}
+
 % TODO @aearsis
 
 
-\subsection{OHCI Support}
+\subsection{OHCI Specifics}
+
 % TODO @aearsis
 
 
-\subsection{EHCI Support}
+\subsection{EHCI Specifics}
+
 % TODO @aearsis
 
 
-\subsection{xHCI Support}
+\subsection{xHCI Specifics}
+
 Since xHCI is the latest HC interface implementation, a lot more is done by the
 hardware for the HC driver in comparison with previous versions. The concept of
 xHCI command ring leads to very elegant implementation of the required
@@ -143,4 +147,40 @@ Reconnection is quite straightforward and requires only that the HC driver
 issues a regular \textit{Configure Endpoint} command in order to transition the
 device from the \textit{Addressed} state back to the \textit{Configured} state.
 
+
+\subsection{Driver Support}
+
+Since the existing USB drivers were quite incomplete, their implementation has
+been extended to add support for explicit device removal. This mostly lead to
+novel approaches to deallocation of device-related memory structures, which is
+often performed in the \fnc{device_remove()} and \fnc{device_gone()} driver
+callbacks.
+
+For instance, a number of drivers required that an implementation of
+\fnc{device_remove()} is created in the first place. Quite so often, the
+existing implementation of \fnc{device_gone()} has provided a good starting
+point, given that both functions have to deal with USB device's demise. The
+fundamental difference was that while \fnc{device_gone()} merely dealt with
+the fallout of unexpectedly unplugged device, \fnc{device_remove()} had the
+oppportunity to tie up all lose ends prior to the physical detachment of the
+device.
+
+This posed a problem, especially in HID and hub drivers, which heavily relied on
+polling of interrupt endpoints. Since polling was a synchronous operation from
+the device driver's point of view, a polling fibril has been created when the
+driver started managing the device. When the device was unplugged, the polling
+operation failed with error, waking up and effectively terminating the fibril in
+the process. Since no explicit joining mechanism was available, the
+implementation of \fnc{device_gone()} merely spinned a limited number of times,
+waiting for the polling fibril to die. This mechanism was however unsuitable for
+\fnc{device_remove()}, since the fibril would not awaken due to an error caused
+by the physical disconnect, which has not happened yet.
+
+This lead to complete refactoring and extension of the USB device polling
+mechanism, which is described in detail in Section \ref{polling-refactoring}.
+In summation, the new version of the mechanism allows device drivers to join
+their polling fibrils and consistently wake them up in order to avoid deadlocks.
+
+The implementation of explicit device removal support for the rest of the
+drivers was a trivial extension of their previous functionality.
 
