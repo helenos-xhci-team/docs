@@ -2,21 +2,40 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{fancyhdr}
+\usepackage[paper=a4paper,margin=1in]{geometry}
 
 \pagestyle{fancy}
 
-\author{Ondřej~Hlavatý, Jan~Hrach, Jaroslav~Jindrák, Petr~Mánek, Michal~Staruch}
+\author{Ondřej~Hlavatý, Jan~Hrach, Jaroslav~Jindrák,\\Petr~Mánek, Michal~Staruch}
 \title{HelenOS USB 3.x Stack}
 
 \begin{document}
 
+% The title page has its special margin.
 \maketitle
 
+
+% Use double-sided margins from now on.
+\newgeometry{top=1in,bottom=1in,right=0.5in,left=1.5in}
+\cleardoublepage
+
+
+% Here begins the actual content.
 \tableofcontents
 \newpage
 
 \input{01_intro}
+\input{02_xhci}
+\input{03_mods}
+\input{04_drivers}
 
+
+% Appendices
+\appendix
+\input{A1_testing}
+\input{A2_compat}
+\input{A3_future}
+\input{A4_spec}
 
 \end{document}
 
