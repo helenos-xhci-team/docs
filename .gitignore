@@ -223,3 +223,6 @@ TSWLatexianTemp*
 
 # vim
 .*.sw*
+
+# generated images
+/img/*.pdf
