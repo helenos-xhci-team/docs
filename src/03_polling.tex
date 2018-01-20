@@ -1,4 +1,4 @@
-\section{Polling Mechanism Improvements}
+\section{Polling Mechanism Improvements}~\label{polling-refactoring}
 
 As hinted by the previous section, the USB device endpoint polling mechanism has
 been completely refactored.
@@ -98,7 +98,10 @@ polling again (note that stopping polling at will was not supported by the
 previous implementation without generating actual errors from the hardware
 device).
 
-\begin{listing}[H]
+A nice minimalistic example of the new polling mechanism usage can be found in
+Listing \ref{lst:polling-example}
+
+\begin{listing}
 	\begin{code}
 		static usb_polling_t polling;
 		static uint8_t buffer[13];
