@@ -114,17 +114,33 @@ version-specific part of the implementation is discussed in the next sections.
 
 
 \subsection{UHCI Support}
-% TODO
+% TODO @aearsis
 
 
 \subsection{OHCI Support}
-% TODO
+% TODO @aearsis
 
 
 \subsection{EHCI Support}
-% TODO
+% TODO @aearsis
 
 
 \subsection{xHCI Support}
-% TODO
+Since xHCI is the latest HC interface implementation, a lot more is done by the
+hardware for the HC driver in comparison with previous versions. The concept of
+xHCI command ring leads to very elegant implementation of the required
+functionality on the HC driver part.
+
+When the device drivers cease their communications, the HC aborts any leftover
+active transfers. For that purpose, the xHCI features an explicit \textit{Stop
+Endpoint} command, which instructs the HC to abort all transfers to a specific
+device endpoint. This command is issued by the HC driver for all removed device
+endpoints, which are active at the moment of the request. Furthermore, device
+configuration is dropped along with all remaining endpoints by issuing a
+\textit{Configure Endpoint} command with the DC (deconfigure) flag.
+
+Reconnection is quite straightforward and requires only that the HC driver
+issues a regular \textit{Configure Endpoint} command in order to transition the
+device from the \textit{Addressed} state back to the \textit{Configured} state.
+
 
