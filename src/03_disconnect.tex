@@ -303,7 +303,7 @@ driver has to trigger a transfer abort inside the HC. There's no sensible way
 of how to allow a driver abort its own transfer, which wouldn't introduce
 potential memory leaks inside HC or synchronization problems. So we decided
 that the driver will have to unregister the endpoint as the only way to abort
-a currently running trasfer (and also disable scheduling of new ones). The
+a currently running transfer (and also disable scheduling of new ones). The
 device's endpoints (or, at this layer already called pipes) are completely
 managed by the \lib{libusbdev} library. Previously, their lifetime was strictly
 tied to the lifetime of the handled device. There are only two possible
