@@ -70,14 +70,14 @@ to QEMU's standard output:
 \subsection{Implementation}
 
 The implementation of this device is located in the file
-\qemufile{hw/usb/dev-tmon.c} in the helenos-xhci-team/qemu fork of the official
-QEMU repository. It contains several key structures and functions:
+\qemufile{hw/usb/dev-tmon.c}{dev-tmon.c} in the helenos-xhci-team/qemu fork of
+the official QEMU repository. It contains several key structures and functions:
 
 \begin{description}
 	\item[USBTmonState]
 		Structure that reperesents the current state of a \texttt{usb-tmon}
 		device.
-	\item[X]%[desc\_tmon, desc\_device_tmon, desc\_iface\_tmon]
+	\item[desc\_tmon, desc\_device\_tmon, desc\_iface\_tmon]
 		These three structures form the descriptor of the device and contain
 		information about the device's class, protocol, endpoints etc.
 	\item[usb\_tmon\_class\_init]
@@ -127,12 +127,47 @@ add \texttt{"-device usb-tmon"} to their QEMU startup command.
 
 \section{Frontend}
 
-% TODO
-
 \subsection{Structure}
 
-% TODO
+The \texttt{tmon} application consists of the following source files:
+~
+\begin{description}
+	\item[\file{uspace/app/tmon/main.c}{main.c}]
+		Main entry point, command selection and usage string.
+	\item[\file{uspace/app/tmon/commands.h}{commands.h}]
+		Executable commands.
+	\item[\file{uspace/app/tmon/list.c}{list.c}]
+		Implementation of the \textit{"list"} command.
+	\item[\file{uspace/app/tmon/tf.h}{tf.h}, \file{uspace/app/tmon/tf.c}{tf.c}]
+		Testing framework, common code for all "\fnc{test-*}" commands.
+	\item[\file{uspace/app/tmon/resolve.h}{resolve.h},
+		  \file{uspace/app/tmon/resolve.c}{resolve.c}]
+		Resolving DDF device from string using devman's IPC interface.
+	\item[\file{uspace/app/tmon/burst\_tests.c}{burst\_tests.c}]
+		Implementation of burst tests.
+\end{description}
 
 \subsection{Usage}
 
-% TODO
+\begin{bdsh}
+tmon: benchmark USB diagnostic device
+
+Usage: tmon command [device] [options]
+
+      list - Print a list of connected diagnostic devices.
+      test-intr-in - Read from interrupt endpoint as fast as possible.
+      test-intr-out - Write to interrupt endpoint as fast as possible.
+      test-bulk-in - Read from bulk endpoint as fast as possible.
+      test-bulk-out - Write to bulk endpoint as fast as possible.
+      test-isoch-in - Read from isochronous endpoint as fast as possible.
+      test-isoch-out - Write to isochronous endpoint as fast as possible.
+
+      -n --cycles
+            Set the number of read/write cycles.
+      -s --size
+            Set the data size transferred in a single cycle.
+
+If no device is specified, the first device is used provided that it is the
+only one connected. Otherwise, the command fails.
+
+\end{bdsh}
