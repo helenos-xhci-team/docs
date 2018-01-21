@@ -35,7 +35,7 @@ The disconnection routine for explicit device removal is implemented as follows:
 		device.
 	\item The HC driver aborts all leftover active transfers to the device.
 	\item The device configuration is dropped, leaving it in the
-		\textit{addressed} state, in which it is considered safe to be
+		\state{Addressed} state, in which it is considered safe to be
 		physically removed from the bus.
 \end{enumerate}
 
@@ -262,7 +262,7 @@ flag.
 
 Reconnection is quite straightforward and requires only that the HC driver
 issues a regular \textit{Configure Endpoint} command in order to transition the
-device from the \textit{Addressed} state back to the \textit{Configured} state.
+device from the \state{Addressed} state back to the \state{Configured} state.
 
 
 \subsection{Driver Support}

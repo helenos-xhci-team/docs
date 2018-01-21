@@ -93,7 +93,7 @@ drivers' handle it.
 The main problem a hub driver faces is a synchronization one. When a new device
 is detected, it needs to be enumerated. Enumeration process in case of USB 2.0
 devices requires the hub to reset the port the device is attached to, to move
-it the \textit{Default} state, when it's listening on the default address 0.
+it the \state{Default} state, when it's listening on the default address 0.
 Wen the port reset is triggered, the hub must wait until the port reset is
 complete. During the whole process, the device can be disconnected, and the
 port reset will never be completed. Furthermore, the completion of port reset
