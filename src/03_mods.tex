@@ -6,11 +6,118 @@
 \input{03_disconnect}
 \input{03_polling}
 
-\section{USB hub port refactoring - title pending} %FIXME
+\section{A Library Module for USB Hubs}
 \label{hub-port-refactoring}
 
-% TODO @aearsis: Explain the complexity of the topic and the proper solution
+We introduced a new module to support writing hub drivers:
+\file{uspace/lib/usb/include/usb/port.h}{usb/port.h}. It solves the problem of
+hub drivers, that events are announced through a single channel, even though
+they need to wait for each other. The implementation of this module was
+motivated not only by the need of refactoring, nor because we wanted to share
+the functionality with the xHCI driver, but because the previous implementation
+of \lib{usbhub} driver synchronized the fibrils wrong. There might have been
+situations in which two fibrils were spawned and enumerated the same device.
 
+To solve the issue a state information is managed for every port, represented
+by the structure \struct{usb_port_t}. It contains the current port state, one
+of the following:
+
+\begin{description}
+\begingroup \leftskip=1cm \rightskip=\leftskip
+\setcounter{enumi}{-1}
+	\item[\state{Disabled}]
+		There has been no activity on the port yet, or it is already over.
+		Initial state.
+
+	\item[\state{Connecting}]
+		A connected event came, the enumerating fibril was started. It hasn't
+		finished yet, so the device is not enumerated yet. Also, the device is
+		still connected, no error event came while the connecting is in
+		progress.
+
+	\item[\state{Enumerated}]
+		The device was successfully enumerated, so it has to be removed after
+		it will be disconnected.
+
+	\item[\state{Disconnecting}]
+		A disconnected event came after the device was enumerated, so
+		a removing fibril was started.
+
+	\item[\state{Error}]
+		An event about the device disconnection state came while the
+		enumeration was in progress, so the enumeration fibril has to be
+		stopped. This is achieved by returning \macro{EINTR} from the waiting
+		methods.
+
+\endgroup
+\end{description}
+
+The basic synchronization invariant is that the state never changes unless the
+guard is locked. It is expected that the guard is not held for a long time, so
+the fibril generating events shall not be blocked indefinitely. The only
+exception being the final phase of enumeration (announcing the device to the
+bus), which once started, cannot be easily interrupted -- but this operation on
+the bus is also expected to run for a limited time only.
+
+The scheme of states and allowed transitions can be seen on figure
+\ref{fig:port-states}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{port-states}
+	\caption{A graph of port states and their transitions.}
+	\label{fig:port-states}
+\end{figure}
+
+The transitions are triggered by delivering events to the module. This is done
+by calling following functions:
+
+\begin{itemize}
+	\item \fnc{usb_port_connected}
+	\item \fnc{usb_port_disabled}
+	\item \fnc{usb_port_enabled}
+\end{itemize}
+
+The \fnc{connected} and \fnc{disabled} functions take a callback as an
+argument. If the respective state transition is triggered, this callback is run
+in a separate fibril. These functions can block to obtain the port guard, and
+the \fnc{disabled} event can furthermore block while waiting for the
+enumeration fibril to terminate. But before it does, it makes sure the worker
+will be notified as soon as possible.
+
+To make it work, the callbacks must not block while holding the guard. They
+can, however, wait for the enabled event, signalling the completion of port
+reset, using a function \fnc{usb_port_wait_for_enabled}. The caller is required
+to check the return value of it -- it can either finish with \macro{EOK},
+timeout with \macro{ETIMEOUT} or be interrupted with \macro{EINTR}. The enabled
+event is sent by calling the function \fnc{usb_port_enabled}.
+
+When this fibril management is separated, an implementation of USB hub driver or
+root hub driver is very simple. The hub driver just initializes the
+\struct{usb_port_t} structure for every port it manages, then waits for events
+from the hardware (either by poling the \textit{Status Change Endpoint}, or by
+waiting for an interrupt), and forwards the events to this module, providing an
+implementation of the enumeration and removal process.
+
+One last thing to note is what to do when the structure is finalized, but
+a device is still connected. It might happen that there is a subtree of devices
+and hubs being removed because the subtree root $R$ has been unexpectedly
+removed. In that case, a port disconnect is delivered to the parenting hub,
+which triggers the device removal process. The hub $R$ then receives the DDF
+signal \fnc{device_offline}, and starts removal if his own children. But
+there's a catch: USB hierarchy is presented as a flat one to the DDF framework.
+That means that the devman has no clue about hubs (it sees them as ordinary USB
+devices), and considers that all of them are connected to the HC directly.
+Device removal is prepared for the situation that device will remove also its
+\textit{children} devices, but serializes removal of \textit{sibling} devices.
+Therefore, recursive removal of hubs creates a deadlock in devman.
+
+Fortunately, the HC driver must be prepared for badly written drivers, so it
+cleans up after the device function is unbound. This cleanup includes also
+removal of its former children devices -- so the workaround for this problem is
+simply leaving those devices connected, as the HC will remove them itself. This
+state transition is denoted by dotted line in the graph, and is triggered by
+finalizing the port structure while a device is enumerated.
 
 \section{USB Tablet Driver}
 

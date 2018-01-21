@@ -6,12 +6,13 @@ ASPELL=aspell
 ASPELL_FLAGS=--lang=en --mode=tex --personal=${PWD}/xhci.dict
 
 SVGS=$(patsubst %.svg,%.pdf,$(wildcard img/*.svg))
-IMAGES=${SVGS}
+PDFS=$(wildcard img/*.pdf) # We include also built svgs here, but who cares
+IMAGES=$(SVGS) $(PDFS)
 
 all: $(PROJ).pdf
 .PHONY: all
 
-%.pdf: %.svg
+$(SVGS): %.pdf: %.svg
 	convert $< $@
 
 $(PROJ).pdf: src/*.tex ${IMAGES}
@@ -24,7 +25,8 @@ spellcheck:
 	find src/ -name "*.tex" -exec ${ASPELL} ${ASPELL_FLAGS} check "{}" \;
 
 clean:
-	rm -f $(PROJ).pdf *.lo[lgf] *.aux *.toc img/*.pdf
+	rm -f $(PROJ).pdf *.lo[lgf] *.aux *.toc
+	rm -f ${SVGS}
 	rm -rf _minted-docs
 .PHONY: clean
 
