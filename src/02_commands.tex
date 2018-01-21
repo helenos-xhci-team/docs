@@ -36,7 +36,7 @@ of the xHC driver's lifecycle. The purpose of this structure is to maintain and
 manage the command TRB ring, and to keep track of enqueued command descriptors.
 
 Individual command descriptors are represented by the \struct{xhci_cmd_t}
-structure. In it are stored the high-level parameters of the command as well as
+structure. In this structure are stored high-level parameters of the command as well as
 the command TRB, which is placed onto the command ring when the command is
 executed. While the high-level command parameters are kept directly in this
 structure, the hardware-related internals are kept in a substructure, which is
@@ -84,10 +84,10 @@ of issuing, the information required can be broken down into three groups:
 		On the other hand, in the \textit{non-blocking mode}, the fibril will
 		only be blocked until the command is issued -- the command subsystem
 		will take the ownership of the command and deallocate it when the
-		completion event arrives. This mode is meant for commands, which do not
-		require completion event handling, and involves more complicated memory
+		completion event arrives. This mode is meant for commands which do not
+		require the completion event handling and involves more complicated memory
 		management since the command subsystem is responsible for freeing the
-		command after completion occurs.
+		command after the completion occurs.
 \end{description}
 
 Depending on the desired completion semantics of the issued command, the HC
@@ -128,7 +128,7 @@ memory.
 \subsection{Usage Examples}
 
 Since the command subsystem is used at a multitude of places in the HC
-component, it has been the focus of the authors to make its usage elegant and
+component, it has been the goal of the authors to make its usage elegant and
 effortless. For that reason, a dedicated inline notation syntax powered by
 preprocessor macros has been devised and implemented. This is demonstrated in
 Listing \ref{lst:command-usage}.

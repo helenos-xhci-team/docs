@@ -3,7 +3,7 @@
 The structure of the xHCI driver is quite straightforward, as it tries to fit
 into the scheme of how hardware and the rest of HelenOS works. We decided to
 use the existing library \lib{libusbhost} to reduce code duplication with
-other HC drivers. It came out that this library need a lot of changes to
+other HC drivers. It came out that this library needs a lot of changes to
 support us in this goal, but that's for chapter \ref{usb-refactoring}.
 
 The USB host controller driver using \lib{libusbhost}, xHCI included, serves as
@@ -115,18 +115,18 @@ module translates USB transfers to callbacks, which are implemented by
 individual HC drivers to read and modify register space of the Host Controller.
 
 This solution is very clean in design, regarding that root hub functionality is
-exactly the same as any other hub's, it is just controlled by MMIO mapped
+exactly the same as any other hub's, but just controlled by MMIO mapped
 registers instead of USB packets. It is even recommended by the USB 2.0			% TODO: Link to USB2 spec
-specification to embody this solution. But that's pretty much the only advance
+specification to embody this solution. But that's pretty much the only advantage
 this solution has. One has to write a lot of code to even implement the
 callbacks, not mentioning the virthub module itself. And a lot of code always
 comes with bugs. Also, while having no real performance impact, it requires
 several context switches, IPC calls, bouncing memory buffers and a lot of
 unnecessary allocations to clear one bit in the register space (USB hubs
-operate by setting and clearing so called Features, indicating e.g. that
-a connection on port changed). But it needs to be stressed more, that this
+operate by setting and clearing so-called Features, indicating e.g. that
+a connection on port changed). But it needs to be stressed more that this
 performance impact is mitigated by the fact that real hubs use real USB transactions
-above that, and that hub interaction is very sparse.
+above that and that hub interaction is very sparse.
 
 We searched for a solution that would keep the cleanness in terms of shared
 functionality between usbhub driver and roothub and decided to move the port
@@ -137,7 +137,7 @@ is used by both the xHCI roothub and also by the rewritten usbhub. More
 information about this new module can be found in section \ref{hub-port-refactoring}.
 
 One more thing related to the xHCI roothub, which we crossed while debugging on
-real hardware. The USB hub have a bit dedicated to indicate that a port is
+real hardware: the USB hub have a bit dedicated to indicate that a port is
 enabled (PED), and the port can be disabled using it. Counterintuitively, the
 port is disabled by writing a 1 to it. Even worse, this bit is in the same
 field as the change bits with RW1C semantics are -- which means that the
