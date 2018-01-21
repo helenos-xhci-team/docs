@@ -30,7 +30,9 @@ implemented.
 \section{HW structs}
 
 % TODO: Explain that this one is really simple, and just mirrors the structures
-% hardware use.
+% hardware use. Describe briefly the register space of xHC, register field semantics (R, RW, RW1C), contexts.
+
+% TODO @aearsis: Register macros
 
 \section{Debug}
 
@@ -81,12 +83,70 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 % - event handling
 % - context management
 % - extcap parsing
-% - register access macros
-
+\
 \section{Roothub}
 
-% TODO: Explain why we do not have virthub. Who remembers the reasons?
-% Otherwise it just uses libusb/port to do the interesting work.
+The purpose of this module is very simple -- take care of the root hub. Before
+we explain how our roothub works, let's have a look on why and how other HC
+drivers' handle it.
+
+The main problem a hub driver faces is a synchronization one. When a new device
+is detected, it needs to be enumerated. Enumeration process in case of USB 2.0
+devices requires the hub to reset the port the device is attached to, to move
+it the \textit{Default} state, when it's listening on the default address 0.
+Wen the port reset is triggered, the hub must wait until the port reset is
+complete. During the whole process, the device can be disconnected, and the
+port reset will never be completed. Furthermore, the completion of port reset
+is indicated by the same means as port connection, resulting in a deadlock in
+the na\"ive solution. The proper solution therefore involves spawning new
+fibrils and nontrivial synchronization.
+
+All four HC drivers (UHCI, OHCI, EHCI and VHC) are using a virtual roothub. In
+principle that means that they create a virtual USB device, which is listening
+at the default address in the beginning, and trigger an enumeration process.
+Then there is a little branch in transfer scheduling, that takes transfers
+directed to the same address as the virtual device's, and delivers them by
+calling a function instead. The virtual device behaves exactly like a real USB
+hub would -- it has its standard descriptors, reply to setup requests and so
+on. So it enumerates like a USB hub would, and creates a DDF device, which is
+taken by the \texttt{usbhub} driver. The driver then handles the virtual
+roothub like any other hub, by sending USB control transfers. The virthub
+module translates USB transfers to callbacks, which are implemented by
+individual HC driver to read and modify register space of the Host Controller.
+
+This solution is very clean in design, regarding that root hub functionality is
+exactly the same as any other hub's, it is just controlled by MMIO mapped
+registers instead of USB packets. It is even recommended by the USB 2.0			% TODO: Link to USB2 spec
+specification to embody this solution. But that's pretty much the only advance
+this solution has. One has to write a lot of code to even implement the
+callbacks, not mentioning the virthub module itself. And a lot of code always
+come with bugs. Also, while having no real performance impact, it requires
+several context switches, IPC calls, bouncing memory buffers and a lot of
+unnecessary allocations to clear one bit in the register space (USB hubs
+operate by setting and clearing so called Features, indicating e.g. that
+a connection on port changed). But it needs to be stressed more, that this
+performance impact is mitigated by the fact real hub use real USB transactions
+above that, and that hub interaction is very sparse.
+
+We searched for solution, that would keep the cleanness in terms of shared
+functionality between usbhub driver and roothub, and decided to move the port
+state machine and related fibril synchronization into the USB library. That
+cleanly separates the hardest part of handling hub port changes from the code
+that is actually handling them and enumerating the devices. This state machine
+is used by both xHCI roothub, and also by the rewritten usbhub. More
+information about this new module can be found in section \ref{hub-port-refactoring}.
+
+One more thing related to the xHCI roothub, which we crossed while debugging on
+real hardware. The USB hub have a bit dedicated to indicate that a port is
+enabled (PED), and the port can be disabled using it. Counterintuitively, the
+port is disabled by writing a 1 to it. Even worse, this bit is in the same
+field as the change bits with RW1C semantics are -- which means that the
+standard approach of reading and writing back the value read fails hard. This
+took us several hours to discover, because the port reset was completed
+successfully, but right after that, the device was inaccessible, even when we
+didn't do anything with it yet. To make matters more complicated, QEMU ignores
+this bit completely, so the code worked fine in a virtual environment.
+
 
 \section{Transfers}
 
