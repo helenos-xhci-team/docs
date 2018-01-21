@@ -20,7 +20,7 @@ The scheme is not at all strict, we're in a C world, there are dependencies
 almost everywhere -- take it as an informal overview to get an idea.
 
 The whole driver can be split into two parts. The left one takes care about the
-hardware perception on what's going on, the right one is about managing the
+hardware perception of what's going on, the right one is about managing the
 software structures and memory.
 
 We start with describing the modules in the hardware part, as their
@@ -53,7 +53,7 @@ found in the operational register set defined in \struct{xhci_op_regs}.
 
 The amount of buffers requested by the xHC is specified in the \textit{Max Scratchpad Bufs Hi} and
 \textit{Max Scratchpad Bufs Lo} registers of the second set of structural parameters (\textit{HCSPARAMS2},
-see section 5.3.4 of the xHCI specification) defined in \struct{xhci_cap_regs}.
+see \xhci{5.3.4}) defined in \struct{xhci_cap_regs}.
 
 The allocation of these buffers takes place as part of the host constroller initialization,
 specifically in \fnc{hc_init_memory()}, which calls \fnc{xhci_scratchpad_alloc()}. The pointers
@@ -64,7 +64,7 @@ occupies the first index of the \textit{Device Context Base Address Array} (dcba
 Our implementation originally implemented these as a standalone structure \struct{xhci_scratchpad_t},
 which served mainly for the purposes of resource management by keeping both the physical addresses
 for the xHC and the virtual addresses for deallocation. This was, however, later refactored to use
-\struct{dma_buffer_t}, which is part of \lib{libusbhost} was created for the same purpose.
+\struct{dma_buffer_t}, which is part of \lib{libusbhost} and was created for the same purpose.
 
 Once the xHCI driver finishes its execution, the scratchpad buffers are deallocated by a call to
 \fnc{xhci_scratchpad_free()} as part of \fnc{hc_fini()}.

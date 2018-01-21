@@ -193,7 +193,7 @@ All three HCI's that were supported prior to our project have similar
 structure with regard to what is required to implement transfer aborting. Let us
 first describe very briefly how these controllers handle transfers.
 
-Generally, all three host controllers require driver to create a system of
+Generally, all three host controllers require the driver to create a system of
 linked structures in memory (for UHCI and OHCI, restricted to the lower 4 GBs
 of addressable space). The names and guts differ, the structures however
 describe a linked chain of queues. Queues are then filled by transfer
@@ -228,7 +228,7 @@ two locks. While scheduling the transfer, we (potentially) need to wait, until
 the endpoint is free to be activated, so we need to take the endpoint lock first.
 On the other hand, when scanning the pending list, we cannot know the
 endpoints, and therefore cannot lock them in advance. The resolution of this
-conflict is different in every driver
+conflict is different in every driver.
 
 % TODO: In UHCI, it is currently broken, and it struck me while writing the
 % documentation. Too late for me to fix it now, gotta go sleep.
@@ -286,7 +286,7 @@ This posed a problem, especially in HID and hub drivers, which heavily relied on
 polling of interrupt endpoints. Since polling was a synchronous operation from
 the device driver's point of view, a polling fibril has been created when the
 driver started managing the device. When the device was unplugged, the polling
-operation failed with error, waking up and effectively terminating the fibril in
+operation failed with an error, waking up and effectively terminating the fibril in
 the process. Since no explicit joining mechanism was available, the
 implementation of \fnc{device_gone()} merely spinned a limited number of times,
 waiting for the polling fibril to die. This mechanism was however unsuitable for

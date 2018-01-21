@@ -2,7 +2,7 @@
 
 The xHC offers an independent command interface. During operation, the xHC
 driver uses this interface to manipulate device slots, devices and endpoints by
-executing various commands provided by a unified the command subsystem. This
+executing various commands provided by a unified command subsystem. This
 section provides details on the structure and implementation of this subsystem.
 
 
@@ -55,7 +55,7 @@ and schedule commands on the xHC. These functions produce valid instances of the
 \struct{xhci_cmd_t} and place their respective TRBs onto the command ring
 managed by the \struct{xhci_cmd_ring_t} structure, requesting either blocking or
 non-blocking semantics for waiting on their completion. These functions are
-described detail in the next section.
+described in detail in the next section.
 
 
 \subsection{Command Lifecycle}
@@ -77,10 +77,10 @@ of issuing, the information required can be broken down into three groups:
 		specified command type.
 	\item[Completion Semantics]
 		This is the desired behavior of command execution.
-		
+
 		In the \textit{blocking mode}, the call to issue the command will block
 		the calling fibril until the completion event is received.
-		
+
 		On the other hand, in the \textit{non-blocking mode}, the fibril will
 		only be blocked until the command is issued -- the command subsystem
 		will take the ownership of the command and deallocate it when the
@@ -92,7 +92,7 @@ of issuing, the information required can be broken down into three groups:
 
 Depending on the desired completion semantics of the issued command, the HC
 component calls either the \fnc{xhci_cmd_sync()} or \fnc{xhci_cmd_async()}
-function and pass it a configured instance of the \struct{xhci_cmd_t} structure.
+function and passes it a configured instance of the \struct{xhci_cmd_t} structure.
 Upon such call, the command subsystem will execute an internal command handler
 function, which copies the high-level command-specific parameters configured by
 the issuer, and use their values to construct a command descriptor consisting of

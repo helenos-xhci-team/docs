@@ -35,13 +35,13 @@ gather data about the throughput and speed of the communication and validate
 the contents of the USB packets sent between HelenOS and a device.
 
 In order to support communications of all types, the device contains an
-endpoint for each direction of each transfer types - i.e. interrupt, bulk and
+endpoint for each direction of each transfer type - i.e. interrupt, bulk and
 isochronous. Since we want to both check the speed of the driver and the
 correctness of the data sent, each endpoint is duplicated creating two
-sets of endpoints - first set that does not validate the transferred data
-and a second set, that each four bytes of the data equals to a predefined macro
-\macro{CHECK}. Each of these endpoints has an associated
-macro that containts its endpoint number which has the form of
+sets of endpoints - first set, which does not validate the transferred data,
+and a second set, which checks that each four bytes of the data equal to a
+predefined macro \macro{CHECK}. Each of these endpoints has an associated
+macro that contains its endpoint number which has the form of
 \macro{EP_<type>_<direction>} for the first set and
 \macro{CHECKED_EP_<type>_<direction>} for the second set, where \texttt{<type>}
 can be \texttt{INT} for interrupt transfers, \texttt{BULK} for bulk transfers or
@@ -52,7 +52,7 @@ by a driver has to match the value of one of these macros.
 
 \subsection{Monitoring}
 
-Regardless of which of the aforementioned endpoint sets are used, the
+Regardless of which of the aforementioned endpoint sets is used, the
 \texttt{usb-tmon} device prints information about the transfers it handles
 to QEMU's standard output:
 ~
@@ -87,7 +87,7 @@ the official QEMU repository. It contains several key structures and functions:
 		Called when an instance of the \texttt{usb-tmon} device gets created and
 		is used to initialize a specific instance of \struct{USBTmonState}.
 	\item[usb\_tmon\_handle\_attach]
-		Called when an instance of the \texttt{usb-tmon} device get attached to
+		Called when an instance of the \texttt{usb-tmon} device gets attached to
 		the guest OS.
 	\item[usb\_tmon\_handle\_control]
 		Called when the device receives a control request, in its current
@@ -109,15 +109,15 @@ and QEMU debugging/informational functions and structures (e.g.
 \fnc{usb_tmon_register_types}). These should seldom require modification.
 
 For the purposes of modifying or debugging usb-tmon's source code, the header
-\qemufile{include/hw/usb.h} contains most of the structure definitions and
-function declarations that might be needed.
+\qemufile{include/hw/usb.h}{usb.h} contains most of the structure definitions
+and function declarations that might be needed.
 
 \subsection{Usage}
 
 To attach an instance of the \texttt{usb-tmon} device to a running QEMU, one
-can type \textit{device\_add usb-tmon} into QEMU's monitor (which can be
-accessed via the \texttt{Ctrl-Alt-2} key combination or by redirecting the
-monitor to QEMU's standard IO by adding \texttt{"-monitor stdio"} to QEMU's
+can type \textit{"device\_add usb-tmon"} into QEMU's monitor (which can be
+accessed via the Ctrl-Alt-2 key combination or by redirecting the
+monitor to QEMU's standard IO by adding \textit{"-monitor stdio"} to QEMU's
 startup command). To have QEMU start with \texttt{usb-tmon} attached, they may
 add \texttt{"-device usb-tmon"} to their QEMU startup command.
 
