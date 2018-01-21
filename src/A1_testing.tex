@@ -1,4 +1,138 @@
 \chapter{Benchmarks and Testing}
 
+To demonstrate and benchmark performance of the xHCI stack, a proprietary
+subsystem has been implemented in HelenOS. The primary function of this
+subsystem is to communicate with a custom QEMU USB device over arbitrary
+endpoints and provide statistical information related to the communication.
+This way, it can be used to verify the correctness of message transmission,
+experiment with synchronization and to measure performance indicators.
+
+In addition, since the subsystem is built on top of the USB device driver
+framework and has no xHCI-specific requirements, it can be also used to compare
+parameters of the xHCI stack with its predecessors.
+
+The subsystem is composed of three parts:
+~
+\begin{description}
+	\item[QEMU fork with proprietary diagnostic device (usb-tmon)]
+		This implementation of QEMU contains a virtual USB device, which carries
+		the diagnostic device class descriptor.
+	\item[USB Diagnostic Device Driver (usbdiag)]
+		The usbdiag driver matches with the QEMU diagnostic device and
+		facilitates all communication with it. It also exposes a remote
+		interface for all HelenOS aplications.
+	\item[User Frontend Program (tmon)]
+		The tmon program is the primary user frontend in shell. It can use the
+		interface exposed by usbdiag to perform various tests with diagnostic
+		devices and return human-readable results.
+\end{description}
+
+\section{QEMU Device}
+
+The \texttt{usb-tmon} virtual device is a diagnostic class USB device
+created to allow us to test all of the different transfer types on one device,
+gather data about the throughput and speed of the communication and validate
+the contents of the USB packets sent between HelenOS and a device.
+
+In order to support communications of all types, the device contains an
+endpoint for each direction of each transfer types - i.e. interrupt, bulk and
+isochronous. Since we want to both check the speed of the driver and the
+correctness of the data sent, each endpoint is duplicated creating two
+sets of endpoints - first set that does not validate the transferred data
+and a second set, that each four bytes of the data equals to a predefined macro
+\macro{CHECK}. Each of these endpoints has an associated
+macro that containts its endpoint number which has the form of
+\macro{EP_<type>_<direction>} for the first set and
+\macro{CHECKED_EP_<type>_<direction>} for the second set, where \texttt{<type>}
+can be \texttt{INT} for interrupt transfers, \texttt{BULK} for bulk transfers or
+\texttt{ISOC} for isochronous transfers and \texttt{<direction>} can be either
+\texttt{IN} or \texttt{OUT}. Note that the way \texttt{usb-tmon} handles
+transfers depends on the number of the endpoint, so the endpoint number used
+by a driver has to match the value of one of these macros.
+
+\subsection{Monitoring}
+
+Regardless of which of the aforementioned endpoint sets are used, the
+\texttt{usb-tmon} device prints information about the transfers it handles
+to QEMU's standard output:
+~
+\begin{description}
+	\item[Interrupt]
+		Time since last \texttt{IN} or \texttt{OUT} interrupt request in
+		microseconds.
+	\item[Bulk]
+		Amount of bytes transferred in the last second for every second of an
+		\texttt{IN} or \texttt{OUT} bulk transfer.
+	\item[Isochronous]
+		Notification about receiving the request.
+\end{description}
+
+\subsection{Implementation}
+
+The implementation of this device is located in the file
+\qemufile{hw/usb/dev-tmon.c} in the helenos-xhci-team/qemu fork of the official
+QEMU repository. It contains several key structures and functions:
+
+\begin{description}
+	\item[USBTmonState]
+		Structure that reperesents the current state of a \texttt{usb-tmon}
+		device.
+	\item[X]%[desc\_tmon, desc\_device_tmon, desc\_iface\_tmon]
+		These three structures form the descriptor of the device and contain
+		information about the device's class, protocol, endpoints etc.
+	\item[usb\_tmon\_class\_init]
+		Called when QEMU starts, so it is used as a constructor function for the
+		virtual device and all relevant data.
+	\item[usb\_tmon\_realize]
+		Called when an instance of the \texttt{usb-tmon} device gets created and
+		is used to initialize a specific instance of \struct{USBTmonState}.
+	\item[usb\_tmon\_handle\_attach]
+		Called when an instance of the \texttt{usb-tmon} device get attached to
+		the guest OS.
+	\item[usb\_tmon\_handle\_control]
+		Called when the device receives a control request, in its current
+		implementation simply forwards the request to QEMU via
+		\fnc{usb_desc_handle_control}.
+	\item[usb\_tmon\_handle\_data]
+		Called when the device receives an interrupt, a bulk or an isochronous
+		data request, determines the receiving endpoint, stores information
+		about handled data and if needed, sends or validates a USB packet.
+	\item[usb\_tmon\_\{int\textbar bulk\textbar isoc\}\_\{in\textbar out\}]
+		Called on specific kinds of transfers and track sent/received data.
+\end{description}
+
+These are the structures and functions one needs to modify in order to modify
+the behavior of the device. Additionally, the source code contains helper
+functions (e.g. time measurement with \fnc{get_now_sec} and \fnc{get_now_usec})
+and QEMU debugging/informational functions and structures (e.g.
+\struct{desc_strings}, \struct{vmstate_usb_tmon}, \struct{usb_tmon_info} and
+\fnc{usb_tmon_register_types}). These should seldom require modification.
+
+For the purposes of modifying or debugging usb-tmon's source code, the header
+\qemufile{include/hw/usb.h} contains most of the structure definitions and
+function declarations that might be needed.
+
+\subsection{Usage}
+
+To attach an instance of the \texttt{usb-tmon} device to a running QEMU, one
+can type \textit{device\_add usb-tmon} into QEMU's monitor (which can be
+accessed via the \texttt{Ctrl-Alt-2} key combination or by redirecting the
+monitor to QEMU's standard IO by adding \texttt{"-monitor stdio"} to QEMU's
+startup command). To have QEMU start with \texttt{usb-tmon} attached, they may
+add \texttt{"-device usb-tmon"} to their QEMU startup command.
+
+\section{Driver}
+
 % TODO
 
+\section{Frontend}
+
+% TODO
+
+\subsection{Structure}
+
+% TODO
+
+\subsection{Usage}
+
+% TODO
