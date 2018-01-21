@@ -109,24 +109,141 @@ for functions corresponding to HC's child devices. Their handling is forwarded
 to the bus module, which executes the disconnection or the reconnection routine
 for the \textit{offline} and \textit{online} signal respectively. In addition,
 the transfer scheduling mechanism of the bus module has been extended to permit
-scheduling new transfers only to devices, which are in the online state. The
-version-specific part of the implementation is discussed in the next sections.
+scheduling new transfers only to devices, which are in the online state.
+
+The general scheme of stopping communication with a device breaks down to
+unregistering all its registered endpoints. The biggest challenge the driver
+faces is to abort all currently running transfers on an endpoint that is being
+unregistered. The majority of transfers (Bulk, Control, Isochronous,
+Interrupt-out) wouldn't pose a problem -- we could just wait the short while
+until they are completed, either successfully or not. But then there are
+Interrupt-in transfers, which, especially in case of gone device, may not
+complete in a timely manner.
+
+\subsection{Aborting active transfers}
+
+It is not possible to ``abort a transfer'' in a generic way, mainly because of
+synchronization issues. Before we explain how can a transfer be properly
+aborted in various Host Controllers, let us describe the lifecycle of
+a transfer batch, a structure representing a transfer in HC drivers.
+
+Currently, USB stack in HelenOS only supports synchronous interface to interact
+with pipes. The two methods are called \fnc{dev_read} and \fnc{dev_write}.
+Driver calls these methods on pipes, and provides a buffer -- either filled
+with data, or to be filled. Once the call crosses the IPC barrier, it is joined
+to a call to \fnc{bus_device_send_batch}. This function finds the target
+endpoint structure, and passes control to \fnc{endpoint_send_batch}.
+
+There, an instance of \struct{usb_transfer_batch_t} structure is created and
+filled with parameters of the transfer. It is then passed to the driver
+implementation to be scheduled. The driver typically copies the data to
+a buffer suitable for the device, prepares some supporting structures, and
+finally, schedules the transfer to the hardware.
+
+Since then, an interrupt may come and finish the transfer in a different
+fibril. A transfer is finished by copying the data out from the hardware buffer
+to the batch buffer, setting the error code and calling a completion callback.
+This callbacks answers the original incoming IPC call, causing the \fnc{dev_read/write}
+function to return. After that, the transfer batch is destroyed.
+
+But that's not the only scenario that may happen. From the moment a transfer is
+created, a pointer to it must not be forgotten, otherwise the caller would
+never return. But on the other side, once the pointer to batch is stored
+somewhere, the transfer might be aborted at any time. Furthermore, once the
+transfer is scheduled to the hardware, the buffers must not be deallocated
+until the driver is sure that the hardware won't use them anymore.
+
+This synchronization problem might be resolved by locking the batch and
+reference counting, but then different problems would arise (e.g. a transfer
+could be finished after the endpoint was successfully unregistered, just
+because we cannot know if there's any). So, we decided to take a different
+approach.
+
+As the interface is synchronous (and it doesn't make much sense to make it
+asynchronous, unless under special conditions), and the endpoint is assumed to
+be available for one driver only, there's no point in having more than one
+transfer active at a time. So, we store the pointer to a batch inside the
+endpoint structure, in the field \struct{active_batch}. This field shall not be
+accessed, unless the endpoint guard is locked.
+
+The driver shall modify this field only by calling two methods, which ensure
+the proper semantics: \fnc{endpoint_activate_locked} and \fnc{endpoint_deactivate_locked}.
+Both of them are to be called with the guard locked. An endpoint is said to be
+\emph{active}, if there's an active transfer scheduled. Once the endpoint is
+activated and the guard released, the batch must be assumed to be already
+finished or aborted. In the counterpart process, when the driver wants to
+finish or abort transfer, it needs to obtain the endpoint guard, check if the
+transfer is still the active transfer, and then deactivate the endpoint.
+
+In other words, the ownership of the batch is transferred from the calling
+fibril to the endpoint once activated, and to the finishing/aborting fibril by
+deactivating the endpoint. Only the owner of the batch is allowed to finish it.
+
+Following this scheme a driver can be sure a batch is always finished once and
+only once. But in our thoughts, we haven't yet covered that the buffers of the
+batch are owned by the Host Controller while the batch is scheduled. Because of
+that, drivers need to implement aborting transfers themselves.
+
+The version-specific part of the implementation is discussed in the next sections.
 
 
-\subsection{UHCI Specifics}
+\subsection{UHCI, OHCI and EHCI specifics}
 
-% TODO @aearsis
+All three HCI's that were supported prior to our project have similar
+structure with regard to what is required to implement transfer aborting. Let us
+first describe very briefly how these controllers handle transfers.
 
+Generally, all three host controllers require driver to create a system of
+linked structures in memory (for UHCI and OHCI, restricted to the lower 4 GBs
+of addressable space). The names and guts differ, the structures however
+describe a linked chain of queues. Queues are then filled by transfer
+descriptors, which describe USB transfers to be done. Once the transfer is
+done, its descriptor is flagged, removed from the queue and if the descriptor
+is marked, the host is interrupted. More specific information can be found
+either in respective specifications, or in the documentation of the HelUSB
+project.
 
-\subsection{OHCI Specifics}
+At the time of receiving an interrupt, the host does not know which transfer
+was finished, so it has to check all pending transfer descriptors for the
+completion flag. In case all the transfer descriptors of a transfer are
+completed, the driver may finish the transfer.
 
-% TODO @aearsis
+When aborting a transfer, the driver must make sure the controller is not using
+any of the allocated buffers. It is allowed to modify the queues while the
+controller is scanning them, the modifications must however follow an order in
+which the consistency of the structure is guaranteed at any time. After it
+does, it must notify the driver that the structure has changed, in order to
+force the controller to clear its caches (EHCI only).
 
+Because the driver is polling the transfers for completion, the first thing
+we (as a driver) have to do to abort a transfer is to remove it from the list
+of pending transfers. As the list modification is synchronized, we can be sure
+no other fibril will ever complete the transfer. After that, we can finish it
+ourselves with an error. Note that in this case it is unknown to driver whether
+the transfer was completed or not -- but since the driver is unregistering an
+endpoint, the device must already be in a state in which it expects removal.
 
-\subsection{EHCI Specifics}
+The removal itself is not that easy as one would expect, because it involves
+two locks. While scheduling the transfer, we (potentially) need to wait, until
+the endpoint is free to be activated, so we need to take the endpoint lock first.
+On the other hand, when scanning the pending list, we cannot know the
+endpoints, and therefore cannot lock them in advance. The resolution of this
+conflict is different in every driver
 
-% TODO @aearsis
+% TODO: In UHCI, it is currently broken, and it struck me while writing the
+% documentation. Too late for me to fix it now, gotta go sleep.
 
+In OHCI and EHCI, transfers have to be prepared with previous transfers in
+mind. To avoid the conflict, we changed the list of pending transfers to list
+of pending endpoints. The endpoint's reference in this list is counted, and it
+is possible to check whether the endpoint takes part in the list. We can remove
+it if it is without holding the endpoint lock, and then finish the transfer
+without holding the list lock, thus avoiding the ABBA deadlock completely.
+
+From the further perspective, these controllers do not have an internal state
+for individual devices and endpoints, so the deconfiguration and its rollback
+is an operation on software-state only. As such it is already done completely
+by the \lib{libusbhost} library.
 
 \subsection{xHCI Specifics}
 
@@ -135,13 +252,13 @@ hardware for the HC driver in comparison with previous versions. The concept of
 xHCI command ring leads to very elegant implementation of the required
 functionality on the HC driver part.
 
-When the device drivers cease their communications, the HC aborts any leftover
-active transfers. For that purpose, the xHCI features an explicit \textit{Stop
-Endpoint} command, which instructs the HC to abort all transfers to a specific
-device endpoint. This command is issued by the HC driver for all removed device
-endpoints, which are active at the moment of the request. Furthermore, device
-configuration is dropped along with all remaining endpoints by issuing a
-\textit{Configure Endpoint} command with the DC (deconfigure) flag.
+For the purpose of aborting active transfers, the xHCI features an explicit
+\textit{Stop Endpoint} command, which instructs the HC to abort all transfers
+to a specific device endpoint. This command is issued by the HC driver for all
+removed device endpoints, which are active at the moment of the request.
+Furthermore, device configuration is dropped along with all remaining endpoints
+by issuing a \textit{Configure Endpoint} command with the DC (deconfigure)
+flag.
 
 Reconnection is quite straightforward and requires only that the HC driver
 issues a regular \textit{Configure Endpoint} command in order to transition the
@@ -180,6 +297,63 @@ This lead to complete refactoring and extension of the USB device polling
 mechanism, which is described in detail in Section \ref{polling-refactoring}.
 In summation, the new version of the mechanism allows device drivers to join
 their polling fibrils and consistently wake them up in order to avoid deadlocks.
+
+To actually stop the polling in the \fnc{device_remove()} callback, the device
+driver has to trigger a transfer abort inside the HC. There's no sensible way
+of how to allow a driver abort its own transfer, which wouldn't introduce
+potential memory leaks inside HC or synchronization problems. So we decided
+that the driver will have to unregister the endpoint as the only way to abort
+a currently running trasfer (and also disable scheduling of new ones). The
+device's endpoints (or, at this layer already called pipes) are completely
+managed by the \lib{libusbdev} library. Previously, their lifetime was strictly
+tied to the lifetime of the handled device. There are only two possible
+ordering of these two operations:
+
+\begin{enumerate}
+	\item Close the pipes after the \fnc{device_remove()} callback returns.
+		After that, the polling fibrils will end and destroy their structures.
+		The library USB device structure will have to be reference-counted and
+		the counter will be managed by the driver to account for polling
+		fibrils.
+
+	\item Close the pipes prior to calling \fnc{device_remove()}, effectively
+		destroying the only reason why this callback exists, and make the
+		expected removal equivalent to the unexpected one.
+\end{enumerate}
+
+\noindent It is pretty obvious that we had to choose a completely different approach. So
+we came up with three more options:
+
+\begin{enumerate}
+\setcounter{enumi}{2}
+	\item Introduce a new callback, e.g. \fnc{device_removed()}, to be called
+		after the pipes are closed. The removal would be split into two phases:
+		first, in \fnc{device_remove()} the loose ends are closed and the
+		device is brought to a state expecting removal, then in
+		\fnc{device_removed()}, the polling fibrils are joined and structures
+		are destroyed.
+
+	\item After calling \fnc{device_remove()} and closing the pipes, call
+		\fnc{device_gone()}.
+
+	\item Allow the driver to close individual pipes imperatively.
+\end{enumerate}
+
+At first, we decided to go with option 3). But it was yet another callback, we
+didn't come up with a name that wasn't so similar and yet was clear, and
+finally, the \fnc{device_removed()} callback implementations were very similar
+to \fnc{device_gone()}.
+
+The option 4) seems reasonable at the first look, but it would create
+inconsistency between DDF drivers and USB drivers, which would be very
+confusing for developers. \footnote{Actually, some team members think this
+behavior shall be present in DDF too, but we didn't open a discussion with
+HelenOS developers.}
+
+In the end, the only option left was letting the driver close its own pipes. So
+we introduced a new library call \fnc{usb_device_unmap_ep()}, which does
+exactly that. The new library polling mechanism closes its pipe automatically,
+but this functionality is usable in any driver for any endpoint.
 
 The implementation of explicit device removal support for the rest of the
 drivers was a trivial extension of their previous functionality.
