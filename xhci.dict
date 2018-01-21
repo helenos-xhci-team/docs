@@ -1,4 +1,4 @@
-personal_ws-1.1 en 80 
+personal_ws-1.1 en 86 
 ptr
 RO
 OHCI
@@ -13,6 +13,7 @@ devctl
 TRBs
 addr
 breaklines
+iso
 HCI's
 EHCI
 cmd
@@ -35,7 +36,9 @@ hc
 initializer
 const
 sizeof
+Ctrl
 frontend
+qemu
 printf
 Petr
 borland
@@ -63,8 +66,10 @@ UHCI
 pre
 TRB
 GBs
+kvm
 linenos
 Staruch
+microkernel
 Jaroslav
 desc
 IPC
@@ -79,3 +84,4 @@ Roothub
 Mánek
 DDF
 unregistering
+cdrom

@@ -6,3 +6,22 @@
 \input{03_disconnect}
 \input{03_polling}
 
+\section{A driver for USB tablet}
+
+This modification is very standalone and seemingly simple, yet very useful and
+appreciated. We extended the HID driver to support absolutely positioned
+devices. That means, one can now connect a USB tablet and it will work in
+HelenOS. If you are still wondering what this could be useful for (people using
+USB tablets are usually graphic designers or photographers, not microkernel
+developers), try running QEMU with en emulated one:
+
+\begin{bdsh}
+$ qemu-system-x86_64 -enable-kvm -usb -device usb-tablet -boot d -cdrom image.iso
+\end{bdsh}
+
+When using mouse with relative positioning (PS/2, USB mouse), one have to first
+click inside the window of QEMU to let it grab input. To release it again,
+a special key combination (for current QEMU Ctrl+Alt+G) must be pressed. When
+using an emulated USB tablet instead, the mouse is not ``locked'' inside the
+window, but it can freely move in and out and still be registered by the guest
+OS.
