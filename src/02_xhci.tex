@@ -88,13 +88,13 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 
 The purpose of this module is very simple -- take care of the root hub. Before
 we explain how our roothub works, let's have a look on why and how other HC
-drivers' handle it.
+drivers handle it.
 
 The main problem a hub driver faces is a synchronization one. When a new device
-is detected, it needs to be enumerated. Enumeration process in case of USB 2.0
+is detected, it needs to be enumerated. Enumeration process in the case of USB 2.0
 devices requires the hub to reset the port the device is attached to, to move
-it the \state{Default} state, when it's listening on the default address 0.
-Wen the port reset is triggered, the hub must wait until the port reset is
+it to the \state{Default} state, when it's listening on the default address 0.
+When the port reset is triggered, the hub must wait until the port reset is
 complete. During the whole process, the device can be disconnected, and the
 port reset will never be completed. Furthermore, the completion of port reset
 is indicated by the same means as port connection, resulting in a deadlock in
@@ -112,7 +112,7 @@ on. So it enumerates like a USB hub would, and creates a DDF device, which is
 taken by the \texttt{usbhub} driver. The driver then handles the virtual
 roothub like any other hub, by sending USB control transfers. The virthub
 module translates USB transfers to callbacks, which are implemented by
-individual HC driver to read and modify register space of the Host Controller.
+individual HC drivers to read and modify register space of the Host Controller.
 
 This solution is very clean in design, regarding that root hub functionality is
 exactly the same as any other hub's, it is just controlled by MMIO mapped
@@ -120,20 +120,20 @@ registers instead of USB packets. It is even recommended by the USB 2.0			% TODO
 specification to embody this solution. But that's pretty much the only advance
 this solution has. One has to write a lot of code to even implement the
 callbacks, not mentioning the virthub module itself. And a lot of code always
-come with bugs. Also, while having no real performance impact, it requires
+comes with bugs. Also, while having no real performance impact, it requires
 several context switches, IPC calls, bouncing memory buffers and a lot of
 unnecessary allocations to clear one bit in the register space (USB hubs
 operate by setting and clearing so called Features, indicating e.g. that
 a connection on port changed). But it needs to be stressed more, that this
-performance impact is mitigated by the fact real hub use real USB transactions
+performance impact is mitigated by the fact that real hubs use real USB transactions
 above that, and that hub interaction is very sparse.
 
-We searched for solution, that would keep the cleanness in terms of shared
-functionality between usbhub driver and roothub, and decided to move the port
+We searched for a solution that would keep the cleanness in terms of shared
+functionality between usbhub driver and roothub and decided to move the port
 state machine and related fibril synchronization into the USB library. That
 cleanly separates the hardest part of handling hub port changes from the code
 that is actually handling them and enumerating the devices. This state machine
-is used by both xHCI roothub, and also by the rewritten usbhub. More
+is used by both the xHCI roothub and also by the rewritten usbhub. More
 information about this new module can be found in section \ref{hub-port-refactoring}.
 
 One more thing related to the xHCI roothub, which we crossed while debugging on
