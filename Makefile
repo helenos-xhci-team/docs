@@ -24,6 +24,7 @@ spellcheck:
 	find src/ -name "*.tex" -exec ${ASPELL} ${ASPELL_FLAGS} check "{}" \;
 
 clean:
-	rm -f $(PROJ).pdf *.log *.aux *.toc img/*.pdf
+	rm -f $(PROJ).pdf *.lo[lgf] *.aux *.toc img/*.pdf
+	rm -rf _minted-docs
 .PHONY: clean
 
