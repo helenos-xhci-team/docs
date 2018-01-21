@@ -120,7 +120,7 @@ until they are completed, either successfully or not. But then there are
 Interrupt-in transfers, which, especially in case of gone device, may not
 complete in a timely manner.
 
-\subsection{Aborting active transfers}
+\subsection{Aborting Active Transfers}
 
 It is not possible to ``abort a transfer'' in a generic way, mainly because of
 synchronization issues. Before we explain how can a transfer be properly
@@ -187,7 +187,7 @@ that, drivers need to implement aborting transfers themselves.
 The version-specific part of the implementation is discussed in the next sections.
 
 
-\subsection{UHCI, OHCI and EHCI specifics}
+\subsection{UHCI, OHCI and EHCI Specifics}
 
 All three HCI's that were supported prior to our project have similar
 structure with regard to what is required to implement transfer aborting. Let us

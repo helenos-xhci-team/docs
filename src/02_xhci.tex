@@ -27,7 +27,7 @@ We start with describing the modules in the hardware part, as their
 functionality is clear. Their order follows the order in which they were
 implemented.
 
-\section{HW structs}
+\section{Hardware Structures}
 
 % TODO: Explain that this one is really simple, and just mirrors the structures
 % hardware use. Describe briefly the register space of xHC, register field semantics (R, RW, RW1C), contexts.
@@ -38,7 +38,7 @@ implemented.
 
 % TODO: Describe that we used it during debugging to check what we're doing.
 
-\section{TRB ring}
+\section{TRB Ring}
 
 % TODO @aearsis: explain the TRB rings, what they do and how they're
 % implemented (ْ±2 pages, bore the reader to death right now!)
@@ -76,7 +76,7 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 
 \input{02_commands}
 
-\section{Host controller module}
+\section{Host Controller Module}
 
 % TODO: This will be harder, this one is a mix of what didn't fit anywhere else.
 % Ideas:
@@ -84,7 +84,7 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 % - context management
 % - extcap parsing
 \
-\section{Roothub}
+\section{Root Hub}
 
 The purpose of this module is very simple -- take care of the root hub. Before
 we explain how our roothub works, let's have a look on why and how other HC
@@ -152,11 +152,11 @@ this bit completely, so the code worked fine in a virtual environment.
 
 % TODO @salmelu (probably?): Write something about it.
 
-\subsection{Isochronous transfers}
+\subsection{Isochronous Transfers}
 
 % TODO @salmelu: Copy that from the wiki :)
 
-\section{Bus module}
+\section{Bus Module}
 
 % TODO: After the device will be split, will there be anything interesting to write about?
 

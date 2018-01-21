@@ -6,13 +6,13 @@
 \input{03_disconnect}
 \input{03_polling}
 
-\section{USB hub port refactoring - title pending}
+\section{USB hub port refactoring - title pending} %FIXME
 \label{hub-port-refactoring}
 
 % TODO @aearsis: Explain the complexity of the topic and the proper solution
 
 
-\section{A driver for USB tablet}
+\section{USB Tablet Driver}
 
 This modification is very standalone and seemingly simple, yet very useful and
 appreciated. We extended the HID driver to support absolutely positioned
@@ -31,3 +31,4 @@ a special key combination (for current QEMU Ctrl+Alt+G) must be pressed. When
 using an emulated USB tablet instead, the mouse is not ``locked'' inside the
 window, but it can freely move in and out and still be registered by the guest
 OS.
+
