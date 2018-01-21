@@ -3,7 +3,7 @@
 The structure of the xHCI driver is quite straightforward, as it tries to fit
 into the scheme of how hardware and the rest of HelenOS works. We decided to
 use the existing library \lib{libusbhost} to reduce code duplication with
-other HC drivers. IT came out that this library need a lot of changes to
+other HC drivers. It came out that this library need a lot of changes to
 support us in this goal, but that's for chapter \ref{usb-refactoring}.
 
 The USB host controller driver using \lib{libusbhost}, xHCI included, serves as
@@ -45,9 +45,28 @@ implemented.
 
 \section{Scratchpad}
 
-% TODO: Anyone please explain these. The only interesting part is how the
-% number of buffers are split weird and how we needed several attempts to get
-% it right :)
+Scratchpads are buffers that an xHC implementation can request from the system software
+for its internal needs. The size of these buffers is specified in the \textit{PAGESIZE} register
+found in the operational register set defined in \struct{xhci_op_regs}.
+
+The amount of buffers requested by the xHC is specified in the \textit{Max Scratchpad Bufs Hi} and
+\textit{Max Scratchpad Bufs Lo} registers of the second set of structural parameters (\textit{HCSPARAMS2},
+see section 5.3.4 of the xHCI specification) defined in \struct{xhci_cap_regs}.
+
+The allocation of these buffers takes place as part of the host constroller initialization,
+specifically in \fnc{hc_init_memory()}, which calls \fnc{xhci_scratchpad_alloc()}. The pointers
+to these buffers are then passed to the xHC in the \textit{Scratchpad Buffer Array}, pointer to which
+occupies the first index of the \textit{Device Context Base Address Array} (dcbaa field of
+\struct{xhci_hc_t}).
+
+Our implementation originally implemented these as a standalone structure \struct{xhci_scratchpad_t},
+which served mainly for the purposes of resource management by keeping both the physical addresses
+for the xHC and the virtual addresses for deallocation. This was, however, later refactored to use
+\struct{dma_buffer_t}, which is part of \lib{libusbhost} was created for the same purpose.
+
+Once the xHCI driver finishes its execution, the scratchpad buffers are deallocated by a call to
+\fnc{xhci_scratchpad_free()} as part of \fnc{hc_fini()}.
+
 
 \section{Events}
 
