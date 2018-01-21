@@ -36,7 +36,18 @@ implemented.
 
 \section{Debug}
 
-% TODO: Describe that we used it during debugging to check what we're doing.
+Since both the internal state of the xHC and its capabilities are often described by
+a handful of bits located in a packed 32-bit register, we needed a way to monitor these
+values in a human readable form. The \file{uspace/drv/bus/usb/xhci/debug.h}{debug.h} and
+\file{uspace/drv/bus/usb/xhci/debug.c}{debug.c} files contain a set of register dumping
+functions that use the register reading macros described in the previous section to print
+the values of all the bit sets contained in a register to the driver's log. They also contain
+auxiliary functions that are used to convert numeric codes to their meaning in a string form and
+functions that dump the contents of a hardware structure (such as \struct{xhci_endpoint_ctx}).
+
+These functions have proved to be of great use and should any future maintainer of the
+HelenOS xHC stack find themselves in a bug ridden situation, putting these functions to
+the areas of code they suspect of mischievous deeds might be a good starting point.
 
 \input{02_trb_ring}
 
