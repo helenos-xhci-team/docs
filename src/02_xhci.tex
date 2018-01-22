@@ -29,10 +29,74 @@ implemented.
 
 \section{Hardware Structures}
 
-% TODO: Explain that this one is really simple, and just mirrors the structures
-% hardware use. Describe briefly the register space of xHC, register field semantics (R, RW, RW1C), contexts.
+The \file{uspace/drv/bus/usb/xhci/hw\_struct}{hw\_struct} directory contains C structures
+that represent registers and control structures used by the xHC. The memory layout of the
+structures is defined by the xHCI specification and thus the files in this directory should
+be mostly treated as read-only.
+
+\subsection{Registers}
+
+The register structures (defined in \file{uspace/drv/bus/usb/xhci/hw\_struct/regs.h}{regs.h})
+represent hardware registers presented by the xHC to system software
+implemented as Memory-Mapped I/O space. They can be divided into four categories as follows:
+~
+\begin{description}
+	\item[Capability registers]
+		These specity read-only limits, restrictions and capabilities of the specific
+		xHC implementation used.
+	\item[Runtime and Operational registers]
+		These specify the current xHC configuration and runtime modifiable state.
+	\item[Extended capabilities]
+		These specify optional features of the current xHC implementation.
+	\item[Doorbell array]
+		An array of up to 256 doorbell registers, which supports up to 255 USB devices
+		or hubs. Each doorbell register provides the software with a mechanism for
+		notifying the xHC if it has slot or endpoint related work to perform.
+\end{description}
+
+In our implementation, all of these can be accessed through the \struct{xhci_hc_t} structure and
+can be modified through it using the register handling macros defined in
+\file{uspace/drv/bus/usb/xhci/hw\_struct/regs.h}{regs.h}. Note that not all register bits can be
+manipulated freely by the system, some impose restrictions:
+~
+\begin{description}
+	\item[RO, Read-only]
+		Register bits are read-only and may not be altered by system software. An example
+		is the \textit{CAPLENGTH} register (see \xhci{5.3.1}).
+	\item[RW, Read-Write]
+		Register bits are read-write and can be altered by system software. An example
+		is the \textit{USBCMD} register (see \xhci{5.4.1}), in which some bits or bit ranges
+		are RW (and some are only RO).
+	\item[RW1C, Write-1-to-clear]
+		Register bits indicate status when read, a set bit can be cleared by writing
+		a '1', writing a '0' to such register bit has no effect. An example is
+		the \textit{Event Interrupt} bit in the \textit{USBSTS} register (see \xhci{5.4.2}) which is set
+		to '1' by the xHC when an interrupt occurs and can be cleared by the driver
+		by writing '1' to it once the event is scheduled for handling.
+	\item[RW1S, Write-1-to-set]
+		Register bits indicate status when read, a clear bit can be set by writing
+		a '1', writing a '0' to such register bit has no effect. Examples are the
+		\textit{Command Stop} and \textit{Command Abort} bits of the \textit{CRCR} register
+		(see \xhci{5.4.5}).
+\end{description}
+
+This is not an exhaustive list of access attributes, for the entire list, see \xhci{5.1.1}.
 
 % TODO @aearsis: Register macros
+
+\subsection{Contexts}
+
+Contexts (defined in \file{uspace/drv/bus/usb/xhci/hw\_struct/context.h}{context.h})
+are control structures that represent devices and their configuration as well
+as the parameters of the communication between the xHC and system software. The
+\struct{xhci_hc_t} structure contains the \textit{Device Context Base Address Array} (DCBAA), which
+holds up to 255 pointers to device contexts at indices 1 through 255 and a pointer to
+the scratchpad array (see \ref{sec:scratchpads}). Each device context contains a slot
+context (used to describe the device as a whole, represented by \struct{xhci_slot_ctx_t}) and
+31 context for each endpoint (represented by \struct{xhci_ep_ctx_t}). Most of these contexts
+will be described in more detail in the following sections.
+
+% TODO device & input ctx problem with 32-bit and 64-bit?
 
 \section{Debug}
 
@@ -52,6 +116,7 @@ the areas of code they suspect of mischievous deeds might be a good starting poi
 \input{02_trb_ring}
 
 \section{Scratchpad}
+\label{sec:scratchpads}
 
 Scratchpads are buffers that an xHC implementation can request from the system software
 for its internal needs. The size of these buffers is specified in the \textit{PAGESIZE} register
