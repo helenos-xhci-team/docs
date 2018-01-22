@@ -40,9 +40,9 @@ themselves, regardless of their type.
 As already said, TRB ring is a circular queue. It always has one producer and
 one consumer of TRBs. Every ring implicitly defines two pointers: the enqueue
 pointer and the dequeue pointer. The producer uses the enqueue pointer to
-enqueue TRBs, and the consumer the dequeue pointer to dequeue ones. The
+enqueue TRBs and the consumer uses the dequeue pointer to dequeue them. The
 pointers are not shared between the host and the Host Controller. Instead,
-every TRB have one bit with special semantics, the \emph{Cycle Bit}. The
+every TRB has one bit with special semantics, the \emph{Cycle Bit}. The
 transition between values of TRB Cycle Bit of individual TRBs defines the
 value of Enqueue pointer. An example situation is shown on the figure
 \ref{fig:ring-simple}.
@@ -54,14 +54,14 @@ value of Enqueue pointer. An example situation is shown on the figure
 	\label{fig:ring-simple}
 \end{figure}
 
-It is important to understand, that the consumer cannot write to the ring, and
+It is important to understand that the consumer cannot write to the ring and
 thus cannot change the value of the Cycle Bit after it processes a TRB.
 Therefore, the position of the dequeue pointer must be signalized by other
 means. Furthermore, there has to be a mechanism to stop the consumer from
 considering the TRBs in the beginning of the segment as enqueued, after it
 wraps around the segment boundary. The enqueue pointer is not defined by
 a transition from one to zero, but more generally by a transition from
-\emph{Producer Cycle State}, \texttt{PCS} to \texttt{\textasciitilde PCS}.
+\emph{Producer Cycle State}, \texttt{PCS}, to \texttt{\textasciitilde PCS}.
 This bit is kept in the memory of the producer. Similarly, there exists
 a \emph{Consumer Cycle State}, which has the same value as \texttt{PCS} had in
 the moment when the value of the enqueue pointer was the same as the current
@@ -78,7 +78,7 @@ value. In case of Command and Transfer rings, the producer is the Host
 Controller. Every finished command or transfer is denoted by an Event TRB
 placed on the Event Ring. This Event TRB usually contains the physical address
 of the TRB on the respective Command or Transfer ring. This way the producer
-knows, that the dequeue pointer value is not less than the reported value.
+knows that the dequeue pointer value is not less than the reported value.
 Similarly, when the host processes an Event TRB on the Event Ring, it shall
 report the physical address of the TRB processed by writing the value into
 a dedicated register.
@@ -100,9 +100,9 @@ As the requirements imposed by the specifications are quite strict, there's not
 much freedom in the implementation. However, there were some decisions to be
 discussed.
 
-At first, we decided not to restrict ourselves on single-segment rings, as
-other existing implementations do. We did not implemented runtime scaling of
-the rings yet, though. Second, we implement and use three types of TRB rings;
+First, we decided not to restrict ourselves on single-segment rings as
+other existing implementations do, though we haven't implemented runtime
+scaling yet. Second, we implement and use three types of TRB rings;
 the third one being a simplified TRB ring used by the host from both sides. Its
 purpose is better described in the section \ref{sec:events}. The three
 implementations are somehow separate, but because they share principles, they
@@ -127,7 +127,7 @@ manage segments.
 To avoid keeping the \struct{dma_buffer_t} structure inside the segment and
 wasting precious DMA-accessible memory, the structure is reconstructed in order
 to be freed in \fnc{trb_segment_free}. We agree that this violates the
-encapsulation DMA buffers, but consider this the lesser evil.
+encapsulation of DMA buffers, but consider this the lesser evil.
 
 The main runtime interface to rings of this kind is the method
 \fnc{xhci_trb_ring_enqueue_multiple}, used to enqueue a contiguous array of
@@ -149,7 +149,7 @@ The second crucial part of the interface is the function
 announced to the ring. As the rings need to be configured to the hardware
 somehow, there is also a function called
 \fnc{xhci_trb_ring_reset_dequeue_state}, which is used to reset the ring and
-also return a value used to configure the ring in HC -- a physical pointer
+also return a value used to configure the ring in the HC -- a physical pointer
 mixed with the initial Consumer Cycle State.
 
 \subsubsection{Event Ring}
