@@ -1,4 +1,4 @@
-personal_ws-1.1 en 86 
+personal_ws-1.1 en 95 
 ptr
 RO
 OHCI
@@ -13,9 +13,13 @@ devctl
 TRBs
 addr
 breaklines
+enqueue
 iso
+HCIs
 HCI's
 EHCI
+preallocates
+sw
 cmd
 Hrach
 dev
@@ -34,7 +38,9 @@ deallocated
 subtree
 hc
 initializer
+dma
 const
+dequeued
 sizeof
 Ctrl
 frontend
@@ -44,6 +50,7 @@ Petr
 borland
 preprocessor
 HelUSB
+ENOENT
 deallocation
 HW
 structs
@@ -56,15 +63,17 @@ xHCI
 Michal
 unregister
 Isochronous
+emplaces
 struct
 reconnection
 uint
+runtime
 HelenOS
 bool
 img
 UHCI
 pre
-TRB
+trb
 GBs
 kvm
 linenos

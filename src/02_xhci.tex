@@ -38,12 +38,7 @@ implemented.
 
 % TODO: Describe that we used it during debugging to check what we're doing.
 
-\section{TRB Ring}
-
-% TODO @aearsis: explain the TRB rings, what they do and how they're
-% implemented (ْ±2 pages, bore the reader to death right now!)
-\subsection{Purpose}
-\subsection{Implementation}
+\input{02_trb_ring}
 
 \section{Scratchpad}
 
@@ -70,17 +65,16 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 \fnc{xhci_scratchpad_free()} as part of \fnc{hc_fini()}.
 
 
-\section{Events}
-
-% TODO: Explain events, event handling and the event ring.
-
 \input{02_commands}
 
 \section{Host Controller Module}
 
+\subsection{Events}
+\label{sec:events}
+% TODO: Explain events, event handling and the event ring.
+
 % TODO: This will be harder, this one is a mix of what didn't fit anywhere else.
 % Ideas:
-% - event handling
 % - context management
 % - extcap parsing
 %     - different speeds for different RH ports
@@ -150,6 +144,7 @@ this bit completely, so the code worked fine in a virtual environment.
 
 
 \section{Transfers}
+\label{sec:transfers}
 
 % TODO @salmelu (probably?): Write something about it.
 
