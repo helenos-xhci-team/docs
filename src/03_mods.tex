@@ -139,3 +139,69 @@ using an emulated USB tablet instead, the mouse is not ``locked'' inside the
 window, but it can freely move in and out and still be registered by the guest
 OS.
 
+\section{DMA buffers}
+
+A simple but repeated scenario gave rise to another new submodule of
+\lib{libusbhost}. It is a very thin abstraction, yet has been proven useful and we
+think it could be adopted to \lib{libdrv}, for example.
+
+A common task for drivers is allocating memory for buffers, that are accessible
+for DMA. Often there are some restrictions given by the hardware driven -- the
+buffer must be placed in the lower 32bit addressable space, it has to be
+aligned, physically contiguous, or possibly not crossing a page boundary.
+
+Even if the buffer is intended for the hardware use only (like xHCI
+scratchpads), the driver must keep the pointer to where the buffer is mapped
+inside its virtual address space in order to release the memory once it is not
+needed anymore. Hardware devices do not share the virtual address space with
+the task though, so the driver must always obtain also the physical address of
+the buffer. To satisfy all of these requirements, the HelenOS kernel offers
+a specialized API. The driver just needs to call a function
+\fnc{dma_map_anonymous}, and is given both the virtual and physical address. It
+is able to specify its requirements using flags. This API is powerful, but
+complex and inconvenient to use.
+
+The authors of the former USB stack addressed the complexity by creating
+utility functions in \header|<usb/host/utils/malloc32.h>|. These functions offer
+a familiar interface of \fnc{malloc}/\fnc{free}. The \fnc{malloc32} function
+intentionally discards the physical address provided by
+\fnc{dma_map_anonymous}, in order to be simple to use. To retrieve the physical
+address later, one can use another utility function, \fnc{addr_to_phys}. This
+one is a simple wrapper for a syscall.
+
+Even previous authors of the USB subsystem were aware of it being a syscall,
+and tried to cache the physical address where it would be used unneccessarily
+multiple times. The usage scheme of these functions then grew wild: the memory
+was allocated by \fnc{malloc32}, just to be translated by \fnc{addr_to_phys} on
+the next line. These two pointers were then stored inside the same structure.
+
+Being aware of this use-case, we created a different submodule for allocation
+of DMA buffers. Instead of a plain pointer, the caller uses a structure called
+\struct{dma_buffer_t}. This structure can store both the virtual and physical
+address of the buffer, accessible through fields \struct{virt} and
+\struct{phys}. The buffer allocation is made simply by using a function called
+\fnc{dma_buffer_alloc}, which fills the specified buffer with pointers to
+a properly sized allocated space. When the buffer is no longer needed, it is
+freed by calling \fnc{dma_buffer_free}.
+
+When the buffer is contiguous in memory, it's easy to calculate the physical
+address ourselves, without a help of the kernel. To obtain a physical address
+for a concrete position in the buffer, one just needs to call
+\fnc{dma_buffer_phys}, which translates a virtual address pointing inside
+a buffer to a corresponding physical address.
+
+So far, DMA buffers always assume the strictest requirements for the allocated
+memory. That is, the returned memory is page-aligned, physically contiguous,
+always in the 32bit addressable space. Should there be a need to loosen one the
+constraints (e.g. to reduce the memory footprint), the allocation routine can
+be supplied a policy, defining the requirements. There is also a particular
+future optimization, for which the mechanism is prepared. Especially the former
+HC drivers often allocate a whole buffer, which must be at least
+\macro{PAGE_SIZE} big, just to hold a few-bytes sized descriptor structure.
+Shall the wasted memory be a problem, one can easily extend this module to use
+an allocator in userspace to back DMA buffers.
+
+One more reason to drop the previous \fnc{malloc32} helpers completely is that
+developers that are beginners to HelenOS might see \fnc{malloc32} as a weird
+name for an ordinary \fnc{malloc}, and start using it to allocate ordinary
+memory, which is very wasteful and expensive.
