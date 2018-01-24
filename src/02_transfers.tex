@@ -1,0 +1,201 @@
+\section{Transfers}
+\label{sec:transfers}
+
+The xHC uses transfers to abstract USB communication. Every call to
+\fnc{usb_write} and \fnc{usb_read} is accomplished by creating a transfer,
+setting it up, handing it to xHC and waiting for the transfer completion. This
+section describes the code structure and implementation details of xHCI tranfer
+subsystem.
+
+\subsection{Executing Transfers}
+
+The xHC is responsible for communicating with USB devices using USB packets.
+These USB packets are created from the data given to the xHC through the
+transfer rings by the software. The software isn't required to split the
+transfer into USB packets, the xHC takes care of that.
+
+Each transfer is formed by a \textit{Transfer Descriptor}, which is a sequence
+of TRBs with a chain bit set. This allows the software to schedule a transfers
+containing larger data, or data not stored in continuous memory. Each TRB
+points to a single continuous buffer of data (in physical memory) and specifies
+the buffer's size. This buffer must be accessible to the hardware and it's
+physical address needs to be set to the TRB.
+
+Every endpoint uses a single transfer ring (with the exception of streams)
+initialized during the endpoint configuration. This transfer ring is passed to
+the xHC by the endpoint context. The software is not allowed to modify the
+transfer ring except when it wants to enqueue more transfer descriptors. If the
+software requires to modify the ring, it has to first stop the endpoint using
+the command interface, and after the modification is done, it has to use the
+evaluate context command to communicate the changes to the xHC.
+
+After the software puts a transfer descriptor on the transfer ring, it rings
+the doorbell associated with the device and the endpoint. This notifies the xHC
+and causes it to schedule the endpoint and process the transfer.
+
+After the transfer descriptor finishes processing, the xHC can optionally
+notify the software of the completion by generating a \textit{Transfer Event}
+on the event ring with the completion code set to reflect the result. By
+default, this only happens if the TRB processing ends with an error.
+The software can set the \textit{IOC (Interrupt on Completion)} bit if it needs
+to be notified regardless of an error happening.
+
+\subsection{Lifecycle}
+
+Every transfer is represented by a single instance of \struct{xhci_transfer_t}
+structure. This structure encapsulates the \struct{usb_transfer_batch_t}
+structure, which is used by \lib{libusbhost} to schedule USB batches. Its
+lifetime is managed by the library calling the bus operations.
+
+After the library allocates and fills up the \struct{usb_transfer_batch_t}, it
+schedules the transfer. This is where the xHCI takes control over the transfer.
+The transfer is processed in \fnc{xhci_transfer_schedule()}, where it is split
+into TRBs, the correct bits are set depending on the transfer type, TRBs are
+enqueued and the doorbell is rung.
+
+The fibril responsible for this transfer then waits for the transfer event
+signalizing that the transfer has finished. This means that the IOC bit is set
+for every transfer descriptor so that the software gets notified about its
+completion.
+
+After the transfer event is received, the event loop calls
+\fnc{xhci_handle_transfer_event()}. There, the TRB which triggered the event is
+processed and the transfer, that scheduled it, is found. For IN endpoints, the
+received data is copied to prepared buffers. In the end, error code is set in
+the batch and the batch is finalized.
+
+\subsection{Isochronous Transfers}
+
+Due to the nature of isochronous transfers, their implementation needs to avoid
+the common steps used by other transfers. This section describes the
+requirements and details of the isochronous transfer support.
+
+The xHC has an internal timer and it measures time in \textit{microframes},
+where 1 microframe is exactly 125 microseconds. The current time in microframes
+can be read anytime from the \texttt{MFINDEX} register. This register has only
+14 bits and therefore it wraps every 2.048 seconds. The xHC can notify the
+software about the wrap by generating a \textit{MFINDEX Wrap Event} on the
+event ring. This feature is optional and must be enabled beforehand.
+
+Every isochronous transfer descriptor must have a set schedule time. This time
+is calculated by the software and depends on the isochronous endpoint interval.
+Two following transfer descriptors must be always exactly the interval apart.
+Because the isochronous endpoints can have up to 4 second interval, we need to
+track the \textit{MFINDEX Wrap Events} to correctly determine the scheduling
+time.
+
+The xHC gives software strict deadlines when an isochronous transfer descriptor
+may be present on the transfer ring for the transfer to execute successfully.
+This interval is partially HC specific and it's based on \textit{Isochronous
+scheduling interval} (IST). The transfer must be present on the ring at least
+\textit{IST} microframes and at most 895 milliseconds before it is to be
+executed.
+
+The isochronous endpoint also reserves some bandwidth during its setup and has
+only its reserved bandwidth available, therefore the xHC never permits using
+more bandwidth. This sets a hard cap on the size of the data transfered in a
+single transfer descriptor. Scheduling a transfer descriptor with larger data
+causes the xHC to generate an error and refuse to transfer the data.
+
+If the xHC accesses an isochronous transfer ring to retrieve a transfer
+descriptor and the transfer ring is empty, the xHC generates a Transfer Event
+with the completion code set to \textit{Ring Overrun} for IN endpoints, and
+\textit{Ring Underrun} for OUT endpoints. This also removes the endpoint from
+the schedule and lets software clean the structure and report the error to the
+driver, if needed. To reschedule the endpoint, the software needs to ring
+doorbell.
+
+\subsubsection{Implementation}
+
+When we were implementing isochronous transfers, we had to consider all the
+requirements described above. We tried to not introduce an API specific for
+isochronous transfers to not clutter the interface.
+
+To maintain the \lib{libusbhost} API, we have decided to slightly change the
+semantics of calling \fnc{usb_write} and \fnc{usb_read} on isochronous
+endpoints. The \struct{xhci_endpoint_t} structure includes a substructure for
+fields specific to isochronous endpoints in \struct{xhci_isoch_t}. There is a
+small trick present to avoid inflating the \struct{xhci_endpoint_t} for every
+type of endpoint. The last field of the structure is a zero length array of
+\struct{xhci_isoch_t}. This doesn't take any space, but the pointer to this
+field is always valid and points behind the structure. We then allocate the
+structure with \texttt{calloc(1, sizeof(xhci_endpoint_t) + (type ==
+USB_TRANSFER_ISOCHRONOUS) * sizeof(*ep->isoch))}. If the endpoint is
+isochronous, the memory allocated is larger to accomodate the
+\struct{xhci_isoch_t} and we use the pointer mentioned previously to access it.
+
+The \struct{xhci_isoch_t} also contains a dynamic array of
+\struct{xhci_isoch_transfer_t}. These represent an isochronous transfer and
+maintain a permanently allocated data buffer. The amount of these depends on
+the IST and endpoint interval as we need to make sure we put the transfer
+descriptors on the transfer ring in advance, but do not schedule too old data.
+
+In the \textit{Async Framework} documentation, it is stated that the IPC calls
+using a single session are synchronous and therefore blocking in the call would
+block the whole session. Because of that, each \struct{usb_pipe_t} in
+\lib{libusbdev} has a field called \texttt{isoch_session}, which is used to
+communicate with isochronous endpoints as these may block for longer periods of
+time. In reality, the current implementation of \textit{Async Framework} clones
+the session for every IPC call, so this is not necessary. If this ever changes,
+the \texttt{isoch_session} might need to be set to a cloned session.
+
+\subsubsection{IN endpoints}
+
+For IN endpoints, the semantics of \fnc{usb_read} are changed so that instead
+of triggering a read transfer, the call retrieves previously read data and
+returns them to the caller. This means that we have to enqueue read transfers
+in advance and the caller is expected to withdraw them fast enough. If there is
+no prepared data, the call blocks waiting for them instead of returning an
+error.
+
+To keep the transfer ring filled with transfer descriptors, we prepare a
+transfer descriptor for every transfer buffer when the first read is called and
+enqueue as many as possible to the transfer ring before ringing the doorbell
+for the first time. This means that not all descriptors may be enqueued because
+of the strict deadlines described above. If this happens, we start a timer,
+which takes care of putting the transfer descriptors on the ring when the time
+is right. After every call to \fnc{usb_read} and withdrawing the received data,
+the processed buffer is recycled and scheduled back on the transfer ring.
+
+\subsubsection{OUT endpoints}
+
+For OUT endpoints, the \fnc{usb_write} doesn't ensure that the transfer
+finishes. Instead, it only copies the data to the buffer and attempts to put
+the buffer on the ring, if possible. If there is no free buffer yet (so all the
+buffers are on the ring), the call blocks until at least one transfer is
+finished and its buffer is freed.
+
+Unlike with IN endpoints, we need to track, which buffers are filled and which
+are empty, and schedule only filled buffers. Other than that, the scheduling is
+the same. When scheduling the buffers at the start, we also need to make sure
+some of those are already ready on the ring, so we postpone the execution of
+the first transfer descriptor by a short delay.
+
+\subsubsection{Error handling}
+
+The transfer errors in isochronous transfers are very often not considered fatal and should be skipped. Therefore, we decided to not deliver the
+error to driver immediately, instead, the error that occured is returned with
+the next \fnc{usb_read} or \fnc{usb_write} call, in the \texttt{error} field of
+\struct{usb_transfer_batch_t}.
+
+On the other hand, the \textit{Ring Overrun} and \textit{Ring Underrun} errors
+are considered fatal as there is no simple way to recover from them. For IN
+endpoints and therefore for \textit{Ring Overrun}, the error tells us that the
+driver either cannot keep up and read the data fast enough, or it has stopped
+reading completely. To not preserve old data, we reset the state of our
+internal buffers. If the driver attempts to read again, the transfers are
+started again as if the endpoint was accessed for the first time.
+
+For OUT endpoints and \textit{Ring Underrun}, this means that the driver cannot
+supply data fast enough or it has stopped sending them. We reset the endpoint
+again and restart if the driver writes to the endpoint again.
+
+Unfortunately, some host controllers (or QEMU, at least) don't generate
+\textit{Ring Overrun} and \textit{Ring Underrun} events. We have therefore
+implemented a mechanism to detect the issues these events convey ourselves.
+There is a \textit{reset timer} for each isochronous endpoint that is started
+every time a buffer is added to the ring, or a transfer event is received. The
+timer is set to expire after the endpoint interval passes plus a small
+constant. If this timer expires, we know that there was no event for at least
+the endpoint interval and therefore the endpoint isn't working properly, so we
+consider this as the error and reset the endpoint.
