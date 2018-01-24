@@ -191,7 +191,7 @@ endpoint, and transfers the ownership of the batch to the caller.
 
 Second, there can be a fibril trying to unregister the endpoint. To do so, it
 locks the mutex, and calls \fnc{endpoint_set_offline}. This blocks access for
-further transfers, and also wwakes fibrils waiting inside
+further transfers, and also wakes fibrils waiting inside
 \fnc{endpoint_activate_locked} from the sleep, returning an error value. The
 unregistering fibril then may decide to wait a while to finish already running
 transfers, and then do HC-specific steps to remove the running transfer from the

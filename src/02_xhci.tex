@@ -42,7 +42,7 @@ implemented as Memory-Mapped I/O space. They can be divided into four categories
 ~
 \begin{description}
 	\item[Capability registers]
-		These specity read-only limits, restrictions and capabilities of the specific
+		These specify read-only limits, restrictions and capabilities of the specific
 		xHC implementation used.
 	\item[Runtime and Operational registers]
 		These specify the current xHC configuration and runtime modifiable state.
@@ -61,12 +61,12 @@ manipulated freely by the system, some impose restrictions:
 ~
 \begin{description}
 	\item[RO, Read-only]
-		Register bits are read-only and may not be altered by system software. An example
+		Register bits are read-only and cannot be altered by system software. An example
 		is the \textit{CAPLENGTH} register (see \xhci{5.3.1}).
 	\item[RW, Read-Write]
 		Register bits are read-write and can be altered by system software. An example
 		is the \textit{USBCMD} register (see \xhci{5.4.1}), in which some bits or bit ranges
-		are RW (and some are only RO).
+		are RW (and some are read-only).
 	\item[RW1C, Write-1-to-clear]
 		Register bits indicate status when read, a set bit can be cleared by writing
 		a '1', writing a '0' to such register bit has no effect. An example is
@@ -126,7 +126,7 @@ The amount of buffers requested by the xHC is specified in the \textit{Max Scrat
 \textit{Max Scratchpad Bufs Lo} registers of the second set of structural parameters (\textit{HCSPARAMS2},
 see \xhci{5.3.4}) defined in \struct{xhci_cap_regs}.
 
-The allocation of these buffers takes place as part of the host constroller initialization,
+The allocation of these buffers takes place as part of the host controller initialization,
 specifically in \fnc{hc_init_memory()}, which calls \fnc{xhci_scratchpad_alloc()}. The pointers
 to these buffers are then passed to the xHC in the \textit{Scratchpad Buffer Array}, pointer to which
 occupies the first index of the \textit{Device Context Base Address Array} (dcbaa field of
