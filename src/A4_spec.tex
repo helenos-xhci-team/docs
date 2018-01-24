@@ -1,4 +1,142 @@
-\chapter{Project Specification}
+\chapter{Project Specification and Timeline}
+
+This section contains the original project specification, as it was approved by
+the project comitee at Faculty of Mathematics and Physics, Charles University.
+The actual project realization timeline is also included.
+
+
+\section{Project Specification (in Czech)}
+
+\subsection{Základní informace}
+
+\begin{description}
+	\item[Jméno projektu] HelenOS USB 3.x Stack
+	\item[Zkratka] HelUSB3
+	\item[Vedoucí] Martin Děcký \email{decky@d3s.mff.cuni.cz}
+	\item[Konzultanti] --
+	\item[Anotace]
+		Rozšíření podpory sběrnice USB a USB zařízení v mikrojádrovém multiserverovém operačním systému HelenOS o revizi 3.0 (resp. 3.1), sjednocení této podpory s dříve implementovanou funkcionalitou pro USB 1.0, 1.1 a 2.0 a další vylepšení.
+\end{description}
+
+\subsection{Motivace}
+
+Podpora sběrnice USB v revizi 1.0 a 1.1, která byla naimplementována v rámci Softwarového
+projektu v roce 2011 (HelUSB), výrazně rozšířila praktickou použitelnost operačního systému
+HelenOS v souvislosti s periferními zařízeními. Na tuto funkcionalitu bylo později navázáno
+podporou USB 2.0. V současné době je poslední specifikovaná revize USB 3.0 (z hlediska
+hardwarového transportu potom 3.1) a začínají se objevovat počítače, které implementují pouze tuto
+revizi (tedy z pohledu operačního systému nejsou zpětně kompatibilní se staršími revizemi). Proto
+je vhodné, aby byl operační systém HelenOS doplněn o nativní podporu pro USB 3.0 (resp. 3.1).
+Tento projekt je pochopitelně také vhodnou příležitostí pro provedení sjednocení s předchozími
+implementacemi a provedení dalších souvisejících vylepšení.
+
+\subsection{Popis projektu}
+
+Primárním předmětem projektu je rozšířit generický framework pro použití USB sběrnic a
+implementaci ovladačů USB zařízení v systému HelenOS o podporu USB revize 3.0 (resp. 3.1), při
+zachování plné podpory předchozích revizí 1.0, 1.1 a 2.0. Cílem je, aby bylo možné na běžně
+dostupném hardwaru využít nejvyšší možnou revizi USB s přihlédnutím k možnostem daných
+periferních zařízení. Součástí projektu je také implementace základního demonstrátoru – ovladače
+konkrétního fyzického USB host controlleru a ověření funkcionality konkrétních koncových USB
+zařízení.
+
+\begin{itemize}
+	\item
+		Implementace ovladače pro USB host controller podle normy xHCI.
+		\begin{itemize}
+			\item Podpora přenosových režimů a rychlostí odpovídajících USB 1.0, 1.1, 2.0 a 3.0.
+			\item
+				Enumerace zařízení na sběrnici USB 3.0 a spouštění příslušných ovladačů koncových USB zařízení (s využitím existujícího Device Driver Frameworku), jsou-li k dispozici.
+				\begin{itemize}
+					\item Zachování kompatibility s dříve naimplementovanými ovladači host controllerů podle norem OHCI, UHCI a EHCI.
+					\item Ideálně zachování možnosti implementovat ovladače koncových USB zařízení nezávisle na použité variantě host controlleru.
+				\end{itemize}
+			\item Demonstrátor: Ovladač pro xHCI host controller NEC Renesas uPD720200
+		\end{itemize}
+
+	\item
+		Implementace explicitního mechanismu odpojování USB zařízení (očekávaného i neočekávaného).
+		\begin{itemize}
+			\item Podpora přerušení USB komunikace (USB communication abort) na hardwarové úrovni bez zablokování ovladače USB zařízení.
+		\end{itemize}
+
+	\item Implementace podpory isochronního režimu komunikace USB zařízení.
+	\item Volitelná část zadání: Rozšíření USB frameworku o dosud nepodporované vlastnosti (např. správa napájení), o podporu specifických xHCI host controllerů (např. Intel Sunrise Point-H a/nebo contollery integrované na vývojových deskách či SoC čipech typu BeagleBoard, BeagleBone, Raspberry Pi) či jiná vylepšení (např. implementace nových ovladačů koncových USB zařízení jako je DisplayLink, dokončení implementace správy přenosového pásma a výkonu, odladění ovladačů controllerů na jiných platformách).
+
+\end{itemize}
+
+\subsection{Platforma, technologie}
+
+\begin{itemize}
+	\item
+	Framework a ovladače budou odladěny v simulátoru QEMU a na běžném fyzickém PC
+	(obojí pro platformy x86 a x86-64) vybaveném výše uvedeným USB controllerem a
+	případně kombinací již dříve podporovaných USB controllerů s použitím již existujících
+	ovladačů koncových USB zařízení.
+
+	\item
+	Framework a ovladače budou implementovány takovým způsobem, který nebude
+	principielně bránit jejich budoucímu využití na jiných platformách než x86 a x86-64.
+
+	\item
+	Framework a ovladače budou implementovány takovým způsobem, aby zachovávaly
+	celkovou softwarovou architekturu mikrojádrového multiserverového operačního systemu
+	HelenOS a aby nedošlo k omezení již dříve naimplementované a odladěné funkcionality (tj.
+	podpora OHCI, UHCI atd.).
+\end{itemize}
+
+
+\subsection{Odhad náročnosti}
+
+Na základě zkušeností z dřívějšího Softwarového projektu HelUSB (implementace podpory OHCI,
+UHCI) lze říci, že zadání je řešitelským týmem o 5 – 6 studentech zvládnutelné ve standardní době.
+Projekt klade na řešitele především následující nároky, ze kterých přirozeně plyne přibližný
+harmonogram prací:
+
+\begin{itemize}
+	\item Nastudování specifikace sběrnice USB, specifikace xHCI, specifikace controlleru NEC Renesas uPD720200, volitelně studium implementací v jiných operačních systémech. [1 měsíc]
+
+	\item Nastudování softwarové architektury, relevantních mechanismů a existující implementace systému HelenOS (async framework, Device Driver Framework, podpora OHCI, UHCI, EHCI). [1 měsíc]
+
+	\item Implementace podpory xHCI a controlleru NEC Renesas uPD720200, integrace s existující implementací, refactoring. [2 měsíce]
+
+	\item Implementace explicitního mechanismu odpojování USB zařízení, přerušení USB komunikace a isochronního režimu komunikace. [1,5 měsíce]
+
+	\item Implementace vhodné podmnožiny volitelných částí zadání. [2,5 měsíce]
+
+	\item Důkladné odladění výsledné implementace, sepsání dokumentace. [1 měsíc]
+\end{itemize}
+
+Aktuální stav systému HelenOS poskytuje dostatečně stabilní základ pro úspěšnou realizaci
+projektu, riziko nedokončení projektu je malé. Zadání projektu záměrně klade důraz na elegantní
+integraci výsledného řešení s existujícím kódem včetně nutného refactoringu. Nelze pochopitelně
+zcela vyloučit nutnost opravovat drobné chyby v existující implementaci, které mohou být
+v průběhu práce na tomto projektu odhaleny, nemělo by se však jednat o zásadní překážky.
+
+Protože časovou náročnost implementace povinných bodů zadání není možné předem zcela
+spolehlivě odhadnout, počítá zadání také s volitelnými částmi, které by posloužily jednak pro
+zlepšení celkové funkcionality USB v systému HelenOS a jednak umožnily dosáhnout za všech
+okolností obvyklého objemu implementačních prací v rámci Softwarového projektu. V případě, že
+povinné části zadání zaberou odhadovaný čas, bude možné implementovat vhodnou podmnožinu
+volitelných částí. Ukáže-li se naopak, že odhad časové náročnosti povinných částí byl
+podhodnocen, resp. nadhodnocen, potom bude možné omezit, resp. rozšířit, podíl implementace
+volitelných částí.
+
+
+\subsection{Vymezení projektu}
+
+Projekt je zaměřen na následující oblasti:
+~
+\begin{itemize}
+	\item softwarové inženýrství,
+	\item vývoj software,
+	\item systémové programování,
+	\item spolehlivé systémy.
+\end{itemize}
+
+
+\section{Project Timeline}
 
 % TODO
+
 
