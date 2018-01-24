@@ -27,6 +27,7 @@ The subsystem is composed of three parts:
 		devices and return human-readable results.
 \end{description}
 
+
 \section{QEMU Device}
 
 The \texttt{usb-tmon} virtual device is a diagnostic class USB device
@@ -121,9 +122,11 @@ monitor to QEMU's standard IO by adding \textit{"-monitor stdio"} to QEMU's
 startup command). To have QEMU start with \texttt{usb-tmon} attached, they may
 add \texttt{"-device usb-tmon"} to their QEMU startup command.
 
+
 \section{Driver}
 
 % TODO
+
 
 \section{Frontend}
 
@@ -171,3 +174,9 @@ If no device is specified, the first device is used provided that it is the
 only one connected. Otherwise, the command fails.
 
 \end{bdsh}
+
+
+\section{Automated Removal Testing}
+
+% TODO
+
