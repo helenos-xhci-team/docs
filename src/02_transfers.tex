@@ -119,8 +119,8 @@ small trick present to avoid inflating the \struct{xhci_endpoint_t} for every
 type of endpoint. The last field of the structure is a zero length array of
 \struct{xhci_isoch_t}. This doesn't take any space, but the pointer to this
 field is always valid and points behind the structure. We then allocate the
-structure with \texttt{calloc(1, sizeof(xhci_endpoint_t) + (type ==
-USB_TRANSFER_ISOCHRONOUS) * sizeof(*ep->isoch))}. If the endpoint is
+structure with \texttt{calloc(1, sizeof(xhci\_endpoint\_t) + (type ==
+USB\_TRANSFER\_ISOCHRONOUS) * sizeof(*ep->isoch))}. If the endpoint is
 isochronous, the memory allocated is larger to accomodate the
 \struct{xhci_isoch_t} and we use the pointer mentioned previously to access it.
 
@@ -133,11 +133,11 @@ descriptors on the transfer ring in advance, but do not schedule too old data.
 In the \textit{Async Framework} documentation, it is stated that the IPC calls
 using a single session are synchronous and therefore blocking in the call would
 block the whole session. Because of that, each \struct{usb_pipe_t} in
-\lib{libusbdev} has a field called \texttt{isoch_session}, which is used to
+\lib{libusbdev} has a field called \texttt{isoch\_session}, which is used to
 communicate with isochronous endpoints as these may block for longer periods of
 time. In reality, the current implementation of \textit{Async Framework} clones
 the session for every IPC call, so this is not necessary. If this ever changes,
-the \texttt{isoch_session} might need to be set to a cloned session.
+the \texttt{isoch\_session} might need to be set to a cloned session.
 
 \subsubsection{IN endpoints}
 
