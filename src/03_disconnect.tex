@@ -166,26 +166,42 @@ transfer active at a time. So, we store the pointer to a batch inside the
 endpoint structure, in the field \struct{active_batch}. This field shall not be
 accessed, unless the endpoint guard is locked.
 
-The driver shall modify this field only by calling two methods, which ensure
-the proper semantics: \fnc{endpoint_activate_locked} and \fnc{endpoint_deactivate_locked}.
-Both of them are to be called with the guard locked. An endpoint is said to be
-\emph{active}, if there's an active transfer scheduled. Once the endpoint is
-activated and the guard released, the batch must be assumed to be already
-finished or aborted. In the counterpart process, when the driver wants to
-finish or abort transfer, it needs to obtain the endpoint guard, check if the
-transfer is still the active transfer, and then deactivate the endpoint.
+Speaking about the endpoint guard leads us to one of the strange design
+decisions we made. Endpoints do not have their own guard, they inherit one
+while being put into the online state. That is, when the endpoint is being
+registered, the HC driver calls \fnc{endpoint_set_online} and passes a pointer
+to a mutex which will be used to synchronize transfers on that endpoint. The
+endpoint itself never locks this mutex, it only uses it to ensure correctness
+(whether the mutex is locked in named functions) and to wait on a condition
+variable.
 
-In other words, the ownership of the batch is transferred from the calling
-fibril to the endpoint once activated, and to the finishing/aborting fibril by
-deactivating the endpoint. Only the owner of the batch is allowed to finish it.
+Sooner or later in the scheduling of a transfer batch, there is a need to access
+shared structures. Once there is, the HC driver locks the mutex, and in a single
+critical section it calls the function \fnc{endpoint_activate_locked}. If this
+function successfully returns, the endpoint is reserved for a given batch. By
+calling the function, the batch ownership is given to the endpoint -- once the
+critical section ends, the batch must be considered already finished.
 
-Following this scheme a driver can be sure a batch is always finished once and
-only once. But in our thoughts, we haven't yet covered that the buffers of the
-batch are owned by the Host Controller while the batch is scheduled. Because of
-that, drivers need to implement aborting transfers themselves.
+In the meantime, there are two possible execution flows that are related. First
+of all, there is the interrupt handler finishing transfers. Once it decides
+a transfer is to be finished, it is supposed to have the mutex already locked
+(to avoid racing with the scheduling fibril), and calls function
+\fnc{endpoint_deactivate_locked}. This function allows another batch to use the
+endpoint, and transfers the ownership of the batch to the caller.
 
-The version-specific part of the implementation is discussed in the next sections.
+Second, there can be a fibril trying to unregister the endpoint. To do so, it
+locks the mutex, and calls \fnc{endpoint_set_offline}. This blocks access for
+further transfers, and also wwakes fibrils waiting inside
+\fnc{endpoint_activate_locked} from the sleep, returning an error value. The
+unregistering fibril then may decide to wait a while to finish already running
+transfers, and then do HC-specific steps to remove the running transfer from the
+hardware. Eventually, it shall call \fnc{endpoint_deactivate_locked}, which
+takes the ownership of the batch, and gives the unregistering fibril a sole
+right to finish the transfer with an error code.
 
+This whole mechanism is completely opt-in, and the driver can avoid using it
+(like xHCI do for stream-enabled endpoints). The HC-specific part of the
+implementation is discussed in the next sections.
 
 \subsection{UHCI, OHCI and EHCI Specifics}
 
@@ -215,30 +231,28 @@ which the consistency of the structure is guaranteed at any time. After it
 does, it must notify the driver that the structure has changed, in order to
 force the controller to clear its caches (EHCI only).
 
-Because the driver is polling the transfers for completion, the first thing
-we (as a driver) have to do to abort a transfer is to remove it from the list
-of pending transfers. As the list modification is synchronized, we can be sure
-no other fibril will ever complete the transfer. After that, we can finish it
+Because the interrupt handler is polling the transfers for completion, it is
+enough for the driver to remove the transfer from the list of pending transfers
+to be sure no other fibril will ever complete it. After that, we can finish it
 ourselves with an error. Note that in this case it is unknown to driver whether
 the transfer was completed or not -- but since the driver is unregistering an
 endpoint, the device must already be in a state in which it expects removal.
 
-The removal itself is not that easy as one would expect, because it involves
-two locks. While scheduling the transfer, we (potentially) need to wait, until
-the endpoint is free to be activated, so we need to take the endpoint lock first.
-On the other hand, when scanning the pending list, we cannot know the
-endpoints, and therefore cannot lock them in advance. The resolution of this
-conflict is different in every driver.
-
-% TODO: In UHCI, it is currently broken, and it struck me while writing the
-% documentation. Too late for me to fix it now, gotta go sleep.
-
-In OHCI and EHCI, transfers have to be prepared with previous transfers in
-mind. To avoid the conflict, we changed the list of pending transfers to list
-of pending endpoints. The endpoint's reference in this list is counted, and it
-is possible to check whether the endpoint takes part in the list. We can remove
-it if it is without holding the endpoint lock, and then finish the transfer
-without holding the list lock, thus avoiding the ABBA deadlock completely.
+The nature of handling finished transfers defines the weird semantics of the
+inherited mutex. Let's consider a situation, in which two locks were involved:
+a lock protecting the HC structures (lists, interrupt handling, \dots) called
+$H$ and a lock protecting the endpoint $E$. When a transfer is scheduled, it
+must first wait until the endpoint is available. To avoid a deadlock between
+finishing the current transfer and waiting for it to finish, the mutex $E$ must
+be taken first. Also, $E$ cannot be released before taking $H$, because after
+$E$ is released the transfer can be aborted immediately. On the other hand, when
+an interrupt comes, there is no way how to get a pointer to the endpoint without
+taking $H$ first. Neither $H$ cannot be released before taking $E$, because
+we cannot access the batch unless holding $E$, and even transferring a pointer
+to an endpoint does not help -- in between the critical sections the current
+transfer transfer can be aborted and a new one scheduled, resulting in
+completing a wrong transfer. To avoid ABBA deadlock eventually, we just have to
+avoid using two locks for transfer synchronization.
 
 From the further perspective, these controllers do not have an internal state
 for individual devices and endpoints, so the deconfiguration and its rollback
