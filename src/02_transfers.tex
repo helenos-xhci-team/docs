@@ -3,8 +3,8 @@
 
 The xHC uses transfers to abstract USB communication. Every call to
 \fnc{usb_write} and \fnc{usb_read} is accomplished by creating a transfer,
-setting it up, handing it to xHC and waiting for the transfer completion. This
-section describes the code structure and implementation details of xHCI tranfer
+setting it up, handing it to the xHC and waiting for transfer completion. This
+section describes the code structure and implementation details of the xHCI tranfer
 subsystem.
 
 \subsection{Executing Transfers}
@@ -15,7 +15,7 @@ transfer rings by the software. The software isn't required to split the
 transfer into USB packets, the xHC takes care of that.
 
 Each transfer is formed by a \textit{Transfer Descriptor}, which is a sequence
-of TRBs with a chain bit set. This allows the software to schedule a transfers
+of TRBs with a chain bit set. This allows the software to schedule a transfer
 containing larger data, or data not stored in continuous memory. Each TRB
 points to a single continuous buffer of data (in physical memory) and specifies
 the buffer's size. This buffer must be accessible to the hardware and it's
@@ -49,7 +49,7 @@ lifetime is managed by the library calling the bus operations.
 
 After the library allocates and fills up the \struct{usb_transfer_batch_t}, it
 schedules the transfer. This is where the xHCI takes control over the transfer.
-The transfer is processed in \fnc{xhci_transfer_schedule()}, where it is split
+The transfer is processed in \fnc{xhci_transfer_schedule}, where it is split
 into TRBs, the correct bits are set depending on the transfer type, TRBs are
 enqueued and the doorbell is rung.
 
@@ -59,7 +59,7 @@ for every transfer descriptor so that the software gets notified about its
 completion.
 
 After the transfer event is received, the event loop calls
-\fnc{xhci_handle_transfer_event()}. There, the TRB which triggered the event is
+\fnc{xhci_handle_transfer_event}. There, the TRB which triggered the event is
 processed and the transfer, that scheduled it, is found. For IN endpoints, the
 received data is copied to prepared buffers. In the end, error code is set in
 the batch and the batch is finalized.
@@ -102,7 +102,7 @@ descriptor and the transfer ring is empty, the xHC generates a Transfer Event
 with the completion code set to \textit{Ring Overrun} for IN endpoints, and
 \textit{Ring Underrun} for OUT endpoints. This also removes the endpoint from
 the schedule and lets software clean the structure and report the error to the
-driver, if needed. To reschedule the endpoint, the software needs to ring
+driver, if needed. To reschedule the endpoint, the software needs to ring a
 doorbell.
 
 \subsubsection{Implementation}
@@ -127,7 +127,7 @@ isochronous, the memory allocated is larger to accomodate the
 The \struct{xhci_isoch_t} also contains a dynamic array of
 \struct{xhci_isoch_transfer_t}. These represent an isochronous transfer and
 maintain a permanently allocated data buffer. The amount of these depends on
-the IST and endpoint interval as we need to make sure we put the transfer
+the IST and the endpoint interval as we need to make sure we put the transfer
 descriptors on the transfer ring in advance, but do not schedule too old data.
 
 In the \textit{Async Framework} documentation, it is stated that the IPC calls
@@ -173,8 +173,9 @@ the first transfer descriptor by a short delay.
 
 \subsubsection{Error handling}
 
-The transfer errors in isochronous transfers are very often not considered fatal and should be skipped. Therefore, we decided to not deliver the
-error to driver immediately, instead, the error that occured is returned with
+The transfer errors in isochronous transfers are very often not considered fatal
+and should be skipped. Therefore, we decided to not deliver the
+error to the driver immediately, instead, the error that occured is returned with
 the next \fnc{usb_read} or \fnc{usb_write} call, in the \texttt{error} field of
 \struct{usb_transfer_batch_t}.
 
