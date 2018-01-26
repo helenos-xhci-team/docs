@@ -97,7 +97,7 @@ the value of the whole register, uses the bitwise negation of the mask to copy
 surrounding bits, then shift the value to be written into its place. This
 solution is simple to understand, yet hard to use correctly. There's a lot of
 repetition, the more if you consider endianity (HelenOS is targeted also on Big
-Endian platforms, while USB world is Little Endian).
+Endian platforms, while the USB world is Little Endian).
 
 Another possibility is to define macros for reading and writing every single
 field. That idea was discarded in its very beginning. We wanted a solution,
@@ -119,7 +119,7 @@ XHCI_REG_WR(hc->op_regs, XHCI_SOME_FIELD, 42);
 
 All the definitions of macros like \macro{XHCI_SOME_FIELD} relevant for xHCI
 are contained in the header file \header|hw_struct/regs.h|. The definition
-contains all the information necessary to access the field. It says, that the
+contains all the information necessary to access the field. It says that the
 register field is contained in a field \struct{usbreg} of an operational
 register structure (the one \mintinline{c}{hc->op_regs} points to), the
 structure field is a 32 bit wide dword, and that the register field is
@@ -140,7 +140,7 @@ top-level macros (\macro{XHCI_REG_WR}, \macro{XHCI_REG_SET},
 \macro{XHCI_REG_CLR}, \macro{XHCI_REG_MASK} and \macro{XHCI_REG_SHIFT}) operate
 on the same principle.
 
-We think we achieved our goal. These macros are a bit hard to understand but
+We think we have achieved our goal. These macros are a bit hard to understand but
 very easy to use, and require just one line of definition per field. Looking
 back though, the work was probably not worth it -- the registers are not used
 that much to justify existence of register definition of every single register
