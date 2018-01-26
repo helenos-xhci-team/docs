@@ -192,7 +192,7 @@ The amount of buffers requested by the xHC is specified in the \textit{Max Scrat
 see \xhci{5.3.4}) defined in \struct{xhci_cap_regs}.
 
 The allocation of these buffers takes place as part of the host controller initialization,
-specifically in \fnc{hc_init_memory()}, which calls \fnc{xhci_scratchpad_alloc()}. The pointers
+specifically in \fnc{hc_init_memory}, which calls \fnc{xhci_scratchpad_alloc}. The pointers
 to these buffers are then passed to the xHC in the \textit{Scratchpad Buffer Array}, pointer to which
 occupies the first index of the \textit{Device Context Base Address Array} (dcbaa field of
 \struct{xhci_hc_t}).
@@ -203,7 +203,7 @@ for the xHC and the virtual addresses for deallocation. This was, however, later
 \struct{dma_buffer_t}, which is part of \lib{libusbhost} and was created for the same purpose.
 
 Once the xHCI driver finishes its execution, the scratchpad buffers are deallocated by a call to
-\fnc{xhci_scratchpad_free()} as part of \fnc{hc_fini()}.
+\fnc{xhci_scratchpad_free} as part of \fnc{hc_fini}.
 
 
 \input{02_commands}

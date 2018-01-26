@@ -284,15 +284,15 @@ device from the \state{Addressed} state back to the \state{Configured} state.
 Since the existing USB drivers were quite incomplete, their implementation has
 been extended to add support for explicit device removal. This mostly lead to
 novel approaches to deallocation of device-related memory structures, which is
-often performed in the \fnc{device_remove()} and \fnc{device_gone()} driver
+often performed in the \fnc{device_remove} and \fnc{device_gone} driver
 callbacks.
 
 For instance, a number of drivers required that an implementation of
-\fnc{device_remove()} is created in the first place. Quite so often, the
-existing implementation of \fnc{device_gone()} has provided a good starting
+\fnc{device_remove} is created in the first place. Quite so often, the
+existing implementation of \fnc{device_gone} has provided a good starting
 point, given that both functions have to deal with USB device's demise. The
-fundamental difference was that while \fnc{device_gone()} merely dealt with
-the fallout of unexpectedly unplugged device, \fnc{device_remove()} had the
+fundamental difference was that while \fnc{device_gone} merely dealt with
+the fallout of unexpectedly unplugged device, \fnc{device_remove} had the
 opportunity to tie up all lose ends prior to the physical detachment of the
 device.
 
@@ -302,9 +302,9 @@ the device driver's point of view, a polling fibril has been created when the
 driver started managing the device. When the device was unplugged, the polling
 operation failed with an error, waking up and effectively terminating the fibril in
 the process. Since no explicit joining mechanism was available, the
-implementation of \fnc{device_gone()} merely spinned a limited number of times,
+implementation of \fnc{device_gone} merely spinned a limited number of times,
 waiting for the polling fibril to die. This mechanism was however unsuitable for
-\fnc{device_remove()}, since the fibril would not awaken due to an error caused
+\fnc{device_remove}, since the fibril would not awaken due to an error caused
 by the physical disconnect, which has not happened yet.
 
 This lead to complete refactoring and extension of the USB device polling
@@ -312,7 +312,7 @@ mechanism, which is described in detail in Section \ref{polling-refactoring}.
 In summation, the new version of the mechanism allows device drivers to join
 their polling fibrils and consistently wake them up in order to avoid deadlocks.
 
-To actually stop the polling in the \fnc{device_remove()} callback, the device
+To actually stop the polling in the \fnc{device_remove} callback, the device
 driver has to trigger a transfer abort inside the HC. There's no sensible way
 of how to allow a driver abort its own transfer, which wouldn't introduce
 potential memory leaks inside HC or synchronization problems. So we decided
@@ -324,13 +324,13 @@ tied to the lifetime of the handled device. There are only two possible
 ordering of these two operations:
 
 \begin{enumerate}
-	\item Close the pipes after the \fnc{device_remove()} callback returns.
+	\item Close the pipes after the \fnc{device_remove} callback returns.
 		After that, the polling fibrils will end and destroy their structures.
 		The library USB device structure will have to be reference-counted and
 		the counter will be managed by the driver to account for polling
 		fibrils.
 
-	\item Close the pipes prior to calling \fnc{device_remove()}, effectively
+	\item Close the pipes prior to calling \fnc{device_remove}, effectively
 		destroying the only reason why this callback exists, and make the
 		expected removal equivalent to the unexpected one.
 \end{enumerate}
@@ -340,23 +340,23 @@ we came up with three more options:
 
 \begin{enumerate}
 \setcounter{enumi}{2}
-	\item Introduce a new callback, e.g. \fnc{device_removed()}, to be called
+	\item Introduce a new callback, e.g. \fnc{device_removed}, to be called
 		after the pipes are closed. The removal would be split into two phases:
-		first, in \fnc{device_remove()} the loose ends are closed and the
+		first, in \fnc{device_remove} the loose ends are closed and the
 		device is brought to a state expecting removal, then in
-		\fnc{device_removed()}, the polling fibrils are joined and structures
+		\fnc{device_removed}, the polling fibrils are joined and structures
 		are destroyed.
 
-	\item After calling \fnc{device_remove()} and closing the pipes, call
-		\fnc{device_gone()}.
+	\item After calling \fnc{device_remove} and closing the pipes, call
+		\fnc{device_gone}.
 
 	\item Allow the driver to close individual pipes imperatively.
 \end{enumerate}
 
 At first, we decided to go with option 3). But it was yet another callback, we
 didn't come up with a name that wasn't so similar and yet was clear, and
-finally, the \fnc{device_removed()} callback implementations were very similar
-to \fnc{device_gone()}.
+finally, the \fnc{device_removed} callback implementations were very similar
+to \fnc{device_gone}.
 
 The option 4) seems reasonable at the first look, but it would create
 inconsistency between DDF drivers and USB drivers, which would be very
@@ -365,7 +365,7 @@ behavior shall be present in DDF too, but we didn't open a discussion with
 HelenOS developers.}
 
 In the end, the only option left was letting the driver close its own pipes. So
-we introduced a new library call \fnc{usb_device_unmap_ep()}, which does
+we introduced a new library call \fnc{usb_device_unmap_ep}, which does
 exactly that. The new library polling mechanism closes its pipe automatically,
 but this functionality is usable in any driver for any endpoint.
 
