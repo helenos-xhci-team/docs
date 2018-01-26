@@ -173,14 +173,9 @@ the first transfer descriptor by a short delay.
 
 \subsubsection{Error handling}
 
-<<<<<<< HEAD
 The transfer errors in isochronous transfers are very often not considered fatal
 and should be skipped. Therefore, we decided to not deliver the
-error to the driver immediately, instead, the error that occured is returned with
-=======
-The transfer errors in isochronous transfers are very often not considered fatal and should be skipped. Therefore, we decided to not deliver the
-error to driver immediately, instead, the error that occurred is returned with
->>>>>>> spelling
+error to the driver immediately, instead, the error that occurred is returned with
 the next \fnc{usb_read} or \fnc{usb_write} call, in the \texttt{error} field of
 \struct{usb_transfer_batch_t}.
 
