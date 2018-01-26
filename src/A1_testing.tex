@@ -47,9 +47,7 @@ macro that contains its endpoint number which has the form of
 \macro{CHECKED_EP_<type>_<direction>} for the second set, where \texttt{<type>}
 can be \texttt{INT} for interrupt transfers, \texttt{BULK} for bulk transfers or
 \texttt{ISOC} for isochronous transfers and \texttt{<direction>} can be either
-\texttt{IN} or \texttt{OUT}. Note that the way \texttt{usb-tmon} handles
-transfers depends on the number of the endpoint, so the endpoint number used
-by a driver has to match the value of one of these macros.
+\texttt{IN} or \texttt{OUT}.
 
 \subsection{Monitoring}
 
