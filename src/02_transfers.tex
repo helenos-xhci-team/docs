@@ -4,7 +4,7 @@
 The xHC uses transfers to abstract USB communication. Every call to
 \fnc{usb_write} and \fnc{usb_read} is accomplished by creating a transfer,
 setting it up, handing it to the xHC and waiting for transfer completion. This
-section describes the code structure and implementation details of the xHCI tranfer
+section describes the code structure and implementation details of the xHCI transfer
 subsystem.
 
 \subsection{Executing Transfers}
@@ -93,7 +93,7 @@ executed.
 
 The isochronous endpoint also reserves some bandwidth during its setup and has
 only its reserved bandwidth available, therefore the xHC never permits using
-more bandwidth. This sets a hard cap on the size of the data transfered in a
+more bandwidth. This sets a hard cap on the size of the data transferred in a
 single transfer descriptor. Scheduling a transfer descriptor with larger data
 causes the xHC to generate an error and refuse to transfer the data.
 
@@ -121,7 +121,7 @@ type of endpoint. The last field of the structure is a zero length array of
 field is always valid and points behind the structure. We then allocate the
 structure with \texttt{calloc(1, sizeof(xhci\_endpoint\_t) + (type ==
 USB\_TRANSFER\_ISOCHRONOUS) * sizeof(*ep->isoch))}. If the endpoint is
-isochronous, the memory allocated is larger to accomodate the
+isochronous, the memory allocated is larger to accommodate the
 \struct{xhci_isoch_t} and we use the pointer mentioned previously to access it.
 
 The \struct{xhci_isoch_t} also contains a dynamic array of
@@ -173,9 +173,14 @@ the first transfer descriptor by a short delay.
 
 \subsubsection{Error handling}
 
+<<<<<<< HEAD
 The transfer errors in isochronous transfers are very often not considered fatal
 and should be skipped. Therefore, we decided to not deliver the
 error to the driver immediately, instead, the error that occured is returned with
+=======
+The transfer errors in isochronous transfers are very often not considered fatal and should be skipped. Therefore, we decided to not deliver the
+error to driver immediately, instead, the error that occurred is returned with
+>>>>>>> spelling
 the next \fnc{usb_read} or \fnc{usb_write} call, in the \texttt{error} field of
 \struct{usb_transfer_batch_t}.
 

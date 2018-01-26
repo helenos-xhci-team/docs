@@ -170,7 +170,7 @@ address later, one can use another utility function, \fnc{addr_to_phys}. This
 one is a simple wrapper for a syscall.
 
 Even previous authors of the USB subsystem were aware of it being a syscall,
-and tried to cache the physical address where it would be used unneccessarily
+and tried to cache the physical address where it would be used unnecessarily
 multiple times. The usage scheme of these functions then grew wild: the memory
 was allocated by \fnc{malloc32}, just to be translated by \fnc{addr_to_phys} on
 the next line. These two pointers were then stored inside the same structure.
