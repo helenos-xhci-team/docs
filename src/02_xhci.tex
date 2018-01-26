@@ -82,7 +82,72 @@ manipulated freely by the system, some impose restrictions:
 
 This is not an exhaustive list of access attributes, for the entire list, see \xhci{5.1.1}.
 
-% TODO @aearsis: Register macros
+\subsubsection{Register access macros}
+
+Registers are accessed very often in all hardware-related modules. We felt that
+there is a need to centralize the information defined in specification,
+especially the subdivision of registers to individual fields. There are several
+common solutions to this problem.
+
+Probably the most common one, which we also considered at first, is defining
+two constants for every such field: mask and shift. When one needs to read
+a field, they read the value of the register, use the mask to select bits, and
+then shift the value according to the shift macro. To write a field, one reads
+the value of the whole register, uses the bitwise negation of the mask to copy
+surrounding bits, then shift the value to be written into its place. This
+solution is simple to understand, yet hard to use correctly. There's a lot of
+repetition, the more if you consider endianity (HelenOS is targeted also on Big
+Endian platforms, while USB world is Little Endian).
+
+Another possibility is to define macros for reading and writing every single
+field. That idea was discarded in its very beginning. We wanted a solution,
+that requires only one definition per field, cannot be used in a wrong way and
+is sensibly short to write. So we came up with the register access macros. The
+best introduction is probably by an artificial example:
+
+\begin{listing}[h]
+\begin{code}
+#define XHCI_SOME_FIELD            usbreg, 32, RANGE, 13, 7
+
+unsigned field = XHCI_REG_RD(hc->op_regs, XHCI_SOME_FIELD);
+XHCI_REG_WR(hc->op_regs, XHCI_SOME_FIELD, 42);
+\end{code}
+	\caption[An example of using register macros]{On the first line, we read
+	bits 13 to 7 of the field \mintinline{c}{hc->op_regs->usbreg} to
+	a variable, and then change the same bits in the register to a value 42.}
+\end{listing}
+
+All the definitions of macros like \macro{XHCI_SOME_FIELD} relevant for xHCI
+are contained in the header file \header|hw_struct/regs.h|. The definition
+contains all the information necessary to access the field. It says, that the
+register field is contained in a field \struct{usbreg} of an operational
+register structure (the one \mintinline{c}{hc->op_regs} points to), the
+structure field is a 32 bit wide dword, and that the register field is
+contained in bits 13 to 7 of it.
+
+The primary principle used to implement these preprocessor macros is the
+specific order of macro expansion in C. In the example, the register definition
+macro is used as an argument to the \macro{XHCI_REG_RD} macro. Both macros are
+expanded in a breadth-first fashion, producing just another preprocessor macro
+\macro{XHCI_REG_RD_INNER(hc->op_regs, usbreg, 32, RANGE, 13, 7)}. You can see
+that one argument is expanded to several arguments for the inner macro. What
+happens next is pretty simple. The \macro{RANGE} argument token is glued to
+a prefix, producing a name for another macro, which selects between
+implementations for whole fields, bit ranges and individual bit flags. The
+\macro{XHCI_REG_RD_RANGE} then extracts the specified bits read from whole
+field. The size argument is needed to properly handle endianity. All other
+top-level macros (\macro{XHCI_REG_WR}, \macro{XHCI_REG_SET},
+\macro{XHCI_REG_CLR}, \macro{XHCI_REG_MASK} and \macro{XHCI_REG_SHIFT}) operate
+on the same principle.
+
+We think we achieved our goal. These macros are a bit hard to understand but
+very easy to use, and require just one line of definition per field. Looking
+back though, the work was probably not worth it -- the registers are not used
+that much to justify existence of register definition of every single register
+field. But it is already done and shall there be a need to access more registers,
+it's easily accessible without thinking how to select the proper bits and
+ensure the correct endianness. And even if there wasn't, it serves as a nice
+showcase of what are preprocessor macros capable of.
 
 \subsection{Contexts}
 
