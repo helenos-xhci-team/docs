@@ -1,8 +1,32 @@
 \chapter{USB Subsystem Modifications}
 \label{usb-refactoring}
 
-% TODO
+Before we start explaining individual modifications to the USB stack, we think
+it is good to explain the overall architecture of it. Please see the figure
+\ref{fig:stack-architecture}.
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{stack-architecture}
+	\caption{The runtime architecture of the USB stack, showing the communication paths}
+	\label{fig:stack-architecture}
+\end{figure}
+
+At the highest logical level, the USB device driver communicates with the
+device using USB packets. The packets are sent through pipes, illusion of which
+is created by the \lib{libusbdev} library. The library communicates with the HC
+driver using the \texttt{usbhc} driver interface. The drivers actually
+communicate using the Device Driver Framework, which in the end uses the
+synchronous interface built upon asynchronous IPC mechanisms in kernel. The
+scope of USB stack is limited to the USB device driver tasks, and to the USB
+Host Controller driver tasks. Because the USB Device Framework hasn't changed much
+in USB 3, our primary focus related to implementing USB 3 support was the HC
+driver. The xHC driver itself was exhaustively explained in the previous
+chapter, this chapter explains the modifications needed to implement it.
+Furthermore, it contains the modifications needed or supporting the
+implementation of other key requirements of the project.
+
+\input{03_bus}
 \input{03_disconnect}
 \input{03_polling}
 

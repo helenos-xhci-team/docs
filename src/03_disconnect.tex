@@ -63,6 +63,7 @@ implementations.
 
 
 \subsection{Offline and Online DDF Signal}
+\label{sec:offline-online}
 
 The HelenOS Device Driver Framework includes two user-initiated signals
 relevant to the implementation of this feature.
@@ -121,6 +122,7 @@ Interrupt-in transfers, which, especially in case of gone device, may not
 complete in a timely manner.
 
 \subsection{Aborting Active Transfers}
+\label{sec:aborting-transfers}
 
 It is not possible to ``abort a transfer'' in a generic way, mainly because of
 synchronization issues. Before we explain how can a transfer be properly
