@@ -19,7 +19,7 @@ interface.
 The scheme is not at all strict, we're in a C world, there are dependencies
 almost everywhere -- take it as an informal overview to get an idea.
 
-The whole driver can be split into two parts. The left one takes care about the
+The whole driver can be split into two parts. The left one takes care of the
 hardware perception of what's going on, the right one is about managing the
 software structures and memory.
 
@@ -42,7 +42,7 @@ implemented as Memory-Mapped I/O space. They can be divided into four categories
 ~
 \begin{description}
 	\item[Capability registers]
-		These specify read-only limits, restrictions and capabilities of the specific
+		These specify read-only limits, restrictions, and capabilities of the specific
 		xHC implementation used.
 	\item[Runtime and Operational registers]
 		These specify the current xHC configuration and runtime modifiable state.
@@ -85,7 +85,7 @@ This is not an exhaustive list of access attributes, for the entire list, see \x
 \subsubsection{Register access macros}
 
 Registers are accessed very often in all hardware-related modules. We felt that
-there is a need to centralize the information defined in specification,
+there is a need to centralize the information defined in the specification,
 especially the subdivision of registers to individual fields. There are several
 common solutions to this problem.
 
@@ -122,7 +122,7 @@ are contained in the header file \header|hw_struct/regs.h|. The definition
 contains all the information necessary to access the field. It says that the
 register field is contained in a field \struct{usbreg} of an operational
 register structure (the one \mintinline{c}{hc->op_regs} points to), the
-structure field is a 32 bit wide dword, and that the register field is
+structure field is a 32-bit wide dword, and that the register field is
 contained in bits 13 to 7 of it.
 
 The primary principle used to implement these preprocessor macros is the
@@ -134,16 +134,16 @@ that one argument is expanded to several arguments for the inner macro. What
 happens next is pretty simple. The \macro{RANGE} argument token is glued to
 a prefix, producing a name for another macro, which selects between
 implementations for whole fields, bit ranges and individual bit flags. The
-\macro{XHCI_REG_RD_RANGE} then extracts the specified bits read from whole
+\macro{XHCI_REG_RD_RANGE} then extracts the specified bits read from the whole
 field. The size argument is needed to properly handle endianity. All other
 top-level macros (\macro{XHCI_REG_WR}, \macro{XHCI_REG_SET},
 \macro{XHCI_REG_CLR}, \macro{XHCI_REG_MASK} and \macro{XHCI_REG_SHIFT}) operate
 on the same principle.
 
 We think we have achieved our goal. These macros are a bit hard to understand but
-very easy to use, and require just one line of definition per field. Looking
+very easy to use and require just one line of definition per field. Looking
 back though, the work was probably not worth it -- the registers are not used
-that much to justify existence of register definition of every single register
+that much to justify the existence of register definition of every single register
 field. But it is already done and shall there be a need to access more registers,
 it's easily accessible without thinking how to select the proper bits and
 ensure the correct endianness. And even if there wasn't, it serves as a nice
@@ -167,7 +167,7 @@ will be described in more detail in the following sections.
 
 Since both the internal state of the xHC and its capabilities are often described by
 a handful of bits located in a packed 32-bit register, we needed a way to monitor these
-values in a human readable form. The \file{uspace/drv/bus/usb/xhci/debug.h}{debug.h} and
+values in a human-readable form. The \file{uspace/drv/bus/usb/xhci/debug.h}{debug.h} and
 \file{uspace/drv/bus/usb/xhci/debug.c}{debug.c} files contain a set of register dumping
 functions that use the register reading macros described in the previous section to print
 the values of all the bit sets contained in a register to the driver's log. They also contain
@@ -175,7 +175,7 @@ auxiliary functions that are used to convert numeric codes to their meaning in a
 functions that dump the contents of a hardware structure (such as \struct{xhci_endpoint_ctx}).
 
 These functions have proved to be of great use and should any future maintainer of the
-HelenOS xHC stack find themselves in a bug ridden situation, putting these functions to
+HelenOS xHC stack find themselves in a bug-ridden situation, putting these functions to
 the areas of code they suspect of mischievous deeds might be a good starting point.
 
 \input{02_trb_ring}
@@ -183,7 +183,7 @@ the areas of code they suspect of mischievous deeds might be a good starting poi
 \section{Scratchpad}
 \label{sec:scratchpads}
 
-Scratchpads are buffers that an xHC implementation can request from the system software
+Scratchpads are buffers that a xHC implementation can request from the system software
 for its internal needs. The size of these buffers is specified in the \textit{PAGESIZE} register
 found in the operational register set defined in \struct{xhci_op_regs}.
 
@@ -210,7 +210,7 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 
 \section{Host Controller Module}
 
-This module contains the mixture of things that didn't fit anywhere else, or
+This module contains the mixture of things that didn't fit anywhere else or
 didn't deserve their own submodule. We tried to move the ``xHCI specification
 quirks'' here, so that other modules rely only on the semantics and overview of
 the xHCI, and don't care that much about the exact technical details. Of
@@ -220,7 +220,7 @@ details of xHCI.
 \subsection{Initialization}
 
 A substantial part of this module handles the initialization of the controller.
-When the xHC device is added, several steps needs to be done. Lets walk through
+When the xHC device is added, several steps need to be done. Let's walk through
 them in order. The DDF callback \fnc{dev_add} is handled by the
 \lib{libusbhost} library, so the story begins there.
 
@@ -238,7 +238,7 @@ them in order. The DDF callback \fnc{dev_add} is handled by the
 	The hardware resources such as MMIO space or IRQ number are obtained from
 	the parent device (usually PCI driver).
 
-	Now, the structure and hw resources are handed out to the xHCI driver for
+	Now, the structure and hardware resources are handed out to the xHCI driver for
 	the first time, to do its initialization.
 
 \item
@@ -265,7 +265,7 @@ them in order. The DDF callback \fnc{dev_add} is handled by the
 	execution returns to the library.
 
 \item
-	The interrupts need to be enabled, if they are available. The driver is
+	The interrupts need to be enabled if they are available. The driver is
 	given an opportunity to generate the bottom-half IRQ handling code, and
 	than the code is registered in the kernel. Shall any of these steps fail,
 	the failure is not critical, the interrupts are just marked unavailable.
@@ -297,7 +297,7 @@ them in order. The DDF callback \fnc{dev_add} is handled by the
 \end{enumerate}
 
 A symmetric reverse sequence is performed to make the HC stopped again. This
-functionality is however not tested, because PCI devices are not hotpluggable,
+functionality is however not tested because PCI devices are not hotpluggable,
 not even in QEMU.
 
 \subsection{Events}
@@ -308,13 +308,13 @@ events. Events are the primary information channel from the device to the host.
 Every synchronous operation needs to be finished by waiting for an event.
 
 The tricky part in handling events is, again, the synchronization. Event
-handlers must not issue operations, which would wait for another events. The
+handlers must not issue operations, which would wait for another event. The
 problem is that this event dependency is inevitable in some cases. Let us
 describe two scenarios which will explain the complexity of the final solution.
 
 First, there are the Port State Changed Events. Handling these events usually
 involves device enumeration -- that is however handled in a separate fibril.
-Its even not the reset completion which would create a deadlock -- if it is
+It's even not the reset completion which would create a deadlock -- if it is
 expected, all the locks are unlocked. The main problem is a device
 disconnection while the enumeration is still in progress -- when it happens,
 the event handling fibril must wait until the enumeration fibril terminates.
@@ -345,7 +345,7 @@ from which two other worker fibrils dequeue and handle the events independently.
 
 \subsection{Commands abstraction}
 
-Although the command interface have a module on its own, there are situations
+Although the command interface has a module on its own, there are situations
 where the specific commands used are a technical detail hiding the actual
 semantics of the operation. To give an example, to inform the HC about dropping
 an endpoint, one must issue the \emph{Configure Endpoint} command with a flag
@@ -354,12 +354,12 @@ set. Also, some commands require an input context with a proper content, some do
 The rest of the Host controller module tries to cover this implementation
 details and offer a more intuitive interface. Although the device and endpoint
 modules do fill the contexts on their own (being also a technical detail), the
-decision whether its needed to fill an input context is left to the HC module.
+decision whether it's needed to fill an input context is left to the HC module.
 
 \section{Root Hub}
 
 The purpose of this module is very simple -- take care of the root hub. Before
-we explain how our roothub works, let's have a look on why and how other HC
+we explain how our roothub works, let's have a look at why and how other HC
 drivers handle it.
 
 The main problem a hub driver faces is a synchronization one. When a new device
@@ -373,9 +373,9 @@ is indicated by the same means as port connection, resulting in a deadlock in
 the na\"ive solution. The proper solution therefore involves spawning new
 fibrils and nontrivial synchronization.
 
-All four HC drivers (UHCI, OHCI, EHCI and VHC) are using a virtual roothub. In
+All four HC drivers (UHCI, OHCI, EHCI, and VHC) are using a virtual roothub. In
 principle that means that they create a virtual USB device, which is listening
-at the default address in the beginning, and trigger an enumeration process.
+on the default address in the beginning, and trigger an enumeration process.
 Then there is a little branch in transfer scheduling, that takes transfers
 directed to the same address as the virtual device's, and delivers them by
 calling a function instead. The virtual device behaves exactly like a real USB
@@ -409,12 +409,12 @@ is used by both the xHCI roothub and also by the rewritten usbhub. More
 information about this new module can be found in section \ref{hub-port-refactoring}.
 
 One more thing related to the xHCI roothub, which we crossed while debugging on
-real hardware: the USB hub have a bit dedicated to indicate that a port is
+real hardware: the USB hub has a bit dedicated to indicate that a port is
 enabled (PED), and the port can be disabled using it. Counterintuitively, the
 port is disabled by writing a 1 to it. Even worse, this bit is in the same
 field as the change bits with RW1C semantics are -- which means that the
 standard approach of reading and writing back the value read fails hard. This
-took us several hours to discover, because the port reset was completed
+took us several hours to discover because the port reset was completed
 successfully, but right after that, the device was inaccessible, even when we
 didn't do anything with it yet. To make matters more complicated, QEMU ignores
 this bit completely, so the code worked fine in a virtual environment.

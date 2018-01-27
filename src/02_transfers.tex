@@ -16,9 +16,9 @@ transfer into USB packets, the xHC takes care of that.
 
 Each transfer is formed by a \textit{Transfer Descriptor}, which is a sequence
 of TRBs with a chain bit set. This allows the software to schedule a transfer
-containing larger data, or data not stored in continuous memory. Each TRB
-points to a single continuous buffer of data (in physical memory) and specifies
-the buffer's size. This buffer must be accessible to the hardware and it's
+containing larger data, or data not stored in contiguous memory. Each TRB
+points to a single contiguous buffer of data (in physical memory) and specifies
+the buffer's size. This buffer must be accessible to the hardware and its
 physical address needs to be set to the TRB.
 
 Every endpoint uses a single transfer ring (with the exception of streams)
@@ -50,7 +50,7 @@ lifetime is managed by the library calling the bus operations.
 After the library allocates and fills up the \struct{usb_transfer_batch_t}, it
 schedules the transfer. This is where the xHCI takes control over the transfer.
 The transfer is processed in \fnc{xhci_transfer_schedule}, where it is split
-into TRBs, the correct bits are set depending on the transfer type, TRBs are
+in TRBs, the correct bits are set depending on the transfer type, TRBs are
 enqueued and the doorbell is rung.
 
 The fibril responsible for this transfer then waits for the transfer event
@@ -61,7 +61,7 @@ completion.
 After the transfer event is received, the event loop calls
 \fnc{xhci_handle_transfer_event}. There, the TRB which triggered the event is
 processed and the transfer, that scheduled it, is found. For IN endpoints, the
-received data is copied to prepared buffers. In the end, error code is set in
+received data is copied to prepared buffers. In the end, an error code is set in
 the batch and the batch is finalized.
 
 \subsection{Isochronous Transfers}
@@ -80,7 +80,7 @@ event ring. This feature is optional and must be enabled beforehand.
 Every isochronous transfer descriptor must have a set schedule time. This time
 is calculated by the software and depends on the isochronous endpoint interval.
 Two following transfer descriptors must be always exactly the interval apart.
-Because the isochronous endpoints can have up to 4 second interval, we need to
+Because the isochronous endpoints can have up to 4-second interval, we need to
 track the \textit{MFINDEX Wrap Events} to correctly determine the scheduling
 time.
 
@@ -102,7 +102,7 @@ descriptor and the transfer ring is empty, the xHC generates a Transfer Event
 with the completion code set to \textit{Ring Overrun} for IN endpoints, and
 \textit{Ring Underrun} for OUT endpoints. This also removes the endpoint from
 the schedule and lets software clean the structure and report the error to the
-driver, if needed. To reschedule the endpoint, the software needs to ring a
+driver if needed. To reschedule the endpoint, the software needs to ring a
 doorbell.
 
 \subsubsection{Implementation}
@@ -116,7 +116,7 @@ semantics of calling \fnc{usb_write} and \fnc{usb_read} on isochronous
 endpoints. The \struct{xhci_endpoint_t} structure includes a substructure for
 fields specific to isochronous endpoints in \struct{xhci_isoch_t}. There is a
 small trick present to avoid inflating the \struct{xhci_endpoint_t} for every
-type of endpoint. The last field of the structure is a zero length array of
+type of endpoint. The last field of the structure is a zero-length array of
 \struct{xhci_isoch_t}. This doesn't take any space, but the pointer to this
 field is always valid and points behind the structure. We then allocate the
 structure with \texttt{calloc(1, sizeof(xhci\_endpoint\_t) + (type ==
@@ -128,11 +128,11 @@ The \struct{xhci_isoch_t} also contains a dynamic array of
 \struct{xhci_isoch_transfer_t}. These represent an isochronous transfer and
 maintain a permanently allocated data buffer. The amount of these depends on
 the IST and the endpoint interval as we need to make sure we put the transfer
-descriptors on the transfer ring in advance, but do not schedule too old data.
+descriptors on the transfer ring in advance but do not schedule too old data.
 
 \subsubsection{IN endpoints}
 
-For IN endpoints, the semantics of \fnc{usb_read} are changed so that instead
+For IN endpoints, the semantics of \fnc{usb_read} is changed so that instead
 of triggering a read transfer, the call retrieves previously read data and
 returns them to the caller. This means that we have to enqueue read transfers
 in advance and the caller is expected to withdraw them fast enough. If there is
@@ -197,7 +197,7 @@ consider this as the error and reset the endpoint.
 Streams are a new feature that was introduced with USB 3. They are used to
 create another abstraction layer over bulk endpoints in order to give software
 an easy way to schedule multiple unrelated transfers in parallel using a single
-endpoint. Every bulk endpoint must either work in a mode without streams, or
+endpoint. Every bulk endpoint must either work in a mode without streams or
 work with stream support. It's not possible for any endpoint to work in both
 modes at the same time.
 
@@ -248,9 +248,9 @@ stream context array is 256 stream contexts. The secondary stream context array
 can again have up to 256 stream contexts. This allows the software to use
 multiple smaller memory buffers instead of one large continuous buffer. The
 secondary stream context support is not mandatory and not every host controller
-may provide such support. With this approach , the stream ID set by system
+may provide such support. With this approach, the stream ID set by system
 software is split into two parts. The first few low order bits (the exact
-amount depends on the amount of primary streams used) is used as an index to
+amount depends on the number of primary streams used) is used as an index to
 primary stream context array and the high order bits are used as an index into
 secondary stream context array.
 
@@ -281,7 +281,7 @@ Luckily, the xHC gives us a way to pass custom data in the transfer event.
 A system software may create a TRB with the TRB Type set to
 \textit{Event Data TRB}, which is chained to the previous TRB it is associated
 with. This TRB has the IOC bit set instead of the previous TRB and it can bear
-any custom 64 bit value. The previous TRB also needs to have
+any custom 64-bit value. The previous TRB also needs to have
 \textit{Evaluate Next TRB} bit set which forces the xHC to always process the
 \textit{Event Data TRB} immediately before another stream is selected.
 

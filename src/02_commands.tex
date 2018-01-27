@@ -13,7 +13,7 @@ The xHC command interface consists of a TRB command ring and a command doorbell
 register. Commands are executed by placing various command TRBs onto this ring,
 forming a \textit{Command Descriptor}.
 
-After placing the respective TRBs and writing into the xHC command doorbell
+After placing the respective TRBs and writing to the xHC command doorbell
 register, the descriptors on the command ring are sequentially processed by the
 xHC, resulting in either failure or successful completion. The result of every
 command descriptor is reported back to the xHC driver in the form of a
@@ -25,7 +25,7 @@ issued command. Such action might be of use for instance if the command
 completion event does not arrive within a set time period.
 
 Note that this section intentionally omits hardware technical details, which are
-not instrumental to understanding the command subsystem. For further hardware
+not instrumental in understanding the command subsystem. For further hardware
 documentation of the xHC command interface, refer to \xhci{4.6}.
 
 
@@ -34,7 +34,7 @@ documentation of the xHC command interface, refer to \xhci{4.6}.
 The xHC driver command subsystem instance is represented by the
 \struct{xhci_cmd_ring_t} structure which exists throughout the entire duration
 of the xHC driver's lifecycle. The purpose of this structure is to maintain and
-manage the command TRB ring, and to keep track of enqueued command descriptors.
+manage the command TRB ring and to keep track of enqueued command descriptors.
 
 Individual command descriptors are represented by the \struct{xhci_cmd_t}
 structure. In this structure are stored high-level parameters of the command as well as
@@ -154,7 +154,7 @@ To orchestrate several fibrils trying to schedule new commands, waiting for
 commands to be completed and also the one handling an interrupt, a simple state
 machine with a synchronization is incorporated. In case the command ring is
 being restarted, newly issued commands are delayed to prevent the doorbell from
-being rung unexpectedly. When there are multiple fibrils with expired timeout,
+being rung unexpectedly. When there are multiple fibrils with an expired timeout,
 while the abort is already triggered but not yet finished, they retract and
 wait for the full timeout period again.
 

@@ -3,7 +3,7 @@
 One of the primary means of communication with the HC, apart from register
 interface, are the TRB rings. Their management is fully contained in the TRB
 ring module. Before we dive into the implementation details, let us first
-describe how these rings works.
+describe how these rings work.
 
 \subsection{Architectural overview}
 
@@ -16,7 +16,7 @@ of an operation.
 
 \emph{TRB Ring} is then a circular queue comprised of individual TRBs. The main
 difference from older HCIs is that TRBs are required to be contiguous in
-memory, forming a \emph{TRB Ring Segment}. It is of course needed to link the
+memory, forming a \emph{TRB Ring Segment}. It is, of course, needed to link the
 two ends of the segment together, one must use a special TRB type called
 \emph{Link TRB}, which serves as a glue between the end and the beginning of
 a segment. It is not required from the ring to be composed of only one segment,
@@ -29,7 +29,7 @@ the command interface is described in more depth in section \ref{sec:commands}.
 The event ring is asynchronously read to retrieve results of commands,
 completed transactions and so on, as the primary information channel from HC to
 host. Actually, there can be more than one instance of Event Ring, but that
-requires the host to be able to recognise multiple interrupts, which is not
+requires the host to be able to recognize multiple interrupts, which is not
 supported in the current version of HelenOS. The event subsystem is further
 discussed in the section \ref{sec:events}. The third type of a~ring,
 a~\emph{Transfer Ring}, is used for every pipe endpoint on the bus - either
@@ -44,7 +44,7 @@ enqueue TRBs and the consumer uses the dequeue pointer to dequeue them. The
 pointers are not shared between the host and the Host Controller. Instead,
 every TRB has one bit with special semantics, the \emph{Cycle Bit}. The
 transition between values of TRB Cycle Bit of individual TRBs defines the
-value of Enqueue pointer. An example situation is shown on the figure
+value of Enqueue pointer. An example situation is shown in the figure
 \ref{fig:ring-simple}.
 
 \begin{figure}[h]
@@ -88,7 +88,7 @@ Host Controller is obviously unable to allocate ring segments and map them into
 virtual address space of the driver, and it's even not possible to allow the
 host to write Link TRBs onto the ring, which is otherwise read-only for the
 host, a~different approach has to be used. Instead of the segments being linked
-together, the host preallocates a number of segments, and an \emph{Event Ring
+together, the host preallocates a number of segments and an \emph{Event Ring
 Segment Table}, which is another structure defined by the specification. The
 segments' addresses and sizes are written into the table, and the address of
 the table is written to a dedicated register. At the time of the write, the
@@ -100,7 +100,7 @@ As the requirements imposed by the specifications are quite strict, there's not
 much freedom in the implementation. However, there were some decisions to be
 discussed.
 
-First, we decided not to restrict ourselves on single-segment rings as
+First, we decided not to restrict ourselves to single-segment rings as
 other existing implementations do, though we haven't implemented runtime
 scaling yet. Second, we implement and use three types of TRB rings;
 the third one being a simplified TRB ring used by the host from both sides. Its
@@ -110,8 +110,8 @@ reside in a common module.
 
 The containing structures are called \struct{xhci_trb_ring_t},
 \struct{xhci_event_ring_t} and \struct{xhci_sw_ring_t} for Command/Transfer
-rings, Event ring and host-only rings, respectively. Despite their name, these
-structures only represent the ring in host memory, and are not the structures
+rings, Event ring, and host-only rings, respectively. Despite their name, these
+structures only represent the ring in host memory and are not the structures
 given to the hardware. Let's walk through them one by one.
 
 \subsubsection{Command and Transfer Rings}
