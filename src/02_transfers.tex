@@ -130,15 +130,6 @@ maintain a permanently allocated data buffer. The amount of these depends on
 the IST and the endpoint interval as we need to make sure we put the transfer
 descriptors on the transfer ring in advance, but do not schedule too old data.
 
-In the \textit{Async Framework} documentation, it is stated that the IPC calls
-using a single session are synchronous and therefore blocking in the call would
-block the whole session. Because of that, each \struct{usb_pipe_t} in
-\lib{libusbdev} has a field called \texttt{isoch\_session}, which is used to
-communicate with isochronous endpoints as these may block for longer periods of
-time. In reality, the current implementation of \textit{Async Framework} clones
-the session for every IPC call, so this is not necessary. If this ever changes,
-the \texttt{isoch\_session} might need to be set to a cloned session.
-
 \subsubsection{IN endpoints}
 
 For IN endpoints, the semantics of \fnc{usb_read} are changed so that instead
