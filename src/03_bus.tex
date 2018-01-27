@@ -17,7 +17,7 @@ it configured runtime operations.
 
 From the perspective of data structures, the \lib{libubshost} defined
 a structure for an instance of host controller, \struct{hcd_t}, and for
-endpoint, \struct{endpoint_t}. Both stuctures had a field for storing driver
+endpoint, \struct{endpoint_t}. Both structures had a field for storing driver
 private data. The library also managed a device tree, with the device
 structures stored inside DDF function nodes. The device structures were however
 private for the library, and apart from two callbacks \fnc{ep_add_hook} and
@@ -28,7 +28,7 @@ called in situation where the toggle of USB packets had to be reset.
 The main work to be done by the driver is transfer management. For this
 purpose, the library defined a structure \struct{usb_transfer_batch_t}, which
 was created for every transfer and then passed to the driver's \fnc{schedule}
-operation. The batch carried all the infromation about a USB transfer: target
+operation. The batch carried all the information about a USB transfer: target
 address, pointer to the data buffer and its size, direction of the transfer and
 so on. Along with this data, it carried one of two callbacks (in/out) to be
 called after the transfer is finished. This particular callback was set by the

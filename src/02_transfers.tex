@@ -263,7 +263,7 @@ To enable stream support, \lib{libusbhost} should call either
 \fnc{xhci\_endpoint\_request\_secondary\_streams}. This initializes the stream
 contexts and transitions the endpoint to the mode with stream support. The
 first function initializes a linear stream context array. The second function
-initializes a hiearchical array and its parameter \texttt{sizes} defines the
+initializes a hierarchical array and its parameter \texttt{sizes} defines the
 sizes of individual secondary stream context arrays. These functions assume
 that there are no TRBs currently scheduled on the transfer ring of the affected
 endpoint. To stop using streams, \lib{libusbhost} should call

@@ -377,7 +377,7 @@ All four HC drivers (UHCI, OHCI, EHCI and VHC) are using a virtual roothub. In
 principle that means that they create a virtual USB device, which is listening
 at the default address in the beginning, and trigger an enumeration process.
 Then there is a little branch in transfer scheduling, that takes transfers
-d irected to the same address as the virtual device's, and delivers them by
+directed to the same address as the virtual device's, and delivers them by
 calling a function instead. The virtual device behaves exactly like a real USB
 hub would -- it has its standard descriptors, reply to setup requests and so
 on. So it enumerates like a USB hub would, and creates a DDF device, which is
