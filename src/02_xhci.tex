@@ -267,8 +267,8 @@ them in order. The DDF callback \fnc{dev_add} is handled by the
 \item
 	The interrupts need to be enabled if they are available. The driver is
 	given an opportunity to generate the bottom-half IRQ handling code, and
-	than the code is registered in the kernel. Shall any of these steps fail,
-	the failure is not critical, the interrupts are just marked unavailable.
+	then the code is registered in the kernel. Shall any of these steps fail,
+	the failure is not critical and the interrupts are just marked unavailable.
 
 \item
 	If the HC is being controlled by the BIOS (denoted by the extended
@@ -293,7 +293,7 @@ them in order. The DDF callback \fnc{dev_add} is handled by the
 \item
 	The roothub is to be set up. Other HCs using virthub must undergo an
 	enumeration process, so this must be done after the initialization is fully
-	completed. In case of xHCI, this step is skipped.
+	completed. In the case of xHCI, this step is skipped.
 \end{enumerate}
 
 A symmetric reverse sequence is performed to make the HC stopped again. This
@@ -308,7 +308,7 @@ events. Events are the primary information channel from the device to the host.
 Every synchronous operation needs to be finished by waiting for an event.
 
 The tricky part in handling events is, again, the synchronization. Event
-handlers must not issue operations, which would wait for another event. The
+handlers must not issue operations, which would wait for other events. The
 problem is that this event dependency is inevitable in some cases. Let us
 describe two scenarios which will explain the complexity of the final solution.
 
@@ -326,7 +326,7 @@ each other.
 
 Similarly, the enumeration process involves fetching descriptors from the
 device. That introduces another dependency, this time between Transfer
-Events and Port Change Detected Events. Neither these two can be handled
+Events and Port Change Detected Events. Neither of these two can be handled
 sequentially.
 
 The last dependency is between Command Completion Events and Transfer Events,
@@ -337,8 +337,8 @@ created while the endpoint is still registered, in a critical section. The same
 critical section that protects the endpoint unregistration -- which needs to
 abort currently running transfers.
 
-In order to avoid deadlock, all three types of events need to be processed
-separately. We achieve it by processing only so-called fast events (Command
+In order to avoid a deadlock, all three types of events need to be processed
+separately. We achieve that by processing only so-called fast events (Command
 Completion, MFINDEX Wrap) in the interrupt handler, and route the Port Change
 Events and Transfer Events to two Software TRB Rings (see section \ref{sec:sw-rings}),
 from which two other worker fibrils dequeue and handle the events independently.
@@ -351,7 +351,7 @@ semantics of the operation. To give an example, to inform the HC about dropping
 an endpoint, one must issue the \emph{Configure Endpoint} command with a flag
 set. Also, some commands require an input context with a proper content, some don't.
 
-The rest of the Host controller module tries to cover this implementation
+The rest of the Host controller module tries to cover these implementation
 details and offer a more intuitive interface. Although the device and endpoint
 modules do fill the contexts on their own (being also a technical detail), the
 decision whether it's needed to fill an input context is left to the HC module.
@@ -364,11 +364,11 @@ drivers handle it.
 
 The main problem a hub driver faces is a synchronization one. When a new device
 is detected, it needs to be enumerated. Enumeration process in the case of USB 2.0
-devices requires the hub to reset the port the device is attached to, to move
-it to the \state{Default} state, when it's listening on the default address 0.
+devices requires the hub to reset the port the device is attached to in order to move
+it to the \state{Default} state when it's listening on the default address 0.
 When the port reset is triggered, the hub must wait until the port reset is
-complete. During the whole process, the device can be disconnected, and the
-port reset will never be completed. Furthermore, the completion of port reset
+complete. During the whole process the device can be disconnected and the
+port reset will never be completed. Furthermore, the completion of the port reset
 is indicated by the same means as port connection, resulting in a deadlock in
 the na\"ive solution. The proper solution therefore involves spawning new
 fibrils and nontrivial synchronization.
@@ -379,11 +379,11 @@ on the default address in the beginning, and trigger an enumeration process.
 Then there is a little branch in transfer scheduling, that takes transfers
 directed to the same address as the virtual device's, and delivers them by
 calling a function instead. The virtual device behaves exactly like a real USB
-hub would -- it has its standard descriptors, reply to setup requests and so
-on. So it enumerates like a USB hub would, and creates a DDF device, which is
+hub would -- it has its standard descriptors, replies to setup requests and so
+on. So it enumerates like a USB hub would and creates a DDF device, which is
 taken by the \texttt{usbhub} driver. The driver then handles the virtual
-roothub like any other hub, by sending USB control transfers. The virthub
-module translates USB transfers to callbacks, which are implemented by
+roothub like any other hub -- by sending USB control transfers. The virthub
+module translates USB transfers to callbacks, which are implemented by the
 individual HC drivers to read and modify register space of the Host Controller.
 
 This solution is very clean in design, regarding that root hub functionality is
@@ -417,7 +417,7 @@ standard approach of reading and writing back the value read fails hard. This
 took us several hours to discover because the port reset was completed
 successfully, but right after that, the device was inaccessible, even when we
 didn't do anything with it yet. To make matters more complicated, QEMU ignores
-this bit completely, so the code worked fine in a virtual environment.
+this bit completely so the code worked fine in a virtual environment.
 
 \section{Bus Module}
 
