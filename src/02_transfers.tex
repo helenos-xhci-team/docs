@@ -194,4 +194,97 @@ consider this as the error and reset the endpoint.
 
 \subsection{Streams}
 
-% TODO @salmelu: Noone else understands that now.
+Streams are a new feature that was introduced with USB 3. They are used to
+create another abstraction layer over bulk endpoints in order to give software
+an easy way to schedule multiple unrelated transfers in parallel using a single
+endpoint. Every bulk endpoint must either work in a mode without streams, or
+work with stream support. It's not possible for any endpoint to work in both
+modes at the same time.
+
+Every device with an endpoint that supports streams declares the support in the
+endpoint's superspeed endpoint companion descriptor. The device driver then
+configures the endpoint with the stream support to enable streams. A single
+bulk endpoint may support up to 65533 streams.
+
+At the host side, every stream has its own transfer ring. When the device
+driver communicates through the USB pipe, it can choose a different stream for
+every \fnc{usb_write()} and \fnc{usb_read()}.
+
+Streams are scheduled cooperatively over a single bulk pipe. The current stream
+selection can be initiated by both host controller and the device. The opposite
+side may refuse the selection if for example it doesn't have data buffers
+prepared. It is not possible for the system software to select the current
+stream manually.
+
+According to the USB3 specification, one possible way to use streams may be
+supporting out-of-order data transfers required for mass storage device command
+queuing. During the development of xHCI support for HelenOS, we haven't
+encountered any USB mass storage device declaring stream support. Therefore,
+the current xHCI stream support is completely untested and its API is not
+available to the device drivers. The current implementation is described in the
+next few paragraphs in case there is a need to write a driver using bulk
+streams and debug their support.
+
+\subsubsection{Stream contexts}
+
+As stated above every stream has its own transfer ring which must be made
+accessible to the xHC. For regular endpoints, the transfer ring's dequeue
+pointer is passed by the endpoint context. With streams, there are many
+transfer rings that need to be passed to the xHC. To accomplish that, the
+software needs to use stream contexts.
+
+A stream context is a simple structure used by the xHC to store transfer ring
+dequeue pointers. There are two possible approaches to setting up stream
+contexts. The first approach is called a linear stream array. In this case,
+every stream context directly contains a transfer ring dequeue pointer. The
+disadvantage of this approach is a need for a large continuous memory buffer as
+there may be up to 65536 streams. When selecting a stream, the stream ID set by
+system software is used directly as an index to the stream context array.
+
+The second approach uses a hierarchical structure where each primary stream
+context may either contain a transfer ring dequeue pointer, or it may point to
+a secondary stream context array. In this case, the maximum size of primary
+stream context array is 256 stream contexts. The secondary stream context array
+can again have up to 256 stream contexts. This allows the software to use
+multiple smaller memory buffers instead of one large continuous buffer. The
+secondary stream context support is not mandatory and not every host controller
+may provide such support. With this approach , the stream ID set by system
+software is split into two parts. The first few low order bits (the exact
+amount depends on the amount of primary streams used) is used as an index to
+primary stream context array and the high order bits are used as an index into
+secondary stream context array.
+
+In our code, every stream context has an associated instance of
+\struct{xhci\_stream\_data\_t}. This structure is used to bookkeep either the
+secondary stream context array buffer or the associated transfer ring.
+
+To enable stream support, \lib{libusbhost} should call either
+\fnc{xhci\_endpoint\_request\_primary\_streams()} or
+\fnc{xhci\_endpoint\_request\_secondary\_streams}. This initializes the stream
+contexts and transitions the endpoint to the mode with stream support. The
+first function initializes a linear stream context array. The second function
+initializes a hiearchical array and its parameter \texttt{sizes} defines the
+sizes of individual secondary stream context arrays. These functions assume
+that there are no TRBs currently scheduled on the transfer ring of the affected
+endpoint. To stop using streams, \lib{libusbhost} should call
+\fnc{xhci\_endpoint\_remove\_streams}.
+
+\subsubsection{Handling Transfer Events}
+
+To finish a transfer and report the result to the device driver, we need to
+process transfer events which tell us when a transfer finishes. This works well
+for any endpoint which doesn't use streams. Nevertheless, if an endpoint uses
+streams, we encounter a problem. There is no way to determine the stream, which
+generated the transfer event, solely from the dequeued TRB.
+
+Luckily, the xHC gives us a way to pass custom data in the transfer event.
+A system software may create a TRB with the TRB Type set to
+\textit{Event Data TRB}, which is chained to the previous TRB it is associated
+with. This TRB has the IOC bit set instead of the previous TRB and it can bear
+any custom 64 bit value. The previous TRB also needs to have
+\textit{Evaluate Next TRB} bit set which forces the xHC to always process the
+\textit{Event Data TRB} immediately before another stream is selected.
+
+Our software uses \textit{Event Data TRBs} to store the pointer of the transfer 
+structure creating this transfer. This allows us to access the transfer
+structure in the transfer event handler and determine the selected stream.
