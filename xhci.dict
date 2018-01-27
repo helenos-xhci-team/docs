@@ -1,4 +1,4 @@
-personal_ws-1.1 en 159 
+personal_ws-1.1 en 166 
 runtime
 linenos
 ENOENT
@@ -16,14 +16,16 @@ fini
 devctl
 dci
 usleep
+unregistration
 tmon's
-DDF
+ddf
 QEMU's
 preallocates
 ptr
 submodule
 endianity
 Hlavatý
+IRQ
 roothub
 microkernel
 preprocessor
@@ -90,6 +92,7 @@ microframe
 RO
 tf
 virthub
+hcd
 Jindrák
 ABBA
 lifecycle
@@ -106,12 +109,15 @@ HelUSB
 PCI
 emplaces
 HC's
+HCs
+DCBA
 vmstate
 async
 Underrun
 isochronous
 usb
 PED
+hotpluggable
 Ctrl
 dcbaa
 WR
@@ -150,6 +156,7 @@ bdsh
 devman's
 img
 addr
+libubshost
 usbdiag
 deconfiguration
 pre

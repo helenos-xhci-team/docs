@@ -210,15 +210,151 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 
 \section{Host Controller Module}
 
+This module contains the mixture of things that didn't fit anywhere else, or
+didn't deserve their own submodule. We tried to move the ``xHCI specification
+quirks'' here, so that other modules rely only on the semantics and overview of
+the xHCI, and don't care that much about the exact technical details. Of
+course, it's not strictly possible, because the whole driver is about technical
+details of xHCI.
+
+\subsection{Initialization}
+
+A substantial part of this module handles the initialization of the controller.
+When the xHC device is added, several steps needs to be done. Lets walk through
+them in order. The DDF callback \fnc{dev_add} is handled by the
+\lib{libusbhost} library, so the story begins there.
+
+\begin{enumerate}
+\item
+	At the very beginning, the supplementary structures are allocated in the
+	DDF device node. These structures accompany the entire lifetime of a driven
+	HC.
+
+\item
+	The DDF control function is created. Through it, the user may command the
+	HC driver.
+
+\item
+	The hardware resources such as MMIO space or IRQ number are obtained from
+	the parent device (usually PCI driver).
+
+	Now, the structure and hw resources are handed out to the xHCI driver for
+	the first time, to do its initialization.
+
+\item
+	The MMIO range needs to be mapped, and the proper register areas found.
+	xHCI specifies several areas of MMIO registers, with variable offsets
+	between them. We cache the pointers to the areas inside the
+	\struct{xhci_hc_t} structure to make the access convenient.
+
+\item
+	The roothub structures are initialized. The number of ports is obtained and
+	memory for state machines is allocated.
+
+\item
+	Extended capabilities need to be parsed soon enough, as they contain some
+	crucial information. Namely the information about legacy support, but also
+	the protocol versions supported on individual roothub ports.
+
+\item
+	A lot of memory structures are to be initialized now. The \emph{DCBA}
+	array, event ring, scratchpads, command ring, the device-keeping array and
+	also the event worker fibril.
+
+	After all of that, the basic driver initialization is completed, and the
+	execution returns to the library.
+
+\item
+	The interrupts need to be enabled, if they are available. The driver is
+	given an opportunity to generate the bottom-half IRQ handling code, and
+	than the code is registered in the kernel. Shall any of these steps fail,
+	the failure is not critical, the interrupts are just marked unavailable.
+
+\item
+	If the HC is being controlled by the BIOS (denoted by the extended
+	capability), it needs to be claimed.
+
+\item
+	The HC is started. In case of xHCI, an initialization sequence as described
+	in the specification is performed. The HC is reset to transition into
+	a known state. The addresses of the memory structures are configured. If
+	the interrupts are available, the interrupter 0 is enabled. Finally, the HC
+	is started by setting a bit in the operational registers.
+
+\item
+	Before the control is returned to the library, all roothub ports are
+	checked for a change, because the reset changed their connection state,
+	but the Port Change Events had no ring to be written on.
+
+\item
+	If the interrupts are not available, a replacement polling fibril is
+	started.
+
+\item
+	The roothub is to be set up. Other HCs using virthub must undergo an
+	enumeration process, so this must be done after the initialization is fully
+	completed. In case of xHCI, this step is skipped.
+\end{enumerate}
+
+A symmetric reverse sequence is performed to make the HC stopped again. This
+functionality is however not tested, because PCI devices are not hotpluggable,
+not even in QEMU.
+
 \subsection{Events}
 \label{sec:events}
-% TODO: Explain events, event handling and the event ring.
 
-% TODO: This will be harder, this one is a mix of what didn't fit anywhere else.
-% Ideas:
-% - context management
-% - extcap parsing
-%     - different speeds for different RH ports
+Another functionality provided by the HC module is the first line of handling
+events. Events are the primary information channel from the device to the host.
+Every synchronous operation needs to be finished by waiting for an event.
+
+The tricky part in handling events is, again, the synchronization. Event
+handlers must not issue operations, which would wait for another events. The
+problem is that this event dependency is inevitable in some cases. Let us
+describe two scenarios which will explain the complexity of the final solution.
+
+First, there are the Port State Changed Events. Handling these events usually
+involves device enumeration -- that is however handled in a separate fibril.
+Its even not the reset completion which would create a deadlock -- if it is
+expected, all the locks are unlocked. The main problem is a device
+disconnection while the enumeration is still in progress -- when it happens,
+the event handling fibril must wait until the enumeration fibril terminates.
+But the enumeration might be in the later phase, in which it issues commands.
+In order to terminate, a command must be completed. That introduces
+a dependency, which cannot be simply removed. Because of it, Port Change
+Detected Events and Command Completion Events must be handled independently on
+each other.
+
+Similarly, the enumeration process involves fetching descriptors from the
+device. That introduces another dependency, this time between Transfer
+Events and Port Change Detected Events. Neither these two can be handled
+sequentially.
+
+The last dependency is between Command Completion Events and Transfer Events,
+forming a dependency triangle. This one might not be that obvious, but it is
+there and cannot be avoided easily. The handler of the Transfer Event needs to
+obtain a reference to an endpoint. To ensure coherency, the reference must be
+created while the endpoint is still registered, in a critical section. The same
+critical section that protects the endpoint unregistration -- which needs to
+abort currently running transfers.
+
+In order to avoid deadlock, all three types of events need to be processed
+separately. We achieve it by processing only so-called fast events (Command
+Completion, MFINDEX Wrap) in the interrupt handler, and route the Port Change
+Events and Transfer Events to two Software TRB Rings (see section \ref{sec:sw-rings}),
+from which two other worker fibrils dequeue and handle the events independently.
+
+\subsection{Commands abstraction}
+
+Although the command interface have a module on its own, there are situations
+where the specific commands used are a technical detail hiding the actual
+semantics of the operation. To give an example, to inform the HC about dropping
+an endpoint, one must issue the \emph{Configure Endpoint} command with a flag
+set. Also, some commands require an input context with a proper content, some don't.
+
+The rest of the Host controller module tries to cover this implementation
+details and offer a more intuitive interface. Although the device and endpoint
+modules do fill the contexts on their own (being also a technical detail), the
+decision whether its needed to fill an input context is left to the HC module.
 
 \section{Root Hub}
 
@@ -241,7 +377,7 @@ All four HC drivers (UHCI, OHCI, EHCI and VHC) are using a virtual roothub. In
 principle that means that they create a virtual USB device, which is listening
 at the default address in the beginning, and trigger an enumeration process.
 Then there is a little branch in transfer scheduling, that takes transfers
-directed to the same address as the virtual device's, and delivers them by
+d irected to the same address as the virtual device's, and delivers them by
 calling a function instead. The virtual device behaves exactly like a real USB
 hub would -- it has its standard descriptors, reply to setup requests and so
 on. So it enumerates like a USB hub would, and creates a DDF device, which is
