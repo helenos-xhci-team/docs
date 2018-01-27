@@ -425,7 +425,28 @@ this bit completely, so the code worked fine in a virtual environment.
 
 \subsection{Device}
 
-% TODO: Enumeration, device context
+Devices in the xHCI are represented by structures called device contexts, these are
+managed by the xHC and used to report device conguration and current state. A device
+context consists of a slot context, which represents the device as a whole (e.g. contains
+information about addressing or power management) and is implemented in the \struct{xhci_slot_ctx_t}
+structure, and 31 endpoint contexts (which are described in the following section)
+for each of the device's possible endpoints (though most of them may never be used).
+
+Note that one will not find a specific structure used to represent a device context. We had
+one at first, but later discovered that according to a note in section 6.2.1 of the
+specification, the \textit{Context Size} field in the \textit{HCCPARAMS1} register determines whether
+a device context contains 32 or 64 byte members (the size of the individual members does
+not change, but the 64 byte version adds 32 byte wide padding to each of them). Because
+of this, the device context structure cannot be represented statically and instead had to be
+implemented as a DMA buffer (see section \ref{sec:dma_bufs}) and its members have to
+be accessed dynamically at runtime.
+
+A device is initialized during a process called device enumeration, which begins when
+the system detects a new device and calls \fnc{xhci_device_enumerate} defined in
+\file{uspace/drv/bus/usb/xhci/device.c}{device.c}. This function then initializes the device
+by requesting its slot (index to the \textit{Device Context Base Address Array} field in
+\struct{xhci_hc_t}), enabling and configuring its control endpoint and requesting
+an address for it.
 
 \subsection{Endpoint}
 
