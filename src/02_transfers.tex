@@ -208,7 +208,7 @@ bulk endpoint may support up to 65533 streams.
 
 At the host side, every stream has its own transfer ring. When the device
 driver communicates through the USB pipe, it can choose a different stream for
-every \fnc{usb_write()} and \fnc{usb_read()}.
+every \fnc{usb_write} and \fnc{usb_read}.
 
 Streams are scheduled cooperatively over a single bulk pipe. The current stream
 selection can be initiated by both host controller and the device. The opposite
@@ -255,19 +255,19 @@ primary stream context array and the high order bits are used as an index into
 secondary stream context array.
 
 In our code, every stream context has an associated instance of
-\struct{xhci\_stream\_data\_t}. This structure is used to bookkeep either the
+\struct{xhci_stream_data_t}. This structure is used to bookkeep either the
 secondary stream context array buffer or the associated transfer ring.
 
 To enable stream support, \lib{libusbhost} should call either
-\fnc{xhci\_endpoint\_request\_primary\_streams()} or
-\fnc{xhci\_endpoint\_request\_secondary\_streams}. This initializes the stream
+\fnc{xhci_endpoint_request_primary_streams} or
+\fnc{xhci_endpoint_request_secondary_streams}. This initializes the stream
 contexts and transitions the endpoint to the mode with stream support. The
 first function initializes a linear stream context array. The second function
 initializes a hierarchical array and its parameter \texttt{sizes} defines the
 sizes of individual secondary stream context arrays. These functions assume
 that there are no TRBs currently scheduled on the transfer ring of the affected
 endpoint. To stop using streams, \lib{libusbhost} should call
-\fnc{xhci\_endpoint\_remove\_streams}.
+\fnc{xhci_endpoint_remove_streams}.
 
 \subsubsection{Handling Transfer Events}
 
@@ -285,6 +285,6 @@ any custom 64-bit value. The previous TRB also needs to have
 \textit{Evaluate Next TRB} bit set which forces the xHC to always process the
 \textit{Event Data TRB} immediately before another stream is selected.
 
-Our software uses \textit{Event Data TRBs} to store the pointer of the transfer 
+Our software uses \textit{Event Data TRBs} to store the pointer of the transfer
 structure creating this transfer. This allows us to access the transfer
 structure in the transfer event handler and determine the selected stream.
