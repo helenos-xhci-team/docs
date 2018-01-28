@@ -51,7 +51,7 @@ implemented as Memory-Mapped I/O space. They can be divided into four categories
 	\item[Doorbell array]
 		An array of up to 256 doorbell registers, which supports up to 255 USB devices
 		or hubs. Each doorbell register provides the software with a mechanism for
-		notifying the xHC if it has slot or endpoint related work to perform.
+		notifying the xHC if it has slot or endpoint-related work to perform.
 \end{description}
 
 In our implementation, all of these can be accessed through the \struct{xhci_hc_t} structure and
@@ -100,7 +100,7 @@ repetition, the more if you consider endianity (HelenOS is targeted also on Big
 Endian platforms, while the USB world is Little Endian).
 
 Another possibility is to define macros for reading and writing every single
-field. That idea was discarded in its very beginning. We wanted a solution,
+field. That idea was discarded in its very beginning. We wanted a solution
 that requires only one definition per field, cannot be used in a wrong way and
 is sensibly short to write. So we came up with the register access macros. The
 best introduction is probably by an artificial example:
@@ -158,7 +158,7 @@ as the parameters of the communication between the xHC and system software. The
 holds up to 255 pointers to device contexts at indices 1 through 255 and a pointer to
 the scratchpad array (see \ref{sec:scratchpads}). Each device context contains a slot
 context (used to describe the device as a whole, represented by \struct{xhci_slot_ctx_t}) and
-31 context for each endpoint (represented by \struct{xhci_ep_ctx_t}). Most of these contexts
+31 contexts for each endpoint (represented by \struct{xhci_ep_ctx_t}). Most of these contexts
 will be described in more detail in the following sections.
 
 \section{Debug}
@@ -181,7 +181,7 @@ the areas of code they suspect of mischievous deeds might be a good starting poi
 \section{Scratchpad}
 \label{sec:scratchpads}
 
-Scratchpads are buffers that a xHC implementation can request from the system software
+Scratchpads are buffers that an xHC implementation can request from the system software
 for its internal needs. The size of these buffers is specified in the \textit{PAGESIZE} register
 found in the operational register set defined in \struct{xhci_op_regs}.
 
@@ -433,8 +433,8 @@ for each of the device's possible endpoints (though most of them may never be us
 Note that one will not find a specific structure used to represent a device context. We had
 one at first, but later discovered that according to a note in section 6.2.1 of the
 specification, the \textit{Context Size} field in the \textit{HCCPARAMS1} register determines whether
-a device context contains 32 or 64 byte members (the size of the individual members does
-not change, but the 64 byte version adds 32 byte wide padding to each of them). Because
+a device context contains 32 or 64-byte members (the size of the individual members does
+not change, but the 64-byte version adds 32 bytes wide padding to each of them). Because
 of this, the device context structure cannot be represented statically and instead had to be
 implemented as a DMA buffer (see section \ref{sec:dma_bufs}) and its members have to
 be accessed dynamically at runtime.

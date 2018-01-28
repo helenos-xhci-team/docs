@@ -36,10 +36,10 @@ gather data about the throughput and speed of the communication and validate
 the contents of the USB packets sent between HelenOS and a device.
 
 In order to support communications of all types, the device contains an
-endpoint for each direction of each transfer type - i.e. interrupt, bulk and
+endpoint for each direction of each transfer type -- i.e. interrupt, bulk and
 isochronous. Since we want to both check the speed of the driver and the
 correctness of the data sent, each endpoint is duplicated creating two
-sets of endpoints - first set, which does not validate the transferred data,
+sets of endpoints -- first set, which does not validate the transferred data,
 and a second set, which checks that each four bytes of the data equal to a
 predefined macro \macro{CHECK}. Each of these endpoints has an associated
 macro that contains its endpoint number which has the form of
