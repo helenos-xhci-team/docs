@@ -11,8 +11,159 @@
 
 
 \section{Existing USB Subsystem}
-% TODO
 
+The support for USB was started by the HelUSB project defended in 2011. In that
+time, the USB driver framework was designed, and delivered with few USB
+drivers. From the Host Controller side, UHCI and OHCI were supported almost
+completely. As for the device drivers, only a generic HID driver was provided
+to demonstrate the functionality of the framework. Since the project was
+delivered, the USB stack evolved a little and new drivers were implemented.
+
+This document does not aim to replace the original documentation of HelUSB
+project. As such, we will focus more on the things that changed since the
+documentation was written, and they are pretty much not documented anywhere.
+And by all means, information in this chapter is written with regard to the
+state before our project was implemented. Thus, great part of the information
+given in this section is already obsolete, but it's needed to assess the damage
+we're personally responsible for.
+
+The USB framework defines two classes of drivers -- the host controller drivers
+and USB function drivers. For the first class, there is a library called
+\lib{libusbhost} that aids in providing the unified interface of the host
+controller to USB function drivers, and also implements common HC
+functionality. There are four HC drivers at the moment:
+
+\begin{itemize}
+\item
+	\textbf{VHC}, Virtual Host Controller. Implemented in the early phase of
+	HelUSB project, served probably as a dummy backend to allow better work
+	parallelization and debugging.
+
+\item
+	\textbf{UHCI}, Universal Host Controller Interface driver. The earliest
+	interface supporting speeds of USB 1.0: Low- and Full-speed devices.
+	Important for running HelenOS under QEMU, as it's the interface of the
+	default HC QEMU emulates. Apart from isochronous transfers, the driver
+	covers all functionality UHCI provides.
+
+\item
+	\textbf{OHCI}, Open Host Controller Interface driver. Somewhat complete,
+	yet a bit simplified, especially in terms of transfer scheduling. Does not
+	care about the polling interval, but schedules all interrupt transfers on
+	every frame. Isochronous transfers not supported.
+
+\item
+	\textbf{EHCI}, Enhanced Host Controller Interface driver. Mostly a copy of
+	OHCI driver, as it uses similar structures. Shall support USB 2 speeds, but
+	the support is very limited -- the driver cannot use High-speed hubs to
+	communicate with Full- and Low-speed devices, as the support for
+	Transaction Translation is completely broken. Also, the bandwidth
+	accounting is not implemented for High speed. Neither this controller
+	supports isochronous transfers.
+\end{itemize}
+
+The HC driver is no longer split in half (as the project documentation states),
+but all HC drivers emulate a virtual hub that is driven by a regular
+\lib{usbhub} driver. The tree physical topology of USB is kept only inside the
+HC driver, and is presented flat to the Device Driver Framework -- all USB
+devices are child functions of the HC driver. They communicate with each other
+through the DDF driver interface called \texttt{usb\_iface}, which contains all
+methods various drivers use.
+
+When the driver enumerates a USB function, it is usually taken care of by the
+\lib{usbmid} driver. This driver scans the device descriptor for provided
+interfaces, and create children functions for them. These functions are then
+driven by class drivers. Notable exception being the \lib{usbhub} driver,
+taking care of the device directly, as hubs are not allowed to have multiple
+interfaces.
+
+The USB function drivers are well supported by the \lib{libusbdev} library.
+This library builds an abstraction layer above \lib{libdrv}, used by other
+drivers directly, to better suit needs of USB devices. It does a complete
+initialization of the USB device, including initiating a separate IPC
+connection to the HC driver directly -- to avoid bouncing all operations in the
+\lib{usbmid} driver. For this purpose, the \texttt{usb\_iface} contains two
+methods: \fnc{get_my_iface} and \fnc{get_my_interface_handle}. The first one is
+answered by the \lib{usbmid} driver with the number of interface driven, or
+with a value of $-1$ by the HC driver if the driver serves the whole device.
+The \fnc{get_my_interface_handle} call is recursive, until it reaches the HC
+driver -- which answers it with devman handle of the USB device function. The
+device driver then uses it to initiate connection to the HC driver, the same
+way as the usbmid driver do.
+
+Although this is sort-of hacky solution (the devman handle is supposed to be
+private), it is currently the only one. Ideally, the drivers would use
+a special method to let new connection forward to the HC driver, but for
+complicated reasons, this does not work as expected. We discussed this with the
+current HelenOS developers, and they confirmed us that the issue is still not
+solved.
+
+The \lib{usbhub} driver uses another four methods defined by the
+\texttt{usb\_iface}. The interface methods \fnc{reserve_default_address} and
+\fnc{release_default_address} ensure synchronization across multiple hubs
+(possibly across multiple hub drivers), as the software must ensure that only one
+device is listening on the default address at the same time. Then,
+\fnc{device_enumerate} and \fnc{device_remove} announce that a device is
+connected to (detached from) the hub, to be enumerated (removed) by the HC
+driver. The interesting part is that the hub driver has no access to the
+created device, as the logical topology presented to the DDF is flat.
+
+All USB device drivers specify the endpoints they expect from the device in
+a form of static description, which they pass to the \lib{libusbdev} library
+during the driver initialization. Once a new device is added, the library
+fetches the device descriptor and matches available endpoints against the
+specification provided by the driver. Then the library creates \emph{pipes} --
+an abstraction of endpoints based on their properties, not their exact numbers,
+which are usually implementation defined. Pipes are then used by the driver
+as, well, pipes to push data through and read data from.
+
+The pipe creation process and their usage define the last four methods of which
+the \texttt{usb\_iface} is comprised of: \fnc{(un)register_endpoint}, \fnc{read}
+and \fnc{write}. The endpoint (un)registration informs the HC driver about
+a pipe creation/disposal, and \fnc{read}/\fnc{write} methods are used to
+actually transmit packets. Note that the interface is unified regardless of the
+transfer type used by the endpoint.
+
+As for the drivers available, there is a solid support for USB HID devices,
+implementing keyboards, mice and multimedia keys. Also, a driver for USB Mass
+storage exists and somehow works, despite several warnings and errors printed
+to the log. Also, a fallback driver is provided to handle any USB device, to
+enable the device examination for devices without their own driver, mainly for
+debugging purposes.
+
+Not to forget, there are two userspace utilities related to the USB stack. One
+of them, \texttt{mkbd}, is not so important, as it is used only to demonstrate
+functionality of multimedia keys HID driver. The other one, \texttt{usbinfo}
+can be used to list available USB devices:
+
+\begin{bdsh}
+/ # usbinfo -l
+Bus 37: /hw/pci0/00:04.0/ctl
+	Device 61: /hw/pci0/00:04.0/usb1-fs
+	Device 65: /hw/pci0/00:04.0/usb2-ls
+\end{bdsh}
+
+Other use cases for this utility include descriptor dumping and examination of
+device status.
+
+It needs to be said, that whole structure of the USB framework (and also the
+DDF framework in general) expects the drivers to behave correctly and does not
+implement any countermeasures against malicious behaviour of drivers. For
+example, the \texttt{usbinfo} utility connects directly to the HC in the same
+way as the device driver does, and fetches the device descriptor. In fact, any
+other task can communicate directly with any USB device. Or, any driver can
+call the interface methods designed for hubs only -- for example, it can
+reserve the default address and never release it. Due to the experimental and
+in-development nature of HelenOS, this is not an important problem. Yet, it is
+an obstacle to solve before HelenOS will be ready for ``normal'' users, and it
+will be a tough one.
+
+Another thing related to the whole USB stack is that support for device
+removal is in fact non-existent. At the time of HelUSB project, there was no
+support for device removal in the Device Driver Framework, so it's not
+surprising that the USB framework inherited this. There are attempts to
+terminate interaction and release resources in case of repeated communication
+errors.
 
 \section{Goals of the Project}
 % TODO
