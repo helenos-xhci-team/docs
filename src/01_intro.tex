@@ -1,7 +1,35 @@
 \chapter{Introduction}
 
 \section{About HelenOS}
-% TODO:
+HelenOS is a microkernel operating system. Contrary to operating systems with
+monolithic kernels, key operating system functionality (including device
+drivers, filesystems and networking) is implemented in user-space processes (or
+servers) that interact via message passing interface. The rationale of this
+decision is that the failure of one component, e.g. a faulty driver, does not
+result in the crash of the entire system. It also allows a more modular system
+design.
+
+HelenOS was started in 2004 as a software project at the Faculty of Mathematics
+and Physics at Charles University and currently is being developed by students,
+former students and staff of this university, among with a number of
+contributors around the world. It has participated in Google Summer of Code
+several times. HelenOS is used as a research operating system and as a platform
+for bachelor and master theses and student software projects.
+
+HelenOS supports several architectures (among them ia32, amd64, 32-bit ARM and
+big endian MIPS) and is released under the BSD license.
+
+\subsection{XHCI support in operating systems}
+
+Extensible Host Controller Interface was first drafted in 2008 and the final
+version of the specification was released in 2010. Since then, XHCI support
+arrived in all mainstream operating systems like Windows, Linux, BSDs and Mac
+OS X.
+
+Regarding special-purpose, microkernel and research OSes, XHCI support is not
+yet widespread.  Most notably, XHCI support is included in Google's
+microkernel-based Fuchsia and in bare-metal iPXE.  Haiku Project is currently
+developing XHCI driver for their OS.
 
 \section{Drivers in HelenOS}
 % TODO: Introduce DDF, terms like device, function, interfaces, add/remove/gone ops, ...
