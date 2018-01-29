@@ -174,6 +174,114 @@ only one connected. Otherwise, the command fails.
 \end{bdsh}
 
 
+\section{Massive Surprise Removal Testing}
+
+As a simple tool to test multiple scenarios regarding device removal, we wrote
+a shell script. It helped us find a lot of synchronization issues in hub driver
+and HC drivers. The setup is very simple -- just run HelenOS in QEMU with
+a management socket located at \mintinline{bash}{$SOCKFILE}:
+
+\begin{bdsh}
+$ qemu-system-x86_64 -qmp unix:$SOCKFILE,server,nowait \
+	-device nec-usb-xhci -boot d -cdrom image.so
+\end{bdsh}
+
+Then, assuming a QEMU build in a directory \mintinline{bash}{$QEMU_ROOT}, run
+the following snippet:
+
+\begin{bdsh}
+: ${repeats:=1} ${count:=1} ${driver:=usb-hub}
+: ${in_delay:=5} ${out_delay:=$in_delay}
+
+for rep in $(seq 1 $repeats); do
+	for i in $(seq 1 $count);do
+		echo "device_add driver=$driver id=burst-$i"
+	done
+
+	sleep $in_delay
+
+	for i in $(seq 1 $count);do
+		echo "device_del id=burst-$i"
+	done
+
+	sleep $out_delay
+done | python2 "$QEMU_ROOT/scripts/qmp/qmp-shell" "$SOCKFILE" >/dev/null
+\end{bdsh}
+
+The first two lines set default values for various parameters. There are
+several combinations which we consider interesting.
+
+\subsection{Fast Attach-Detach Test}
+
+In this test, we used a ridiculously big value of \texttt{repeats}, and very
+short value of \texttt{in\_delay}, something like a tenth of a second. Running
+the script then simulates e.g. a bad cable, which stays conected only for
+a short while.
+
+This test does not work correctly with xHCI, because of a bug in QEMU that cannot
+be worked around retaining correctness on real HW. QEMU correctly aborts
+transfers in a case of device removal, but any transfer scheduled later is just
+ignored. That's fine, the xHCI implementation issues a Stop Endpoint command to
+force HC release the ring and allow it to deallocate abort the transfer itself.
+Except that QEMU for some reason doesn't allow issuing a Stop Endpoint command
+for the default control endpoint. So, in case of bad timing, we can issue
+a transfer on EP 0 (like reading the device descriptor as a part of
+enumeration) after QEMU knows that the device is removed, but we don't know it
+yet. After that, we issue a Stop Endpoint command, which fails. Because we
+cannot know whether the endpoint is used or not after the command fails, we
+cannot simply abort the transfer. And because the disconnection handler fibril
+must make sure the enumeration fibril is not stopped, this results in an
+infinite waiting for QEMU response.
+
+Note that this scenario simulates a real-world scenario, which does not happen
+in virtual environment. So we consider it is acceptable that this test fails
+because of QEMU.
+
+Other HC drivers handled this test fairly well, because they do not maintain
+a soft state in the hardware, they just poll transfers for completion. Thus
+they know when it's safe to abort the transfer manually.
+
+\subsection{Balloon test}
+
+We used a scenario with a large number of \texttt{repeats}, large \texttt{count},
+and long enough delays (like 15 seconds). We simulate a lot of devices connecting,
+waiting for matters to stabilize, then disconnecting the devices again.
+
+The main aspect this test is testing is resource leakage. When the resource
+usage grows still after the first few rounds, something must be wrong. This
+way, we found a leaking reference in \lib{libdrv}, which resulted in devices
+never being dropped. That means that we were the first ever to actually remove
+a device from HelenOS.
+
+Also, we discovered that limits of HelenOS are much bigger than those of QEMU.
+First, QEMU allows at maximum 64 slots per xHC to be enabled. Even though there
+are 127 valid USB addresses available, you cannot connect more than 64 devices
+at once. Even worse, after this limit is reached, QEMU will not report an error
+-- it will simply enable a slot that is already enabled, resulting in correctly
+failed assertions in our code.
+
+The second controller that is failing under QEMU is OHCI, which has a hard
+limit of 32 hops through the periodic queue. Because every hub (and HID device
+too) has an interrupt endpoint, it is added to the periodic queue. QEMU makes
+OHCI fail with an unrecoverable error after it reaches this limit of hops.
+Because of it, you can connect at most 30 devices to OHCI under QEMU.
+
+\subsection{Burst test}
+
+The last parameter combination we tried was a bursting one. Using
+\texttt{repeats = 1}, \texttt{count = 60}, and \texttt{in\_delay = out\_delay
+= 4}. This combination connects a subtree of 60 hubs, and allows an arbitrary
+subtree of them to enumerate. The disconnection comes during the enumeration,
+which is a tough test for the hub driver. The more considering that the
+disconnection comes for all devices at once.
+
+Running this test started the hub refactoring described in section
+\ref{hub-port-refactoring}, because neither the hub driver, nor our roothub at
+that time was prepared for such situations, and failed hard multiple times.
+Also, using this test we discovered the fundamental problem of flat hierarchy
+presented to DDF, which is explained in the section \ref{hub-port-refactoring}
+as well.
+
 \section{Automated Removal Testing}
 
 % TODO
