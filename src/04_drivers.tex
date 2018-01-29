@@ -45,7 +45,7 @@ Device drivers live the same life cycle as any other drivers controlled by the
 	USB framework, which in turn registers also with the Device Driver
 	Framework.
 
-	\item During its lifetime, the driver receives IPC callbacks from the USB
+	\item During its lifetime, the driver receives callbacks from the USB
 	Framework, informing it about relevant device events. On the basis of these
 	events, the driver then communicates with the device and exposes various
 	interfaces to other tasks in the system. At this point, the controlled
