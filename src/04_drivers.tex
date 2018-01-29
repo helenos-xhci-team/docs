@@ -53,9 +53,52 @@ Device drivers live the same life cycle as any other drivers controlled by the
 	control), the Device Manager terminates the driver to save resources.
 \end{enumerate}
 
+In the Device Driver Framework, drivers are the consumers of \textit{devices}
+and providers of \textit{functions}. This paradigm allows them to expose an
+unlimited number of nodes (representing logical or physical units) for every
+device they control. The same basic principle holds for USB drivers as well.
+
 
 \subsection{Device Callbacks}
-% TODO
+As explained in the previous section, USB device drivers are informed about
+relevant device events by asynchronous IPC callbacks from the USB framework. To
+simplify usage, these callbacks are identical to those of the Device Driver
+Framework:
+~
+\begin{description}
+	\item[Add Device] This event notifies the driver that a new device has been
+	discovered and matched to it. From this point on, the driver is allowed to
+	communicate with the device in order to configure it and expose its
+	functions to the rest of the system. Further communication with the device
+	will likely depend on remote calls originating from other system tasks
+	utilizing the exposed interface.
+
+	\item[Remove Device] This event instructs the driver to immediately disallow
+	new user operations on a device, terminate all currently running
+	operations in a timely manner, and hand device control back to the system,
+	as the device will likely be physically removed from the bus in the
+	forseeable future.
+
+	\item[Device Gone] This event informs the driver that a device has been
+	physically disconnected from the system without a prior \textit{Remove
+	Device} event. Since the device is no longer reachable, the driver is to
+	force interrupt all user operations, which were running at the time of
+	receiving the event and report failure to the callers.
+	
+	\item[Offline Function] By receiving this event, the driver is asked by the
+	system to explicitly transition a specific function exposed by one of its
+	controlled devices into the \textit{Offline} state. The meaning of such
+	transition might depend on the interpretation of the function. For more
+	information, see the Device Driver Framework Documentation.
+
+	\item[Online Function] By receiving this event, the driver is asked by the
+	system to explicitly transition a specific function exposed by one of its
+	controlled devices into the \textit{Online} state. Again, the meaning of such
+	transition might depend on the interpretation of the function. For more
+	information, see the Device Driver Framework Documentation.
+\end{description}
+
+
 
 \section{Device Communication}
 % TODO
