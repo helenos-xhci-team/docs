@@ -13,11 +13,13 @@ version or extension of that text.
 
 
 \section{Basics}
+
 This section gives details on the basic structure of USB device drivers, their
 role in the system and components they usually interact with.
 
 
 \subsection{Framework}
+
 USB device drivers use the generic \textit{Device Driver Framework} available in
 HelenOS. Because all USB drivers have similar initialization routines, a thin
 layer -- specific to USB devices -- was added above the generic one. This layer
@@ -60,6 +62,7 @@ device they control. The same basic principle holds for USB drivers as well.
 
 
 \subsection{Device Callbacks}
+
 As explained in the previous section, USB device drivers are informed about
 relevant device events by asynchronous IPC callbacks from the USB framework. To
 simplify usage, these callbacks are identical to those of the Device Driver
@@ -98,12 +101,28 @@ Framework:
 	information, see the Device Driver Framework Documentation.
 \end{description}
 
+\begin{figure}
+	\centering
+	\label{fig:device-states}
+	\includegraphics[width=0.5\textwidth]{device-states}
+	\caption[Diagram of USB device states and transition events.]{Diagram of USB
+	device states and transition events, as perceived by the device driver. Note
+	that these states do \textit{not} correspond to USB bus device states (e.g.
+	\textit{Configured}, \textit{Addressed}, etc.) in any way.}
+\end{figure}
+
 The listed events are delivered to device drivers through function calls to
 event handlers specified in the main USB driver operations structure (see
-Listing \ref{lst:driver-ops-structure} for minimal example). Since there are no
-guarantees on the synchronization between calls, the driver is explicitly
-responsible for synchronizing accesses to its private data structures as well as
-device communication.
+Listing \ref{lst:driver-ops-structure} for a minimal example). The order of
+event delivery models the physical lifecycle of the device within the system.
+For instance, it is not possible for the \textit{Add Device} event to occur more
+than once for the same device in a row. For reference, the exact device states
+and transitions between them (corresponding to the events with respective names)
+are shown in Figure \ref{fig:device-states}.
+
+Furthermore, since there are no guarantees on the synchronization between calls,
+the driver is explicitly responsible for synchronizing accesses to its private
+data structures as well as device communication.
 
 \begin{listing}
 	\begin{code}
@@ -140,13 +159,77 @@ device communication.
 
 
 \section{Device Communication}
+
+In USB, \textit{a pipe} is an abstraction primitive for a communication channel
+between a device and a host computer. For the sake of simplicity, the provided
+framework relies on a mechanism based on the same abstraction in order to
+facilitate communication between device drivers and devices.
+
+
+\subsection{Endpoint Description}
+
+In order to use pipes, device drivers must first define at least one
+\textit{endpoint description}. The purpose of such definition is to specify all
+device endpoints, which will be used for communication by the device driver
+throughout its lifecycle. For that reason, all descriptions ought to be
+specified in advance and referenced in the main device driver structure (for
+example of possible endpoint description definition, refer to Listing
+\ref{lst:driver-ep-array}).
+
+\begin{listing}
+	\begin{code}
+		static const usb_endpoint_description_t bulk_in_ep = {
+			.transfer_type = USB_TRANSFER_BULK,
+			.direction = USB_DIRECTION_IN,
+			.interface_class = USB_CLASS_MASS_STORAGE,
+			.interface_subclass = USB_MASSSTOR_SUBCLASS_SCSI,
+			.interface_protocol = USB_MASSSTOR_PROTOCOL_BBB,
+			.flags = 0
+		};
+
+		static const usb_endpoint_description_t bulk_out_ep = {
+			.transfer_type = USB_TRANSFER_BULK,
+			.direction = USB_DIRECTION_OUT,
+			.interface_class = USB_CLASS_MASS_STORAGE,
+			.interface_subclass = USB_MASSSTOR_SUBCLASS_SCSI,
+			.interface_protocol = USB_MASSSTOR_PROTOCOL_BBB,
+			.flags = 0
+		};
+
+		static const usb_endpoint_description_t *endpoints[] = {
+			&bulk_in_ep, &bulk_out_ep, NULL
+		};
+	\end{code}
+	\caption[Main USB device driver endpoint description array]{Main USB device
+	driver endpoint description array. This particular example shows two
+	\textit{Bulk} endpoints for SCSI mass storage data transfers in both the
+	\textit{In} and \textit{Out} directions.}
+	\label{lst:driver-ep-array}
+\end{listing}
+
+Endpoint description contains information which can be matched to USB endpoint
+descriptors in very much the same way as match identifiers are used to pair
+devices with device drivers in HelenOS. Following this scheme, the presented USB
+framework does most of the heavy lifting for device drivers. When a new device
+is added, prior to delivery of the \textit{Add Device} event, all endpoint
+descriptions provided by the driver are matched to device endpoints, resulting
+in two possible outcomes for every description:
+~
+\begin{enumerate}
+	\item A device endpoint matching the provided description is found and
+		\textit{an endpoint mapping} is created.
+	\item No device endpoint matches the provided description, hence no mapping is
+		created.
+\end{enumerate}
+
+Device drivers can later query the result of the matching and if successful,
+retrieve the created endpoint mapping, which contains a fully initialized pipe
+instance.
+
+
+\subsection{Pipe I/O}
 % TODO
 
-\subsection{Endpoint Mapping}
-% TODO
-
-\subsection{Pipes}
-% TODO
 
 \subsection{Automatic Polling}
 % TODO
