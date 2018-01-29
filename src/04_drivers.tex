@@ -1,23 +1,61 @@
 \chapter{Writing USB Drivers}
 
-This section provides documentation and general guidelines for usage of the
+This chapter provides documentation and general guidelines for usage of the
 refactored USB device driver interface. As such, it is meant for developers of
-HelenOS device drivers, who can use it as a reference guide.
+HelenOS device drivers, who can use it as a reference guide. By intention, this
+section abstracts the reader from all modifications to the stack, and focuses
+only on the latest state of the interface. All changes to the interface are
+described in detail in Chapter \ref{usb-refactoring}.
 
-By intention, this section abstracts the reader from all modifications to the
-stack, and focuses only on the latest state of the interface. All changes to the
-interface are described in detail in Chapter \ref{usb-refactoring}.
+The reader should note that there exists a similar section in the initial USB
+stack documentation. The text in this chapter could be considered an updated
+version or extension of that text.
 
 
 \section{Basics}
-% TODO
+This section gives details on the basic structure of USB device drivers, their
+role in the system and components they usually interact with.
+
 
 \subsection{Framework}
-% TODO
+USB device drivers use the generic \textit{Device Driver Framework} available in
+HelenOS. Because all USB drivers have similar initialization routines, a thin
+layer -- specific to USB devices -- was added above the generic one. This layer
+mainly serves as a middleware for easy communication with USB host controller
+drivers, performing USB specific resource management and enabling device drivers
+to initialize endpoint pipes and interact with USB devices. For those reasons,
+USB device drivers are recommended to link with \lib{libdrv} and
+\lib{libusbdev}, which contain both aforementioned layers respectively.
+
+It is expected that USB device drivers specify in advance not only their
+relevant match identifiers, which are used by the Device Manager to pair new
+devices with available drivers, but also all endpoints, which shall be present
+on the device through a USB driver structure. Later when a new device is found,
+a specialized device structure is prepared and pipe abstractions are
+initialized.
+
+Device drivers live the same life cycle as any other drivers controlled by the
+\textit{Device Manager}. A quick summary follows:
+~
+\begin{enumerate}
+	\item The driver is started at the convenience of the Device Manager if and
+	when a compatible device is found. At startup, the driver registers with the
+	USB framework, which in turn registers also with the Device Driver
+	Framework.
+
+	\item During its lifetime, the driver receives IPC callbacks from the USB
+	Framework, informing it about relevant device events. On the basis of these
+	events, the driver then communicates with the device and exposes various
+	interfaces to other tasks in the system. At this point, the controlled
+	device usually becomes visible and useful to the user.
+
+	\item When there is no more need for the driver to run (i.e. no devices to
+	control), the Device Manager terminates the driver to save resources.
+\end{enumerate}
+
 
 \subsection{Device Callbacks}
 % TODO
-
 
 \section{Device Communication}
 % TODO
