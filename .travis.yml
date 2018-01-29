@@ -3,7 +3,7 @@ dist: trusty
 before_install:
   - sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended latex-xcolor python-pygments
   - wget http://mirrors.ctan.org/macros/latex/contrib/minted.zip && unzip minted.zip
-  - cd minted && make && sudo cp minted.sty /usr/share/texlive/texmf-dist/tex/latex/minted/minted.sty
+  - ( cd minted && make && sudo cp minted.sty /usr/share/texlive/texmf-dist/tex/latex/minted/minted.sty && sudo texhash )
 script:
   - make
 
