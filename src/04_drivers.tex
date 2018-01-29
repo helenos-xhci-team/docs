@@ -98,6 +98,45 @@ Framework:
 	information, see the Device Driver Framework Documentation.
 \end{description}
 
+The listed events are delivered to device drivers through function calls to
+event handlers specified in the main USB driver operations structure (see
+Listing \ref{lst:driver-ops-structure} for minimal example). Since there are no
+guarantees on the synchronization between calls, the driver is explicitly
+responsible for synchronizing accesses to its private data structures as well as
+device communication.
+
+\begin{listing}
+	\begin{code}
+		static int device_add(usb_device_t *dev)
+		{
+			usb_log_info("Device '%s' added.", usb_device_get_name(dev));
+			return EOK;
+		}
+
+		static int device_remove(usb_device_t *dev)
+		{
+			usb_log_info("Device '%s' removed.", usb_device_get_name(dev));
+			return EOK;
+		}
+
+		static int device_gone(usb_device_t *dev)
+		{
+			usb_log_info("Device '%s' gone.", usb_device_get_name(dev));
+			return EOK;
+		}
+
+		static const usb_driver_ops_t driver_ops = {
+			.device_add = device_add,
+			.device_remove = device_remove,
+			.device_gone = device_gone,
+		};
+	\end{code}
+	\caption[Main USB device driver operations structure.]{Main USB device
+	driver operations structure with corresponding event handlers. Note that
+	events \textit{Offline Function} and \textit{Online Function} do not require
+	a handler and can therefore be omitted in the minimal example.}
+	\label{lst:driver-ops-structure}
+\end{listing}
 
 
 \section{Device Communication}
