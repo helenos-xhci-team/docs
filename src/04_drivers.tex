@@ -222,16 +222,37 @@ in two possible outcomes for every description:
 		created.
 \end{enumerate}
 
-Device drivers can later query the result of the matching and if successful,
-retrieve the created endpoint mapping, which contains a fully initialized pipe
+Device drivers can later query the result of the matching, and if successful,
+retrieve the created endpoint mapping containing a fully initialized pipe
 instance.
 
 
 \subsection{Pipe I/O}
+
+Provided that an endpoint description has been defined, successfully matched
+and an endpoint mapping has been retrieved along with a pipe instance, a device
+driver can schedule data transfers to a device.
+
+Pipes offer a very simple synchronous command interface similar to that of an
+open file descriptor, namely \fnc{usb_pipe_read} and \fnc{usb_pipe_write} for
+reading from \textit{In} endpoints and writing to \textit{Out} endpoints
+respectively. While semantics of these functions depends on endpoint types
+(consult USB specification for details), their basic usage is as follows:
+~
+\begin{enumerate}
+	\item Device driver allocates a buffer of appropriate size (and fills it
+		with data if writing).
+	\item Either the \fnc{usb_pipe_read} or \fnc{usb_pipe_write} function is
+		called, scheduling transfers to the device. The function receives a pipe
+		pointer, pointer to user-allocated buffer and data size.
+	\item The calling fibril is blocked until transfers succeed or fail (see
+		error code). If reading, the number of read bytes is returned as well.
+	\item Device driver recycles or disposes of the allocated buffer.
+\end{enumerate}
+
 % TODO
 
-
-\subsection{Automatic Polling}
+\subsection{Automated Polling}
 % TODO
 
 
