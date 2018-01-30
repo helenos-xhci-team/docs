@@ -453,7 +453,13 @@ severity, the presented logging macros are named as follows:
 
 Prior to printing the first log message, the \fnc{log_init} function must be
 called. During runtime, the default HelenOS log level can be adjusted by a
-call to the \fnc{logctl_set_log_level} function.
+call to the \fnc{logctl_set_log_level} function. Keep in mind that in the
+current implementation of HelenOS, every call to a logging macro results in a
+IPC call. For that reason, it is not advisable to perform logging in
+performance-sensitive parts of code, even if the log level is sufficiently high.
+
+For more information about logging in HelenOS, consult the HelenOS
+Documentation.
 
 
 \subsection{Descriptors}
