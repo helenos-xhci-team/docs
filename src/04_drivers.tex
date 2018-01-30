@@ -427,7 +427,7 @@ in Listing \ref{lst:device-data-example}.
 	\end{code}
 	\caption[Example device data allocation and usage.]{Example device data
 	allocation and usage. In this case, the \struct{my_data_t} device-specific
-	data structure is used to keep track of automated pipe polling. Not that
+	data structure is used to keep track of automated pipe polling. Note that
 	some error conditions have been intentionally ignored for the sake of brevity.}
 	\label{lst:device-data-example}
 \end{listing}
@@ -488,8 +488,43 @@ categories, the general scheme remains the same:
 \end{enumerate}
 
 
-\subsection{Descriptors}
+\subsection{Descriptor Parser}
 
+While they are sometimes stored in a serialized form, USB descriptors can be
+viewed as a tree. For instance, configuration descriptor is followed by
+interface and endpoint descriptors, which are not directly accessible. To aid
+with problems such as this, a simple descriptor parser is provided by the
+presented fraamework.
 
+The parser has been designed to be as generic as possible and its interface
+might thus be somewhat terse. It operates on a byte array and offers functions
+for finding the first nested descriptor and its next sibling (i.e. descriptor on
+the same depth of nesting). The parser expects that the input is an array of
+bytes where the descriptors are sorted in \textit{prefix tree traversal} order.
+Next, it expects that each descriptor has its length stored in the first byte
+and the descriptor type in the second byte. That corresponds to standard
+descriptor layout. The parser determines the nesting from a list of parent-child
+pairs that is given to it during parser initialization. This list is terminated
+with pair where both parent and child are set to -1.
+
+The parser uses the \struct{usb_dp_parser_t} structure, which contains array
+with possible descriptor nesting (\struct{usb_dp_descriptor_nesting_t}). The
+data for the parser are stored in the \struct{usb_dp_parser_data_t}, the arg
+field is intended for custom data.
+
+For processing the actual data, two functions are available. The
+\fnc{usb_dp_get_nested_descriptor} function takes parser, parser data and
+pointer to parent as parameters. For retrieving the sibling descriptor (i.e.
+descriptor at the same depth) one can use \fnc{usb_dp_get_sibling_descriptor}.
+Whereas this function takes the same arguments, it also requires two extra
+arguments — pointer to the parent descriptor (i.e. parent of both nested ones)
+and a pointer to the preceeding descriptor. Such pointer must always point to
+the first byte of the descriptor (i.e. to the length of the descriptor, not to
+its type).
+
+In addition, there exists also a simple iterator over the descriptors. The
+function \fnc{usb_dp_walk_simple} takes a callback as a parameter, which is
+executed for each found descriptor and receives thee current depth (starting
+with 0) and a pointer to current descriptor.
 
 
