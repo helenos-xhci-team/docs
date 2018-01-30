@@ -326,7 +326,36 @@ driver's convenience. A complete example of pipe write is shown in Listing
 
 
 \subsection{Automated Polling}
-% TODO
+
+In USB devices which often interact with a human user, it is important to wait
+for user input by spinning (or polling) on some \textit{Interrupt In} endpoint.
+In the abstraction used, this translates to calling \fnc{usb_pipe_read} in a
+perpetual loop. Since this behavior is common to a significant class of drivers,
+a unified implementation is provided by the USB framework.
+
+The implementation is represented by the \struct{usb_polling_t} structure and
+its associated functions. Similarly to device event handlers, the driver is
+expected to configure the structure with polling handler functions. Later when
+the driver wishes to initiate polling, a call to the \fnc{usb_polling_start}
+function will create a separate fibril, which will spin on the pipe and call
+polling handlers once data (or errors) arrive.
+
+When the device driver wishes to cease polling, a call to the
+\fnc{usb_polling_join} function will spontaneously wake up the polling fibril
+and block the caller fibril until its termination. After polling is started, a
+call to this function must \textit{always} occur no later than in the
+\textit{Remove Device} or \textit{Device Gone} event handler.
+
+Furthermore, note that once a device driver starts polling on a pipe, it
+transfers the pipe ownership to the polling fibril, relinquishing all control
+over it. That prohibits any other calls to \fnc{usb_pipe_read} or other relevant
+functions. Also, it is not feasible to poll only for a limited time period, then
+join and reuse the pipe for arbitrary data reads. This is due to the fact that
+once \fnc{usb_polling_join} is called, the pipe is left closed for all
+communication, destroying the underlying endpoint mapping.
+
+An example usage of the pipe polling interface is shown in Listing
+\ref{lst:polling-example}.
 
 
 \section{Utilities}
