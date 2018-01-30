@@ -330,36 +330,108 @@ driver's convenience. A complete example of pipe write is shown in Listing
 In USB devices which often interact with a human user, it is important to wait
 for user input by spinning (or polling) on some \textit{Interrupt In} endpoint.
 In the abstraction used, this translates to calling \fnc{usb_pipe_read} in a
-perpetual loop. Since this behavior is common to a significant class of drivers,
-a unified implementation is provided by the USB framework.
+perpetual loop and responding to incoming data or errors. Since this behavior is
+common to a significant class of drivers, a reusable unified implementation is
+provided by the USB framework.
 
 The implementation is represented by the \struct{usb_polling_t} structure and
-its associated functions. Similarly to device event handlers, the driver is
-expected to configure the structure with polling handler functions. Later when
-the driver wishes to initiate polling, a call to the \fnc{usb_polling_start}
-function will create a separate fibril, which will spin on the pipe and call
-polling handlers once data (or errors) arrive.
+its associated functions. Similarly to device event handlers, device drivers are
+expected to configure this structure with polling handler functions. Later when
+polling should be initiated, a call to the \fnc{usb_polling_start} function will
+spawn a separate fibril, spinning on the pipe and calling handlers when data
+arrive or \fnc{usb_pipe_read} fails with error.
 
-When the device driver wishes to cease polling, a call to the
-\fnc{usb_polling_join} function will spontaneously wake up the polling fibril
-and block the caller fibril until its termination. After polling is started, a
-call to this function must \textit{always} occur no later than in the
-\textit{Remove Device} or \textit{Device Gone} event handler.
+When polling is to be ceased, a call to the \fnc{usb_polling_join} function will
+spontaneously wake up the polling fibril and block the caller fibril until its
+termination. If polling is started, a call to this function must \textit{always}
+occur no later than in the \textit{Remove Device} or \textit{Device Gone} event
+handler in order to prevent the fibril from outlasting the device lifecycle
+within driver private data structures..
 
-Furthermore, note that once a device driver starts polling on a pipe, it
+Furthermore, note that once any device driver starts polling on a pipe, it
 transfers the pipe ownership to the polling fibril, relinquishing all control
-over it. That prohibits any other calls to \fnc{usb_pipe_read} or other relevant
-functions. Also, it is not feasible to poll only for a limited time period, then
-join and reuse the pipe for arbitrary data reads. This is due to the fact that
-once \fnc{usb_polling_join} is called, the pipe is left closed for all
-communication, destroying the underlying endpoint mapping.
+over it. That prohibits subsequent calls to \fnc{usb_pipe_read} or other
+relevant functions. It is also not feasible to poll only for a limited time
+period, then join and reuse the pipe for arbitrary data reads. This is due to
+the fact that once \fnc{usb_polling_join} is called, the pipe is left closed for
+all communication, destroying the underlying endpoint mapping.
 
 An example usage of the pipe polling interface is shown in Listing
 \ref{lst:polling-example}.
 
 
-\section{Utilities}
-% TODO
+\section{Miscellaneous}
+
+This section features general suggestions and recommendations for USB device
+driver implementation.
+
+
+\subsection{Device-specific Data Structures}
+
+Device drivers often need to maintain stateful and descriptive information
+related to their controlled devices. A common practice is to store this kind of
+information in device-specific data structures. As their name suggests, such
+structures usually correspond to a single controlled device, and can thus
+closely follow its lifecycle, being allocated and configured when the device is
+added and being freed upon its removal.
+
+The presented USB framework offers device drivers a straightforward mechanism to
+associate any of their data structures with USB devices by specifying custom
+\textit{device data} in the \struct{usb_device_t} structure, which is present in
+all device-related events. Device data is allocated at most once for every
+device and can have any driver-specified, albeit constant size. When the device
+is later removed from the driver, device data is automatically freed if present.
+
+Allocation of device data is performed by a call to the
+\fnc{usb_device_data_alloc} function. This function has the same return value
+and semantics as the \fnc{calloc} function. In addition, the pointer returned by
+this function is stored within the \struct{usb_device_t} structure and can be
+retrieved from that point onward until the device is removed by a call to the
+\fnc{usb_device_data_get} function. Example usage of this mechanism can be seen
+in Listing \ref{lst:device-data-example}.
+
+\begin{listing}
+	\begin{code}
+		typedef struct my_data {
+			/* Any device-specific data here. */
+			usb_polling_t polling;
+		} my_data_t;
+
+		static int device_add(usb_device_t *dev)
+		{
+			/* Allocate device data. */
+			my_data_t *data = (my_data_t *) usb_device_data_alloc(dev, sizeof(my_data_t));
+			if (!data) {
+				return ENOMEM;
+			}
+
+			usb_polling_init(&data->polling);
+			/* ... configure polling ... */
+			usb_polling_start(&data->polling);
+
+			return EOK;
+		}
+
+		static int device_remove(usb_device_t *dev)
+		{
+			/* Retrieve device data. */
+			my_data_t *data = (my_data_t *) usb_device_data_get(dev);
+
+			/* Stop polling. */
+			usb_polling_join(&data->polling);
+			usb_polling_fini(&data->polling);
+
+			/* After returning, device data is freed automatically. */
+			return EOK;
+		}
+	\end{code}
+	\caption[Example device data allocation and usage.]{Example device data
+	allocation and usage. In this case, the \struct{my_data_t} device-specific
+	data structure is used to keep track of automated pipe polling. Not that
+	some error conditions have been intentionally ignored for the sake of brevity.}
+	\label{lst:device-data-example}
+\end{listing}
+
 
 \subsection{Logging}
 % TODO
