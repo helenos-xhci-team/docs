@@ -462,7 +462,34 @@ For more information about logging in HelenOS, consult the HelenOS
 Documentation.
 
 
+\subsection{Exposing an Interface}
+
+In order for controlled hardware to become usable to system tasks, HelenOS
+device drivers can expose IPC interfaces to abstract hardware-specific features
+and provide a set of well-defined logical operations for device interaction.
+
+In HelenOS IPC, one of the preferred ways to achieve this is by interacting with
+\textit{services} -- system tasks, which run as daemons, and whose purpose is to
+connect user tasks with device drivers. Since services usually keep track of
+devices of the same category, it is necessary to first identify the appropriate
+service for a driver and consult its documentation.
+
+While the specifics of exposing IPC interfaces may vary for different device
+categories, the general scheme remains the same:
+~
+\begin{enumerate}
+	\item For a DDF function, fill a specific structure with configuration and
+		call handlers Then register them with the respective system service.
+	\item Respond to service-specific calls in compliance with service
+		specification. Handling of these calls will likely result in
+		communication with the device.
+	\item When the device is removed, cease handling service calls and
+		unregister the device from the service.
+\end{enumerate}
+
+
 \subsection{Descriptors}
-% TODO
+
+
 
 
