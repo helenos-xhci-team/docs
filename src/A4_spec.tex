@@ -143,18 +143,29 @@ years 2017 and 2018.
 \begin{table}[h]
 	\centering
 	{\renewcommand{\arraystretch}{1.2}
-	\begin{tabularx}{0.95\textwidth}{rl}
-		\hline \textbf{April 18, 2017} & Project specification finalized. \\
-		\hline \textbf{May 1, 2017} & Project officially started. \\
-		\hline \textbf{June 8, 2017} & First commit in the project branch. \\
-		\hline \textbf{October 17, 2017} & USB mouse driver transmitting
-		movement data over the xHCI stack. \\
-
-		% TODO
-
-		\hline \textbf{February 1, 2018} & Project submitted for defense. \\
-		\hline
-	\end{tabularx}
+	\newcommand{\hl}{\rowcolor[gray]{0.95}}
+	\begin{tabular*}{0.95\textwidth}{rr@{\hspace{\tabcolsep}}l|l}
+	\hline \hl \textbf{2017}
+	    & \textbf{April}    & \textbf{18} & Project specification finalized. \\
+	\hl & \textbf{May}      & \textbf{1}  & Project officially started. \\
+	    & May               &             & Studying specifications, getting into the context. \\
+	\hl & \textbf{June}     & \textbf{8}  & First commit in the project branch. \\
+	    & June              &             & Skeleton of the xHCI driver structure. Supportive structures. \\
+	    & July              &             & Command interface. \\
+	    & August            &             & Root hub and event ring. First signs of dialog with the HC. \\
+	    & October           &             & Transfers, debugging. The great usbhost refactoring. \\
+	\hl & \textbf{October}  & \textbf{17} & USB mouse driver transmitting movement data over the xHCI stack. \\
+	    & November          &             & Debugging, refactoring.  \\
+	\hl & \textbf{November} & \textbf{12} & HelenOS 0.7.1 was released. Changed VCS from Bazaar to GIT. \\
+	    & December          &             & Transfer Monitor, testing, benchmarking. \\
+	\hline \textbf{2018}
+	    & January           &             & Device removal, isochronous transfers, USB 3 extensions. \\
+	    &                   &             & Testing, debugging, writing documentation. \\
+	\hl & \textbf{January}  & \textbf{30} & Project considered delivered by the supervisor. \\
+	    & February          &             & Merging into mainline, finishing touches. \\
+	\hl & \textbf{February} & \textbf{??} & Project submitted for defense. \\
+	\hline
+	\end{tabular*}
 	}
 	\caption{Project timeline.}
 	\label{tbl:timeline}
