@@ -53,7 +53,7 @@ Device drivers live the same life cycle as any other drivers controlled by the
 	device usually becomes visible and useful to the user.
 
 	\item When there is no more need for the driver to run (i.e. no devices to
-	control), the Device Manager terminates the driver to save resources.
+	control), the Device Manager may terminate the driver to save resources.
 \end{enumerate}
 
 In the Device Driver Framework, drivers are the consumers of \textit{devices}
@@ -65,7 +65,7 @@ device they control. The same basic principle holds for USB drivers as well.
 \subsection{Device Callbacks}
 
 As explained in the previous section, USB device drivers are informed about
-relevant device events by asynchronous IPC callbacks from the USB framework. To
+relevant device events by asynchronous callbacks from the USB framework. To
 simplify usage, these callbacks are identical to those of the Device Driver
 Framework:
 ~
@@ -104,12 +104,12 @@ Framework:
 
 \begin{figure}
 	\centering
-	\label{fig:device-states}
 	\includegraphics[width=0.5\textwidth]{device-states}
 	\caption[Diagram of USB device states and transition events.]{Diagram of USB
 	device states and transition events, as perceived by the device driver. Note
 	that these states do \textit{not} correspond to USB bus device states (e.g.
 	\textit{Configured}, \textit{Addressed}, etc.) in any way.}
+	\label{fig:device-states}
 \end{figure}
 
 The listed events are delivered to device drivers through function calls to
@@ -225,8 +225,33 @@ in two possible outcomes for every description:
 
 Device drivers can later query the result of the matching, and if successful,
 retrieve the created endpoint mapping containing a fully initialized pipe
-instance.
+instance. An example of this is shown in Listing \ref{lst:driver-ep-mapping}.
 
+\begin{listing}
+	\begin{code}
+		static int device_add(usb_device_t *dev)
+		{
+			/* Find mapping for the endpoint description. */
+			usb_endpoint_mapping_t *mapping = usb_device_get_mapped_ep_desc(dev, &bulk_out_ep);
+
+			/* Determine if the mapping was successful. */
+			if (!mapping || !mapping->present) {
+				usb_log_error("Endpoint mapping failed!");
+				return ENOENT;
+			}
+
+			usb_pipe_t *pipe = &mapping->pipe;
+
+			/* Now we can write to `pipe`. */
+			return write_data(pipe);
+		}
+	\end{code}
+	\caption[Obtaining USB pipe from an endpoint description.]{Sample
+	implementation of the \textit{Device Add} event handler, obtaining a mapping
+	and a USB pipe from one endpoint description defined in Listing
+	\ref{lst:driver-ep-array}.}
+	\label{lst:driver-ep-mapping}
+\end{listing}
 
 \subsection{Pipe I/O}
 
@@ -245,13 +270,60 @@ respectively. While semantics of these functions depends on endpoint types
 		with data if writing).
 	\item Either the \fnc{usb_pipe_read} or \fnc{usb_pipe_write} function is
 		called, scheduling transfers to the device. The function receives a pipe
-		pointer, pointer to user-allocated buffer and data size.
+		pointer, pointer to the user-allocated buffer and data size.
 	\item The calling fibril is blocked until transfers succeed or fail (see
 		error code). If reading, the number of read bytes is returned as well.
 	\item Device driver recycles or disposes of the allocated buffer.
 \end{enumerate}
 
-% TODO
+Note that while the write function blocks the calling fibril until the entire
+buffer is transferred to the device, the read function might return successfully
+with a lower number of bytes read than the actual data size requested, and may
+thus have to be called multiple times.
+
+In addition, due to multiplatform nature of HelenOS, it is not advisable to
+assume endianity of the host system. Instead, the \macro{uint{16|32}_host2usb}
+and \macro{uint{16|32}_usb2host} macros serve to convert host system endianity
+to and from the transfer endianity defined in the USB Protocol Specification at
+driver's convenience. A complete example of pipe write is shown in Listing
+\ref{lst:pipe-write}.
+
+\begin{listing}
+	\begin{code}
+		static int write_data(usb_pipe_t *pipe)
+		{
+			int rc = EOK;
+			/* Allocate memory. */
+			static const size_t size = 64;
+			char *buffer = (char *) malloc(size);
+			if (!buffer) {
+				rc = ENOMEM;
+				goto err;
+			}
+
+			/* Fill `buffer` with arithmetic sequence of bytes. */
+			for (int i = 0; i < size; ++i) buffer[i] = (char) i;
+
+			/* Write data. */
+			rc = usb_pipe_write(pipe, buffer, size);
+			if (rc != EOK) {
+				usb_log_error("Write failed with error: %s", str_error(rc));
+				goto err_buffer;
+			}
+
+			/* Clean up. */
+		err_buffer:
+			free(buffer);
+		err:
+			return rc;
+		}
+	\end{code}
+	\caption[Example write to a USB pipe.]{Example write to a USB pipe. This is
+	a possible implementation of the \fnc{write_data} function referenced in
+	Listing \ref{lst:driver-ep-mapping}.}
+	\label{lst:pipe-write}
+\end{listing}
+
 
 \subsection{Automated Polling}
 % TODO
