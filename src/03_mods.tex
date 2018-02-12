@@ -167,8 +167,12 @@ OS.
 \label{sec:dma_bufs}
 
 A simple but repeated scenario gave rise to another new submodule of
-\lib{libusbhost}. It is a very thin abstraction, yet has been proven useful and we
-think it could be adopted to \lib{libdrv}, for example.
+\lib{libusbhost}. It started as a thin abstraction, and its purpose grew to
+a major performance optimization targeting the whole system. Therefore, we plan
+to discuss with HelenOS core developers to incorporate it in other drivers as
+well.
+
+\subsection{The original purpose}
 
 A common task for drivers is allocating memory for buffers, that are accessible
 for DMA. Often there are some restrictions given by the hardware driven -- the
@@ -215,18 +219,130 @@ for a concrete position in the buffer, one just needs to call
 \fnc{dma_buffer_phys}, which translates a virtual address pointing inside
 a buffer to a corresponding physical address.
 
-So far, DMA buffers always assume the strictest requirements for the allocated
-memory. That is, the returned memory is page-aligned, physically contiguous,
-always in the 32bit addressable space. Should there be a need to loosen one the
-constraints (e.g. to reduce the memory footprint), the allocation routine can
-be supplied a policy, defining the requirements. There is also a particular
-future optimization, for which the mechanism is prepared. Especially the former
-HC drivers often allocate a whole buffer, which must be at least
-\macro{PAGE_SIZE} big, just to hold a few-bytes sized descriptor structure.
-Shall the wasted memory be a problem, one can easily extend this module to use
-an allocator in userspace to back DMA buffers.
-
 One more reason to drop the previous \fnc{malloc32} helpers completely is that
 developers that are beginners to HelenOS might see \fnc{malloc32} as a weird
 name for an ordinary \fnc{malloc}, and start using it to allocate ordinary
 memory, which is very wasteful and expensive.
+
+Even authors of the previous implementation started to overlook fact, that
+\fnc{malloc32} actually allocates a whole page, and implemented some operations
+very prodigally. The most notable occurence was in transfer handling -- every
+transfer descriptor and queue head was allocated in a separate memory page.
+From the performance point of view, allocation and clearing of several memory
+pages just to issue one short transfer is an extreme overhead. Furthermore,
+a TD can describe at most 8KB transfer, so a linear number of TDs are used.
+On the other hand, it is also waste of memory to allocate the memory in
+advance. So we at least merged all the needed structures to one allocated
+buffer to reduce the overhead to one page only.
+
+
+\subsection{Policies}
+
+To accomplish a goal described in the following chapter, we needed a way how to
+express constraints put on DMA buffers by individual drivers. After evaluating
+the individual needs, it came out that there are just two of them:
+a requirement of using 32-bit addresses, and a requirement of physical
+contiguity. However, the contiguity is not just binary (either fully contiguous
+or not). For example, xHCI-compatible controller is able to do bytewise
+scatter-gather. That means it can handle also non-contiguous buffers,
+translated as a scatter-gather on pages. On the other hand, every TRB can
+describe a 64KB block, so it can benefit from the buffer being contiguous by
+using less TRBs per transfer.
+
+We used our benchmarking system to measure performance of issuing transfers.
+The scenario contains a QEMU virtual device (tmon) receiving our data and
+a software driver of this device issuing transfer. The most important aspect of
+the testing is that neither of these two entities actually care about the data
+being transmitted -- the driver just allocates a buffer of garbage and sends
+it. The receiving side just counts the size of the received data. It is
+a completely artificial scenario, but allows us to measure the overhead induced
+by handling transfers, thus limiting the possible performance in real scenarios.
+
+We measured the maximum performance of bulk transfers of a 64KB buffer. That is
+the maximum size of data transferred over IPC in HelenOS. When we relied on the
+buffer being contiguous, we could always issue single TRB per transfer. When
+not, we had to split the transfer to 16 TRBs. In the first case, the average
+performance was around 300 MB/s, in the second one, it dropped to 60 MB/s. That
+shows that the overhead is significant and we should use as large TRBs as
+possible.
+
+It seems that the best solution would be to allocate chunks of 16 pages and
+split the data accordingly. However, using a buffer vector would introduce yet
+another API which would drivers have to use instead of a standard one. And with
+the experience with IO vectors from QEMU, we decided this is not a good option.
+The more when the same task can be solved by a slightly smarter kernel
+allocator, mapping the chunks into contiguous virtual memory. But anyway, we
+needed a way to express how big the chunks have to be.
+
+Let us introduce another scenario, which could've worked if we had the power.
+Imagine a VFS server trying to copy 16 megabytes of data from hard drive to
+a flash drive. Let's say that the hard drive driver is capable of arbitrary
+scatter-gather operations, but handles 32-bit addresses only. On the other
+side, there is an xHC, which can handle 64-bit addresses, but it works best
+with 64KB-contiguous chunks. However, in between there sits a USB mass storage
+driver, which (just to demonstrate the idea) can issue only 32KB transfers,
+so it splits bigger ones to multiple calls. In an ideal world, the VFS driver
+would allocate a 16 MB buffer that is in the lower 4 gigabytes of memory, and
+every 32KB chunk of it is physically contiguous. Then it would share the buffer
+using IPC memory sharing capabilities, so that the hard drive driver loads the
+data in it. Then, without any copying, the VFS server would share the buffer
+all the way down to the xHC driver, which would issue 32 KB transfers as
+ordered by the mass storage driver with the data directly, again without any
+further copying.
+
+This level of copy-free efficiency is thought to be reasonably possible only in
+unikernel systems. But for an unknown reason we were too enthusiastic to let
+it be and decided to do a little experiment, designing a system which would
+allow this scenario to happen even in HelenOS.
+
+The answer to all these issues is surprisingly simple. We use a pointer-sized
+bitmap called \struct{dma_policy_t} to carry flags. The flag on bit $i$ denotes
+that the buffer may be split into $2^{i+1}$B-sized chunks that are physically
+contiguous. As the minimal granularity is \macro{PAGE_SIZE}, the lower bits can
+be used to carry different flags. Currently, we use just one to denote the
+32-bit restriction.
+
+The policy is a part of the pipe description, which is passed from HC driver to
+the USB device driver. It may than allocate a buffer according to this
+policy, and be sure that the HC driver will be able to use it directly. The
+policy a buffer is allocated with is passed along, for the HC driver to check.
+Because we generally trust the driver, there is no further checking. We do not
+trust the human writing it though so the policy is not automatically assumed
+but must be passed explicitly with the buffer pointer. This has another benefit
+-- in case the policy is not exactly satisfied (e.g. the xHC driver is given
+a non-contiguous buffer), it may decide that instead of bouncing it, which is
+expensive, it just uses a page-sized chunks for scatter-gather.
+
+If this mechanism would be adopted by the rest of the system, the scenario
+described above would start with the VFS driver fetching policies from the
+lower-layer drivers. The HC driver would respond with a policy requiring 64KB
+chunks, but it would be modified by the mass storage driver to loosen the
+contiguity requirements, because it knows that the limit is actually 32KB. This
+can be done by a simple bitwise AND operation. From the other side, the hard
+drive driver would respond with a policy requiring 32-bit addresses. The VFS
+driver then computes a bitwise OR, creating a policy that satisfies both sides.
+
+\section{Memory sharing}
+
+As promised in the previous section, we modified the interface of host
+controller driver. Instead of sending large data through IPC, which requires
+kernel to copy data from one task to another, we now use IPC memory sharing.
+While it might be actually slower for small transfers (latency benchmarks shows
+the difference is not relevant), it makes a big difference for large transfers.
+Utilizing the DMA policies described in the previous section, we achived
+a copy-free path from USB device driver to the xHC.
+
+By switching to memory sharing, we released the size limit of one transfer --
+the shared memory area might be arbitrarily large, as opposed to the 64KB
+artificial limit imposed by the kernel on data transfers. That introduced the
+need to actually split transfers to multiple TRBs if needed, so the benchmarked
+performance of previously described scenario dropped to 200 MB/s. However, by
+using transfers of size 16 MB, we can reach a measured bandwidth of around 1.3~GB/s.
+As the theoretical limit of the USB 3.1 bus is 671 MB/s, we can say that the
+bottleneck is no longer in the xHCI driver.
+
+As for the other drivers, the benchmarks on EHCI shown an improvement at 64KB
+blocks from 20 MB/s to 25 MB/s, but by using much bigger blocks (larger than 32
+MB) we were able to reach 360 MB/s. Again, this is much bigger than the
+theoretical limit of 60 MB/s for the bus due to the test nature and virtual
+environment.
