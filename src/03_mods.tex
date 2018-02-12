@@ -226,7 +226,7 @@ memory, which is very wasteful and expensive.
 
 Even authors of the previous implementation started to overlook fact, that
 \fnc{malloc32} actually allocates a whole page, and implemented some operations
-very prodigally. The most notable occurence was in transfer handling -- every
+very prodigally. The most notable occurrence was in transfer handling -- every
 transfer descriptor and queue head was allocated in a separate memory page.
 From the performance point of view, allocation and clearing of several memory
 pages just to issue one short transfer is an extreme overhead. Furthermore,
@@ -329,7 +329,7 @@ controller driver. Instead of sending large data through IPC, which requires
 kernel to copy data from one task to another, we now use IPC memory sharing.
 While it might be actually slower for small transfers (latency benchmarks shows
 the difference is not relevant), it makes a big difference for large transfers.
-Utilizing the DMA policies described in the previous section, we achived
+Utilizing the DMA policies described in the previous section, we achieved
 a copy-free path from USB device driver to the xHC.
 
 By switching to memory sharing, we released the size limit of one transfer --

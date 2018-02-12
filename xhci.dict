@@ -1,4 +1,4 @@
-personal_ws-1.1 en 563 
+personal_ws-1.1 en 606 
 bez
 který
 dostupném
@@ -25,6 +25,7 @@ zlepsení
 priblizný
 predevsím
 reconnection
+del
 pouzitím
 deallocate
 systémové
@@ -43,6 +44,7 @@ CLR
 bránit
 prubehu
 multiserverovém
+Trochtová
 frameworku
 dma
 deskách
@@ -59,9 +61,12 @@ dokoncení
 príslusných
 integrace
 Softwarového
+multiplatform
+HCCPARAMS
 simulátoru
 integraci
 byl
+generify
 vlastnosti
 dríve
 nových
@@ -119,6 +124,7 @@ neocekávaného
 hotpluggable
 enqueue
 Aktuální
+ENOMEM
 jako
 namespaced
 Jaroslav
@@ -130,7 +136,9 @@ enqueued
 volitelnými
 pochopitelne
 DCBA
+stateful
 stav
+goto
 hardwarové
 Nelze
 img
@@ -147,7 +155,7 @@ základ
 pozdeji
 softwarovou
 parallelization
-Endian
+endian
 implementace
 runtime
 konkrétních
@@ -163,6 +171,7 @@ libdrv
 implementovány
 uint
 naopak
+SuperSpeed
 superspeed
 IRQ
 iso
@@ -172,6 +181,7 @@ specifikovaná
 poslouzily
 dcbaa
 SetAddress
+subclasses
 ive
 IST
 ovladace
@@ -188,16 +198,18 @@ výsledného
 ocekávaného
 ovladacu
 bodu
+benchmarking
 casové
 usbreg
 moznostem
 TRBs
+performant
 zkuseností
 nejvyssí
 spinned
 zcela
 architekturu
-NEC
+nec
 omezení
 plyne
 rychlostí
@@ -207,6 +219,7 @@ linenos
 architektury
 pásma
 odhadovaný
+unikernel
 úspesnou
 nedoslo
 preprocessor
@@ -229,8 +242,10 @@ resitele
 isoch
 PCI
 prípade
+lightgray
 PED
 operacní
+unix
 lze
 implementovat
 dalsí
@@ -246,11 +261,13 @@ cástmi
 rezimu
 existujícím
 isochronous
+PIO
 napájení
 tmon's
 zvládnutelné
 init
 BeagleBoard
+ingoing
 celkovou
 jiná
 umoznily
@@ -276,6 +293,7 @@ pri
 Vymezení
 projekt
 koncových
+qmp
 Michal
 vyuzití
 framesep
@@ -292,6 +310,7 @@ generický
 operacního
 prenosového
 Protoze
+nowait
 mesíc
 tuto
 prirozene
@@ -303,6 +322,7 @@ zameren
 plné
 prílezitostí
 implementovanou
+TDs
 sbernice
 elegantní
 sbernici
@@ -313,6 +333,7 @@ opravovat
 lifecycle
 SoC
 CRCR
+Lenka
 Jindrák
 revizemi
 naimplementovanými
@@ -325,8 +346,10 @@ mikrojádrového
 odhad
 nebude
 submodule
+iPXE
 nezávisle
 nárocnosti
+VCS
 dobe
 breaklines
 EINTR
@@ -338,20 +361,27 @@ trb
 VHC
 asynchronicity
 microframes
+VFS
 spoustení
 celkové
+SOCKFILE
 USBTmonState
 isoc
 vsech
 uPD
 souvislosti
+usbhost
+MASSSTOR
 xHCI
 xhci
 typu
+middleware
 vyuzít
 usb
+scalability
 podporovaných
 jiných
+url
 usbdiag
 fyzického
 riziko
@@ -414,23 +444,28 @@ ci
 kompatibility
 oblasti
 odladené
+splitters
 specifických
 odladení
 duraz
 budou
 predmetem
 vyuzitím
+dp
 pouze
+Rozhraní
 podporou
 sepsání
 daných
 endianness
 podmnozinu
 ep
+benchmarked
 zachování
 hc
 podmnoziny
 odladeny
+ia
 rozsírit
 kterých
 softwarové
@@ -453,6 +488,7 @@ volitelne
 explicitního
 hw
 Primárním
+oldid
 predchozích
 zpetne
 také
@@ -469,6 +505,7 @@ moznosti
 iface
 deconfiguration
 isochronního
+lt
 odhaleny
 cásti
 cástí
@@ -477,6 +514,7 @@ existující
 zadání
 Soucástí
 revize
+rc
 initializer
 okolností
 revizi
@@ -491,6 +529,7 @@ tf
 mohou
 Platforma
 sbernic
+rr
 doplnen
 tj
 RW
@@ -535,11 +574,14 @@ casovou
 periferními
 nemelo
 nebo
+filesystems
 dosud
 tedy
 aby
+helusb
 HelUSB
 norem
+logctl
 HCI's
 HCIs
 devman
@@ -559,6 +601,7 @@ allocator
 Hrach
 bookkeep
 zachovávaly
+amd
 výse
 PAGESIZE
 cas

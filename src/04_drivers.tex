@@ -81,7 +81,7 @@ Framework:
 	new user operations on a device, terminate all currently running
 	operations in a timely manner, and hand device control back to the system,
 	as the device will likely be physically removed from the bus in the
-	forseeable future.
+	foreseeable future.
 
 	\item[Device Gone] This event informs the driver that a device has been
 	physically disconnected from the system without a prior \textit{Remove
@@ -494,7 +494,7 @@ While they are sometimes stored in a serialized form, USB descriptors can be
 viewed as a tree. For instance, configuration descriptor is followed by
 interface and endpoint descriptors, which are not directly accessible. To aid
 with problems such as this, a simple descriptor parser is provided by the
-presented fraamework.
+presented framework.
 
 The parser has been designed to be as generic as possible and its interface
 might thus be somewhat terse. It operates on a byte array and offers functions
@@ -518,7 +518,7 @@ pointer to parent as parameters. For retrieving the sibling descriptor (i.e.
 descriptor at the same depth) one can use \fnc{usb_dp_get_sibling_descriptor}.
 Whereas this function takes the same arguments, it also requires two extra
 arguments — pointer to the parent descriptor (i.e. parent of both nested ones)
-and a pointer to the preceeding descriptor. Such pointer must always point to
+and a pointer to the preceding descriptor. Such pointer must always point to
 the first byte of the descriptor (i.e. to the length of the descriptor, not to
 its type).
 

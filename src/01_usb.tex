@@ -90,7 +90,7 @@ communication with the camera (usually via vendor-specific drivers) and, as a
 fallback, a mass-storage interface that can be used to download photos when the
 specialized drivers are not available.
 
-Each interface can have several \textit{lternate settings} that change device
+Each interface can have several \textit{alternate settings} that change device
 capabilities at the interface level. For example, network card may offer
 several alternate settings using different sizes of data packets, or cameras
 offering an alternate setting for each supported resolution.
@@ -128,7 +128,7 @@ divided into four different types.
 The first type of transfers are \textit{control transfers}. These are used for
 the device configuration and for manipulating the state of the device. Every
 device has at least the default control endpoint but it is possible for the
-device to have mutliple control endpoints. The control transfers are
+device to have multiple control endpoints. The control transfers are
 bidirectional.
 
 The second type are \textit{interrupt transfers}. These are intended for small
@@ -164,7 +164,7 @@ ingoing transactions, the token is replaced by a handshake.
 
 This protocol is roughly the same for bulk, interrupt and isochronous
 transfers. Control transfers are a bit different because they have a special
-preambule — a setup packet. The setup packet contains commands that might
+preamble — a setup packet. The setup packet contains commands that might
 change the device state and this packet might be optionally followed by a data
 phase. The control transfers are the only ones that are actually bidirectional
 (because the setup packet is always outgoing, while the data phase could be
@@ -358,7 +358,7 @@ transactions concurrently.
 
 The devices on USB 2 bus communicate using broadcast. For OUT transactions,
 every hub broadcasts the packet to all enabled downstream ports and only the
-targetted device should accept the packet. In USB 3, the communication is
+targeted device should accept the packet. In USB 3, the communication is
 routed directly to the receiver. This introduces the need for route strings,
 which describe the ports of the hubs on the way to the device.
 

@@ -42,7 +42,7 @@ is expected to be a bit familiar with the HelenOS platform to fully understand
 the content of this documentation.
 
 As the primary focus of this documentation is not HelenOS itself, we would like
-to avoid extensivelly documenting what is out of scope. At the time of writing,
+to avoid extensively documenting what is out of scope. At the time of writing,
 there is a very good place to get familiar with device drivers in HelenOS --
 the HelenOS wiki article about Device Drivers.%
 \footnote{\url{http://www.helenos.org/wiki/DeviceDrivers}}
@@ -59,14 +59,14 @@ care about starting drivers, attaching newly found devices to drivers, and many
 more; and a \lib{libdrv} library creating a platform to write DDF-compatible
 drivers on.
 
-A driver, once started, is essentialy a server task. It fills a callback table
+A driver, once started, is essentially a server task. It fills a callback table
 with driver operations, and waits for being called by the library. Once the
 devman wants the driver to take care of a new \emph{device}, its
 \fnc{dev_add} callback is called. The driver is then supposed to do whatever
 it needs to make the device operating, eventually creating \emph{functions} --
 nodes that are passed back to devman to be taken care of. The function can be
 either an \emph{exposed} function, being a leaf node usable directly by the user
-(keyboard, disk partition, \dots), or an \emph{inner} function, essentialy
+(keyboard, disk partition, \dots), or an \emph{inner} function, essentially
 being a device for another driver.
 
 Drivers than communicate with each other using \emph{interfaces}. Every
