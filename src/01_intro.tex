@@ -1,5 +1,54 @@
 \chapter{Introduction}
 
+You are reading the main documentation of the HelUSB3 project. The main goal of
+the project was to extend the existing USB support in HelenOS with support for
+USB 3, namely implementing the driver for host controllers compliant with the
+Extensible Host Controller Interface (xHCI), extending the USB device driver
+framework to USB work with USB 3 devices and overall refactoring and cleanup of
+the USB subsystem in HelenOS. The previous support for USB was implemented as
+a software project back in 2011, then was maintained and extended by HelenOS
+developers (mostly by one team member of the project).
+
+\section{Structure of This Document}
+
+In the first chapter, we try to build a context needed to understand the
+following chapters. You can get an idea of what HelenOS is and how drivers work
+there. Then, we try to introduce the reader to idioms and paradigms used in the
+USB world, as the rest of the documentation assumes the reader has this basic
+knowledge. All of this information is included only for the sake of
+completeness, we do not aim to replace (nor duplicate) the documentation of
+HelenOS nor USB specifications. Please consider these sections as informative
+and supportive only, and follow on topics in their respective documentations.
+
+In the second chapter, we focus on the xHCI driver, which is a major part of
+the project. We describe its overall architecture and discuss implementation
+details. This chapter, together with in-code documentation and knowledge of the
+xHCI specification, shall provide reader enough information to modify and
+extend our implementation without much trouble.
+
+The third chapter is dedicated to modifications to the existing USB subsystem.
+We do not discuss the obvious ones (like support for USB 3 hubs), but those
+that would be avoidable if we took the assignment to the word. Since we like to
+leave the table clean, we had to change some design decisions of the previous
+authors. Some of the changes introduce more systematic approach, some were
+needed to implement additional parts of the assignment without using a duct
+tape. Some of them are just optimizations towards better performance or
+usability. Also, the documentation of the previous project was obsolete, so we
+try to document the current state of the USB subsystem.
+
+As the USB subsystem is mostly useless without drivers for actual USB devices,
+we would like to lessen the initial barrier that stands in the way of
+implementing new USB device drivers. The chapter \ref{chap:usb-drivers} is
+written as a complete guide to writing device drivers, hiding implementation
+details of the stack and focusing on how to use it only. It still requires the
+reader to understand the USB architecture and mechanics though, as well as
+understanding the device they are writing the driver for.
+
+To support the implementation process and to allow us to test it in
+a semi-automatic way, we developed a standalone testing mechanism that tests
+the USB stack end-to-end by using modified virtual environment. This is the
+topic of appendix A.
+
 \section{About HelenOS}
 HelenOS is a microkernel operating system. Contrary to operating systems with
 monolithic kernels, key operating system functionality (including device
@@ -32,25 +81,6 @@ microkernel-based Fuchsia and in bare-metal iPXE.  Haiku Project is currently
 developing xHCI driver for their OS.
 
 \section{Drivers in HelenOS}
-
-If the purpose of reading this documentation is not understanding our work, but
-solely writing new USB device driver, then a separate chapter \ref{chap:usb-drivers}
-contains pretty much all information needed.
-
-In all other cases, this documentation is about device drivers, and kind reader
-is expected to be a bit familiar with the HelenOS platform to fully understand
-the content of this documentation.
-
-As the primary focus of this documentation is not HelenOS itself, we would like
-to avoid extensively documenting what is out of scope. At the time of writing,
-there is a very good place to get familiar with device drivers in HelenOS --
-the HelenOS wiki article about Device Drivers.%
-\footnote{\url{http://www.helenos.org/wiki/DeviceDrivers}}
-
-Sacrificing deep understanding of the topic but saving some time, a very brief
-overview follows.
-
-\subsection{Crash Course in Device Drivers}
 
 Drivers in HelenOS are separate userspace tasks. There is a common framework
 for writing device drivers, the \emph{Device Driver Framework}, abbreviated as
@@ -245,10 +275,3 @@ support for device removal in the Device Driver Framework, so it's not
 surprising that the USB framework inherited this. There are attempts to
 terminate interaction and release resources in case of repeated communication
 errors.
-
-\section{Goals of the Project}
-% TODO
-
-
-\section{Structure of This Document}
-% TODO
