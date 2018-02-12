@@ -4,14 +4,59 @@ This chapter outlines features, which were considered as optional extension of
 the project but were not realized due to time, complexity or other constraints.
 
 \section{Power Management}
-% TODO
 
+The xHCI specification focuses a lot on power management. Devices have multiple
+states with respect to the amount of power used, and even links between devices
+do. Of course, to fully utilize these features, there must have been
+a system-wide mechanism to declare intentions about power management. We're not
+there yet.
 
-\section{Bandwidth Counting}
-% TODO
+There are although a few power switches we could toggle just now. Given the
+small number of drivers implemented, we could for example make the USB fallback
+driver suspend the device.
 
+We consider power management a topic that needs to be addressed on the
+system-level, and as such we didn't pay much attention to it.
 
 \section{Asynchronous I/O}
-% TODO
 
+The aspect we care about though is performance. Even when the primary goal of
+this project was to allow users to use USB on machines equipped only with xHC,
+the performance benefit of USB 3 is not negligible, and could be well worth it.
 
+Every transfer type of USB focuses on different characteristics of the
+transfer. The interrupt pipes strive for the lowest latency possible -- in this
+field, the synchronous semantics works wery well. The latency between receiving
+the interrupt and delivering it is as fast as an IPC reply to a call.
+
+Considering isochronous endpoints, it's simply not possible to satisfy them
+with a synchronous API, so we decided to change the semantics to asynchronous
+one. The downside of the current approach is that the HC driver is forced to
+copy the data out from the shared buffer, because it's ownership is temporary.
+But since the isochronous transfers in xHCI are just a proof-of-concept and
+there are no drivers for real devices yet, we decided not to optimize
+prematurely.
+
+The bulk transfer type can however be utilized both synchronously and
+asynchronously, and both have their pros and cons. Synchronous API is easier to
+work with, asynchronous could be a lot more performant though. As there is just
+one driver using bulk endpoints, we decided not to complicate matters and stay
+with synchronous-only API for bulk pipes.
+
+\section{Isochronous Transfers in UHCI+OHCI+EHCI}
+
+The module we implemented in xHCI can be thought of as a generic scheduling
+framework for isochronous transfers. The scheduler behaves like a leaky bucket,
+scheduling the transfers to xHC at constant rate while throttling the device
+driver. This is the most complicated part of handling isochronous transfers,
+and implementing an asynchronous API for drivers is a good opportunity to
+generify it for other drivers as well.
+
+Implementing the support for isochronous transfers for older HCs is a bit
+harder task, though. Those drivers use special data structures for isochronous
+transfers, and require the software to schedule transfers so all time
+constraints are satisfied. (The xHC does it in hardware, software is just
+responsible for issuing transfers fast enough.) Also, because of a heavily
+simplified implementation of periodic scheduling in former HC drivers,
+a substantial refactoring is inevitable. That however needs a deeper
+understanding of inner workings of individual HCIs.
