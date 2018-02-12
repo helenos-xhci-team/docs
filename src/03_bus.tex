@@ -238,4 +238,6 @@ a few device-related callbacks, as xHC needs to know about devices, former HCs
 need not. But the fact we needed to do the refactoring just to understand what
 is going on proves the fact this interface must have been cleaned up and
 defined more clearly. Also, the sharing of structures reduced the amount of
-bookkeeping needed to be done by the drivers.
+bookkeeping needed to be done by the drivers. This claim is supported by the
+fact that even though we implemented new features and made performance
+optimizations, the codebase of former HC drivers shrunk a few kilobytes.
