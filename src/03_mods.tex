@@ -17,7 +17,7 @@ device using USB packets. The packets are sent through pipes, illusion of which
 is created by the \lib{libusbdev} library. The library communicates with the HC
 driver using the \texttt{usbhc} driver interface. The drivers actually
 communicate using the Device Driver Framework, which in the end uses the
-synchronous interface built upon asynchronous IPC mechanisms in kernel. The
+synchronous RPC built upon asynchronous IPC mechanisms in kernel. The
 scope of USB stack is limited to the USB device driver tasks, and to the USB
 Host Controller driver tasks. Because the USB Device Framework hasn't changed much
 in USB 3, our primary focus related to implementing USB 3 support was the HC
