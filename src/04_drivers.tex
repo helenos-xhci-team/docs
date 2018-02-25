@@ -39,7 +39,7 @@ initialized.
 
 Device drivers live the same life cycle as any other drivers controlled by the
 \textit{Device Manager}. A quick summary follows:
-~
+%
 \begin{enumerate}
 	\item The driver is started at the convenience of the Device Manager if and
 	when a compatible device is found. At startup, the driver registers with the
@@ -68,7 +68,7 @@ As explained in the previous section, USB device drivers are informed about
 relevant device events by asynchronous callbacks from the USB framework. To
 simplify usage, these callbacks are identical to those of the Device Driver
 Framework:
-~
+%
 \begin{description}
 	\item[Add Device] This event notifies the driver that a new device has been
 	discovered and matched to it. From this point on, the driver is allowed to
@@ -215,7 +215,7 @@ framework does most of the heavy lifting for device drivers. When a new device
 is added, prior to delivery of the \textit{Add Device} event, all endpoint
 descriptions provided by the driver are matched to device endpoints, resulting
 in two possible outcomes for every description:
-~
+%
 \begin{enumerate}
 	\item A device endpoint matching the provided description is found and
 		\textit{an endpoint mapping} is created.
@@ -264,7 +264,7 @@ open file descriptor, namely \fnc{usb_pipe_read} and \fnc{usb_pipe_write} for
 reading from \textit{In} endpoints and writing to \textit{Out} endpoints
 respectively. While semantics of these functions depends on endpoint types
 (consult USB specification for details), their basic usage is as follows:
-~
+%
 \begin{enumerate}
 	\item Device driver allocates a buffer of appropriate size (and fills it
 		with data if writing).
@@ -440,7 +440,7 @@ macros. These macros copy the scheme common to the HelenOS logging framework,
 offering various log levels a format string syntax for a variable number of
 arguments consistent with the \fnc{printf} function syntax. With decreasing
 severity, the presented logging macros are named as follows:
-~
+%
 \begin{description}
 	\item[\macro{usb_log_fatal}] for fatal errors,
 	\item[\macro{usb_log_error}] for recoverable errors,
@@ -476,7 +476,7 @@ service for a driver and consult its documentation.
 
 While the specifics of exposing IPC interfaces may vary for different device
 categories, the general scheme remains the same:
-~
+%
 \begin{enumerate}
 	\item For a DDF function, fill a specific structure with configuration and
 		call handlers Then register them with the respective system service.

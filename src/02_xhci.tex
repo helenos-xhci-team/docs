@@ -39,7 +39,7 @@ be mostly treated as read-only.
 The register structures (defined in \file{uspace/drv/bus/usb/xhci/hw\_struct/regs.h}{regs.h})
 represent hardware registers presented by the xHC to system software
 implemented as Memory-Mapped I/O space. They can be divided into four categories as follows:
-~
+%
 \begin{description}
 	\item[Capability registers]
 		These specify read-only limits, restrictions, and capabilities of the specific
@@ -58,7 +58,7 @@ In our implementation, all of these can be accessed through the \struct{xhci_hc_
 can be modified through it using the register handling macros defined in
 \file{uspace/drv/bus/usb/xhci/hw\_struct/regs.h}{regs.h}. Note that not all register bits can be
 manipulated freely by the system, some impose restrictions:
-~
+%
 \begin{description}
 	\item[RO, Read-only]
 		Register bits are read-only and cannot be altered by system software. An example

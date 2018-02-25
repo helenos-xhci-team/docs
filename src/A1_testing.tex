@@ -12,7 +12,7 @@ framework and has no xHCI-specific requirements, it can be also used to compare
 parameters of the xHCI stack with its predecessors.
 
 The subsystem is composed of three parts:
-~
+%
 \begin{description}
 	\item[QEMU fork with proprietary diagnostic device (usb-tmon)]
 		This implementation of QEMU contains a virtual USB device, which carries
@@ -55,7 +55,7 @@ can be \texttt{INT} for interrupt transfers, \texttt{BULK} for bulk transfers or
 Regardless of which of the aforementioned endpoint sets is used, the
 \texttt{usb-tmon} device prints information about the transfers it handles
 to QEMU's standard output:
-~
+%
 \begin{description}
 	\item[Interrupt]
 		Time since last \texttt{IN} or \texttt{OUT} interrupt request in
@@ -126,13 +126,12 @@ add \texttt{"-device usb-tmon"} to their QEMU startup command.
 
 % TODO
 
-
 \section{Frontend}
 
 \subsection{Structure}
 
 The \texttt{tmon} application consists of the following source files:
-~
+%
 \begin{description}
 	\item[\file{uspace/app/tmon/main.c}{main.c}]
 		Main entry point, command selection and usage string.
@@ -173,7 +172,6 @@ If no device is specified, the first device is used provided that it is the
 only one connected. Otherwise, the command fails.
 
 \end{bdsh}
-
 
 \section{Massive Surprise Removal Testing}
 

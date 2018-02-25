@@ -25,7 +25,7 @@ drivers, whereas common functionality is implemented in the bus module, which is
 a part of \lib{libusbhost}.
 
 The disconnection routine for explicit device removal is implemented as follows:
-~
+%
 \begin{enumerate}
 	\item The user signals the intention to disconnect a USB device.
 	\item The respective device drivers are notified to end their business (e.
@@ -42,7 +42,7 @@ The disconnection routine for explicit device removal is implemented as follows:
 If the user requests that this routine is rolled back, the steps of the
 disconnection routine are just executed in reverse order. The following can
 therefore be labeled as a reconnection routine:
-~
+%
 \begin{enumerate}
 	\item The user signals the intention to resume communications with a USB
 	device, on which the disconnection routine has been previously performed.
