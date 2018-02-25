@@ -182,7 +182,7 @@ a management socket located at \mintinline{bash}{$SOCKFILE}:
 
 \begin{bdsh}
 $ qemu-system-x86_64 -qmp unix:$SOCKFILE,server,nowait \
-	-device nec-usb-xhci -boot d -cdrom image.so
+	-device nec-usb-xhci -boot d -cdrom image.iso
 \end{bdsh}
 
 Then, assuming a QEMU build in a directory \mintinline{bash}{$QEMU_ROOT}, run
