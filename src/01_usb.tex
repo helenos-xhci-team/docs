@@ -2,7 +2,7 @@
 \label{sec:usb_briefly}
 
 Disclaimer: This chapter is heavily copied from the documentation of the
-previous project \textit{USB subsystem in HelenOS} and filled in with the new
+previous project \textit{USB subsystem in HelenOS}\cite{helenos:helusb} and filled in with the new
 features and specifics of USB 3.
 
 This chapter provides a brief overview of the USB architecture. It does not aim
@@ -319,14 +319,14 @@ The USB 3 bus and USB 3 devices are backwards compatible with USB 2. As the
 protocol is completely different this was done by splitting the bus into two
 parts. The physical implementation is best shown by the following figure.
 
-% TODO Reference this figure to the USB 3 specification, section 3.1, fig 3-1
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.6\textwidth]{dual-bus}
-	\caption{Dual bus architecture}
+	\caption{Dual bus architecture, \cite{usb3}, Figure 3-1}
 	\label{fig:dual-bus}
 \end{figure}
+
+% TODO: 3.2 contains vector version, use it
 
 Every USB 3 device can be seen as both USB 3 and USB 2 device. If an USB 3
 device is plugged into USB 2 hub, the device will recognize that and start

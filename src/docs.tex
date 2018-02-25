@@ -4,9 +4,25 @@
 \usepackage[utf8]{inputenc}
 \usepackage[paper=a4paper,margin=1in]{geometry}
 \usepackage[chapter]{minted}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks,urlcolor=red!50!black]{hyperref}
 \usepackage[table]{xcolor}
+\usepackage{biblatex}
 \usepackage{fancyhdr,graphicx,wrapfig,booktabs,tabularx}
+
+\addbibresource{src/bibliography.bib}
+
+% Include indirectly cited references
+\nocite{*}
+
+% Break line before URL
+\DeclareFieldFormat{formaturl}{\newline #1}
+\newbibmacro*{url+urldate}{%
+\printtext[formaturl]{%
+  \printfield{url}}%
+  \iffieldundef{urlyear}
+    {}
+    {\setunit*{\addspace}%
+     \printtext[urldate]{\printurldate}}}
 
 \graphicspath{{img/}}
 
@@ -27,7 +43,6 @@
 }
 
 \definecolor{lightgray}{gray}{0.95}
-
 
 \usemintedstyle{borland}
 

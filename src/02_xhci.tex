@@ -31,7 +31,7 @@ implemented.
 
 The \file{uspace/drv/bus/usb/xhci/hw\_struct}{hw\_struct} directory contains C structures
 that represent registers and control structures used by the xHC. The memory layout of the
-structures is defined by the xHCI specification and thus the files in this directory should
+structures is defined by the xHCI specification\cite{xhci} and thus the files in this directory should
 be mostly treated as read-only.
 
 \subsection{Registers}
@@ -386,8 +386,8 @@ individual HC drivers to read and modify register space of the Host Controller.
 
 This solution is very clean in design, regarding that root hub functionality is
 exactly the same as any other hub's, but just controlled by MMIO mapped
-registers instead of USB packets. It is even recommended by the USB 2.0			% TODO: Link to USB2 spec
-specification to embody this solution. But that's pretty much the only advantage
+registers instead of USB packets. It is even recommended by the USB 2.0
+specification \cite{usb2} to embody this solution. But that's pretty much the only advantage
 this solution has. One has to write a lot of code to even implement the
 callbacks, not mentioning the virthub module itself. And a lot of code always
 comes with bugs. Also, while having no real performance impact, it requires
