@@ -118,16 +118,11 @@ given to the hardware. Let's walk through them one by one.
 
 These rings are prepared to be multi-segment. They contain a list of
 \struct{trb_segment_t} structures, which represent one ring segment. The
-segment itself is allocated as a DMA buffer (sect. \ref{sec:dma-buffers}) of
+segment itself is allocated as a memory accessible for DMA of
 size \macro{PAGE_SIZE}. The space for TRBs is in the beginning to ensure
 alignment. At the end, there is a small footer keeping the physical address of
 the segment and a link to the segment list. There are helper functions to
 manage segments.
-
-To avoid keeping the \struct{dma_buffer_t} structure inside the segment and
-wasting precious DMA-accessible memory, the structure is reconstructed in order
-to be freed in \fnc{trb_segment_free}. We agree that this violates the
-encapsulation of DMA buffers, but consider this the lesser evil.
 
 The main runtime interface to rings of this kind is the method
 \fnc{xhci_trb_ring_enqueue_multiple}, used to enqueue a contiguous array of
