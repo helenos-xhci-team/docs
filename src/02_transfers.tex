@@ -2,7 +2,7 @@
 \label{sec:transfers}
 
 The xHC uses transfers to abstract USB communication. Every call to
-\fnc{usb_write} and \fnc{usb_read} is accomplished by creating a transfer,
+\fnc{usbhc_transfer} is accomplished by creating a transfer,
 setting it up, handing it to the xHC and waiting for transfer completion. This
 section describes the code structure and implementation details of the xHCI transfer
 subsystem.
@@ -112,7 +112,7 @@ requirements described above. We tried to not introduce an API specific for
 isochronous transfers to not clutter the interface.
 
 To maintain the \lib{libusbhost} API, we have decided to slightly change the
-semantics of calling \fnc{usb_write} and \fnc{usb_read} on isochronous
+semantics of calling \fnc{usb_transfer} on isochronous
 endpoints. The \struct{xhci_endpoint_t} structure includes a substructure for
 fields specific to isochronous endpoints in \struct{xhci_isoch_t}. There is a
 small trick present to avoid inflating the \struct{xhci_endpoint_t} for every
@@ -132,7 +132,7 @@ descriptors on the transfer ring in advance but do not schedule too old data.
 
 \subsubsection{IN endpoints}
 
-For IN endpoints, the semantics of \fnc{usb_read} is changed so that instead
+For IN endpoints, the semantics of \fnc{usbhc_transfer} is changed so that instead
 of triggering a read transfer, the call retrieves previously read data and
 returns them to the caller. This means that we have to enqueue read transfers
 in advance and the caller is expected to withdraw them fast enough. If there is
@@ -145,12 +145,12 @@ enqueue as many as possible to the transfer ring before ringing the doorbell
 for the first time. This means that not all descriptors may be enqueued because
 of the strict deadlines described above. If this happens, we start a timer,
 which takes care of putting the transfer descriptors on the ring when the time
-is right. After every call to \fnc{usb_read} and withdrawing the received data,
+is right. After every call to \fnc{usbhc_transfer} and withdrawing the received data,
 the processed buffer is recycled and scheduled back on the transfer ring.
 
 \subsubsection{OUT endpoints}
 
-For OUT endpoints, the \fnc{usb_write} doesn't ensure that the transfer
+For OUT endpoints, the \fnc{usbhc_transfer} doesn't ensure that the transfer
 finishes. Instead, it only copies the data to the buffer and attempts to put
 the buffer on the ring, if possible. If there is no free buffer yet (so all the
 buffers are on the ring), the call blocks until at least one transfer is
@@ -167,7 +167,7 @@ the first transfer descriptor by a short delay.
 The transfer errors in isochronous transfers are very often not considered fatal
 and should be skipped. Therefore, we decided to not deliver the
 error to the driver immediately, instead, the error that occurred is returned with
-the next \fnc{usb_read} or \fnc{usb_write} call, in the \texttt{error} field of
+the next \fnc{usbhc_transfer} call, in the \texttt{error} field of
 \struct{usb_transfer_batch_t}.
 
 On the other hand, the \textit{Ring Overrun} and \textit{Ring Underrun} errors
@@ -208,7 +208,7 @@ bulk endpoint may support up to 65533 streams.
 
 At the host side, every stream has its own transfer ring. When the device
 driver communicates through the USB pipe, it can choose a different stream for
-every \fnc{usb_write} and \fnc{usb_read}.
+every \fnc{usbhc_transfer}.
 
 Streams are scheduled cooperatively over a single bulk pipe. The current stream
 selection can be initiated by both host controller and the device. The opposite
