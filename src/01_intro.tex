@@ -47,7 +47,7 @@ understanding the device they are writing the driver for.
 To support the implementation process and to allow us to test it in
 a semi-automatic way, we developed a standalone testing mechanism that tests
 the USB stack end-to-end by using modified virtual environment. This is the
-topic of appendix A.
+topic of \ref{appendix:testing}.
 
 \section{About HelenOS}
 HelenOS is a microkernel operating system. Contrary to operating systems with
@@ -99,23 +99,23 @@ either an \emph{exposed} function, being a leaf node usable directly by the user
 (keyboard, disk partition, \dots), or an \emph{inner} function, essentially
 being a device for another driver.
 
-Drivers than communicate with each other using \emph{interfaces}. Every
+Drivers then communicate with each other using \emph{interfaces}. Every
 function is provided with an interface it provides to the child driver. The
-driver itself than serves as a mediator or translator of operations called on
+driver itself then serves as a mediator or translator of operations called on
 its functions to yet another operations called on its device. For example, the
 \emph{PCI} driver exposes a function for every card physically attached to the
 bus. One of its functions is an xHC, which is given as a device to the
-\emph{xhci} driver. It then creates a function for every gadget connected
+\emph{xHCI} driver. It then creates a function for every gadget connected
 through USB. USB functions are provided with an interface to issue USB
 transfers. USB device drivers use this interface to actually drive the USB
-devices. The xhci driver translates the transfer requests to writes into PIO
+devices. The xHCI driver translates the transfer requests to writes into PIO
 space offered by the PCI driver as a part of the PCI function interface.
 
 In the very end, the device tree exposes only its leaves. Every leaf node
 (exposed function) can be added into several categories. Categories being
-a well-known classes of devices (e.g. a disk partition) providing an interface
+a well-known classes of devices (e.g. a disk partition) provide an interface
 of a service. For the user, the whole DDF ecosystem looks like a modular
-implementation of the service interface, allowing him, for example, to mount
+implementation of the service interface, allowing them, for example, to mount
 the partition regardless of where it is located and how it is connected to the
 system.
 
