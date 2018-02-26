@@ -13,23 +13,15 @@ all: $(PROJ).pdf
 .PHONY: all
 
 $(SVGS): %.pdf: %.svg
-	convert $< $@
+	inkscape --export-pdf=$@ $<
 
-$(PROJ).aux: src/*.tex ${IMAGES}
+$(PROJ).pdf: src/*.tex ${IMAGES}
 	# First run generates TOC.
 	TEXINPUTS=src:${TEXINPUTS} $(TEX) $(TEXFLAGS) -draft $(PROJ).tex
-
-$(PROJ).bbl: src/*.bib $(PROJ).aux
 	# Update bibliography
 	biber $(PROJ)
-
-$(PROJ).pdf: $(PROJ).aux $(PROJ).bbl
-	mv $< $<.tmp
 	# Second run uses it.
 	TEXINPUTS=src:${TEXINPUTS} $(TEX) $(TEXFLAGS) $(PROJ).tex
-	# If the aux file hasn't changed, mask modification time to break cycle
-	cmp -s $< $<.tmp && mv $<.tmp $<
-	rm -f $<.tmp
 
 spellcheck:
 	find src/ -name "*.tex" -exec ${ASPELL} ${ASPELL_FLAGS} check "{}" \;

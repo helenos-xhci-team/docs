@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg1732"
+   version="1.1"
+   viewBox="0 0 76.190651 85.436554"
+   height="85.436554mm"
+   width="76.190651mm">
+  <defs
+     id="defs1726">
+    <clipPath
+       id="clipPath96"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         id="path94"
+         d="M 0,0 H 268.73 V 277.99 H 0 Z" />
+    </clipPath>
+  </defs>
+  <metadata
+     id="metadata1729">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-68.750416,-70.627203)"
+     id="layer1">
+    <g
+       transform="matrix(1.1607447,0,0,-1.2006791,68.363223,156.68667)"
+       id="g88">
+      <g
+         transform="scale(0.26793,0.259)"
+         id="g90">
+        <g
+           clip-path="url(#clipPath96)"
+           id="g92">
+          <path
+             id="path98"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 32.865,92.123 h 103.5 v 76.5 h -103.5 z" />
+          <path
+             id="path100"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 32.865,92.123 h 103.5 v 76.5 h -103.5 z" />
+          <path
+             id="path102"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 1.365,200.12 h 175.5 v 76.5 H 1.365 Z" />
+          <path
+             id="path104"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 1.365,200.12 h 175.5 v 76.5 H 1.365 Z" />
+          <path
+             id="path106"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 59.865,227.12 h 112.5 v 45 h -112.5 z" />
+          <path
+             id="path108"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 59.865,227.12 h 112.5 v 45 h -112.5 z" />
+          <text
+             id="text112"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,95.156,260.92)">
+            <tspan
+               id="tspan110"
+               y="0"
+               x="0 5.1328082 8.8085518 13.159944">USB</tspan>
+          </text>
+          <text
+             id="text116"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,110.12,260.92)">
+            <tspan
+               id="tspan114"
+               y="0"
+               x="0">2</tspan>
+          </text>
+          <text
+             id="text120"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,114.18,260.92)">
+            <tspan
+               id="tspan118"
+               y="0"
+               x="0">.</tspan>
+          </text>
+          <text
+             id="text124"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,116.2,260.92)">
+            <tspan
+               id="tspan122"
+               y="0"
+               x="0 4.0547519">0</tspan>
+          </text>
+          <text
+             id="text128"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,122.06,260.92)">
+            <tspan
+               id="tspan126"
+               y="0"
+               x="0 4.9842 9.2029676 12.331872">Host</tspan>
+          </text>
+          <path
+             id="path130"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 64.365,231.62 h 31.5 v 22.5 h -31.5 z" />
+          <path
+             id="path132"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 64.365,231.62 h 31.5 v 22.5 h -31.5 z" />
+          <text
+             id="text136"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,71.496,245.27)">
+            <tspan
+               id="tspan134"
+               y="0"
+               x="0 4.9842 6.819984 10.585584">High</tspan>
+          </text>
+          <text
+             id="text140"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,86.285,245.27)">
+            <tspan
+               id="tspan138"
+               y="0"
+               x="0">-</tspan>
+          </text>
+          <text
+             id="text144"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,70.094,235.67)">
+            <tspan
+               id="tspan142"
+               y="0"
+               x="0 3.6757441 7.8788161 11.859192 15.839568">Speed</tspan>
+          </text>
+          <path
+             id="path146"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 100.37,231.62 h 31.5 v 22.5 h -31.5 z" />
+          <path
+             id="path148"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 100.37,231.62 h 31.5 v 22.5 h -31.5 z" />
+          <text
+             id="text152"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,109.12,245.27)">
+            <tspan
+               id="tspan150"
+               y="0"
+               x="0 3.6757441 7.8788161 9.7145996">Full</tspan>
+          </text>
+          <text
+             id="text156"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,120.67,245.27)">
+            <tspan
+               id="tspan154"
+               y="0"
+               x="0">-</tspan>
+          </text>
+          <text
+             id="text160"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,106.09,235.67)">
+            <tspan
+               id="tspan158"
+               y="0"
+               x="0 3.6757441 7.8788161 11.859192 15.839568">Speed</tspan>
+          </text>
+          <path
+             id="path162"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 136.37,231.62 h 31.5 v 22.5 h -31.5 z" />
+          <path
+             id="path164"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 136.37,231.62 h 31.5 v 22.5 h -31.5 z" />
+          <text
+             id="text168"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,144.24,245.27)">
+            <tspan
+               id="tspan166"
+               y="0"
+               x="0 3.3631921 7.5819602">Low</tspan>
+          </text>
+          <text
+             id="text172"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,157.54,245.27)">
+            <tspan
+               id="tspan170"
+               y="0"
+               x="0">-</tspan>
+          </text>
+          <text
+             id="text176"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,142.09,235.67)">
+            <tspan
+               id="tspan174"
+               y="0"
+               x="0 3.6757441 7.8788161 11.859192 15.839568">Speed</tspan>
+          </text>
+          <path
+             id="path178"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 5.865,227.12 h 49.5 v 45 h -49.5 z" />
+          <path
+             id="path180"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 5.865,227.12 h 49.5 v 45 h -49.5 z" />
+          <text
+             id="text184"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,14.658,256.82)">
+            <tspan
+               id="tspan182"
+               y="0"
+               x="0 3.9062159 8.1092882 12.31236 16.144417 20.347488 23.730192 27.710567 31.913639">Enhanced</tspan>
+          </text>
+          <text
+             id="text188"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,11.168,247.22)">
+            <tspan
+               id="tspan186"
+               y="0"
+               x="0 3.6757441 7.8788161 12.081888 16.062263 18.8514 22.527143 26.730215 30.710592 34.690968">SuperSpeed</tspan>
+          </text>
+          <text
+             id="text192"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,23.109,237.62)">
+            <tspan
+               id="tspan190"
+               y="0"
+               x="0 4.9842 9.2029676 12.331872">Host</tspan>
+          </text>
+          <path
+             id="path194"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 23.865,195.62 h 27 v 9 h -27 z" />
+          <path
+             id="path196"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 23.865,195.62 h 27 v 9 h -27 z" />
+          <path
+             id="path198"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 127.37,195.62 h 27 v 9 h -27 z" />
+          <path
+             id="path200"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 127.37,195.62 h 27 v 9 h -27 z" />
+          <path
+             id="path202"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 30.615,227.12 v -13.5 h -2.25 v -9" />
+          <path
+             id="path204"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 30.615,227.12 v -13.5 H 132.24 v -9" />
+          <g
+             id="g206">
+            <path
+               id="path208"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 116.12,227.12 v -9 h 33.75 v -13.5" />
+          </g>
+          <g
+             id="g210">
+            <path
+               id="path212"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 116.12,227.12 v -9 H 46.365 v -13.5" />
+          </g>
+          <path
+             id="path214"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 37.365,114.62 h 54 v 40.5 h -54 z" />
+          <path
+             id="path216"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 37.365,114.62 h 54 v 40.5 h -54 z" />
+          <text
+             id="text220"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,48.408,142.07)">
+            <tspan
+               id="tspan218"
+               y="0"
+               x="0 3.9062159 8.1092882 12.31236 16.144417 20.347488 23.730192 27.710567 31.913639">Enhanced</tspan>
+          </text>
+          <text
+             id="text224"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,44.918,132.47)">
+            <tspan
+               id="tspan222"
+               y="0"
+               x="0 3.6757441 7.8788161 12.081888 16.062263 18.8514 22.527143 26.730215 30.710592 34.690968">SuperSpeed</tspan>
+          </text>
+          <text
+             id="text228"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,57.67,122.87)">
+            <tspan
+               id="tspan226"
+               y="0"
+               x="0 4.9842 9.1872721">Hub</tspan>
+          </text>
+          <path
+             id="path230"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 95.865,119.12 h 36 v 31.5 h -36 z" />
+          <path
+             id="path232"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 95.865,119.12 h 36 v 31.5 h -36 z" />
+          <text
+             id="text236"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,101.32,137.27)">
+            <tspan
+               id="tspan234"
+               y="0"
+               x="0 5.1328082 8.8085518 13.159944">USB</tspan>
+          </text>
+          <text
+             id="text240"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,116.28,137.27)">
+            <tspan
+               id="tspan238"
+               y="0"
+               x="0">2</tspan>
+          </text>
+          <text
+             id="text244"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,120.34,137.27)">
+            <tspan
+               id="tspan242"
+               y="0"
+               x="0">.</tspan>
+          </text>
+          <text
+             id="text248"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,122.36,137.27)">
+            <tspan
+               id="tspan246"
+               y="0"
+               x="0 4.0547519">0</tspan>
+          </text>
+          <text
+             id="text252"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,107.17,127.67)">
+            <tspan
+               id="tspan250"
+               y="0"
+               x="0 4.9842 9.1872721">Hub</tspan>
+          </text>
+          <path
+             id="path254"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 80.115,164.12 h 27 v 9 h -27 z" />
+          <path
+             id="path256"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 80.115,164.12 h 27 v 9 h -27 z" />
+          <path
+             id="path258"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 55.365,87.623 h 27 v 9 h -27 z" />
+          <path
+             id="path260"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 55.365,87.623 h 27 v 9 h -27 z" />
+          <path
+             id="path262"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 104.87,87.623 h 27 v 9 h -27 z" />
+          <path
+             id="path264"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 104.87,87.623 h 27 v 9 h -27 z" />
+          <path
+             id="path266"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 64.365,114.62 v -11.25 h -4.5 v -6.747" />
+          <path
+             id="path268"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="M 64.365,114.62 V 103.37 H 109.74 V 96.623" />
+          <g
+             id="g270">
+            <path
+               id="path272"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 113.87,119.12 v -9 h 13.5 V 96.623" />
+          </g>
+          <g
+             id="g274">
+            <path
+               id="path276"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 113.87,119.12 v -9 H 77.865 V 96.623" />
+          </g>
+          <path
+             id="path278"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 84.99,164.12 v -4.5 H 64.365 v -4.5" />
+          <g
+             id="g280">
+            <path
+               id="path282"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 102.62,164.12 v -6.75 h 11.25 v -6.75" />
+          </g>
+          <path
+             id="path284"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 131.87,195.62 v -9 H 84.615 v -13.5" />
+          <g
+             id="g286">
+            <path
+               id="path288"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 149.87,195.62 v -13.5 h -47.25 v -9" />
+          </g>
+          <text
+             id="text292"
+             style="font-variant:normal;font-weight:bold;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri-Bold;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,189.87,240.47)">
+            <tspan
+               id="tspan290"
+               y="0"
+               x="0 5.2225919 9.0038157 13.488192 15.296832 20.343672 24.64452 27.836063">USB Host</tspan>
+          </text>
+          <path
+             id="path294"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 32.865,2.1231 h 108 v 58.5 h -108 z" />
+          <path
+             id="path296"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 32.865,2.1231 h 108 v 58.5 h -108 z" />
+          <path
+             id="path298"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 37.365,6.6231 h 54 v 36 h -54 z" />
+          <path
+             id="path300"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 37.365,6.6231 h 54 v 36 h -54 z" />
+          <text
+             id="text304"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,48.408,31.823)">
+            <tspan
+               id="tspan302"
+               y="0"
+               x="0 3.9062159 8.1092882 12.31236 16.144417 20.347488 23.730192 27.710567 31.913639">Enhanced</tspan>
+          </text>
+          <text
+             id="text308"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,44.918,22.223)">
+            <tspan
+               id="tspan306"
+               y="0"
+               x="0 3.6757441 7.8788161 12.081888 16.062263 18.8514 22.527143 26.730215 30.710592 34.690968 38.894039">SuperSpeed</tspan>
+          </text>
+          <text
+             id="text312"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,50.164,12.623)">
+            <tspan
+               id="tspan310"
+               y="0"
+               x="0 3.6757441 7.8788161 12.081888 15.464592 18.144144 19.979927 24.198696">Function</tspan>
+          </text>
+          <path
+             id="path314"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 95.865,11.123 h 40.5 v 31.5 h -40.5 z" />
+          <path
+             id="path316"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 95.865,11.123 h 40.5 v 31.5 h -40.5 z" />
+          <text
+             id="text320"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,103.57,29.273)">
+            <tspan
+               id="tspan318"
+               y="0"
+               x="0 5.1328082 8.8085518 13.159944">USB</tspan>
+          </text>
+          <text
+             id="text324"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,118.53,29.273)">
+            <tspan
+               id="tspan322"
+               y="0"
+               x="0">2</tspan>
+          </text>
+          <text
+             id="text328"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,122.59,29.273)">
+            <tspan
+               id="tspan326"
+               y="0"
+               x="0">.</tspan>
+          </text>
+          <text
+             id="text332"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,124.61,29.273)">
+            <tspan
+               id="tspan330"
+               y="0"
+               x="0 4.0547519">0</tspan>
+          </text>
+          <text
+             id="text336"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,101.91,19.673)">
+            <tspan
+               id="tspan334"
+               y="0"
+               x="0 3.6757441 7.8788161 12.081888 15.464592 18.144144 19.979927 24.198696">Function</tspan>
+          </text>
+          <path
+             id="path338"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 80.115,56.123 h 27 v 9 h -27 z" />
+          <path
+             id="path340"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 80.115,56.123 h 27 v 9 h -27 z" />
+          <path
+             id="path342"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 84.99,56.123 v -6.75 H 64.365 v -6.75" />
+          <g
+             id="g344">
+            <path
+               id="path346"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 102.62,56.123 v -6.75 h 13.5 v -6.75" />
+          </g>
+          <path
+             id="path348"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 109.37,87.623 v -9 H 84.615 v -13.5" />
+          <g
+             id="g350">
+            <path
+               id="path352"
+               style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1"
+               d="m 127.37,87.623 v -13.5 h -24.75 v -9" />
+          </g>
+          <text
+             id="text356"
+             style="font-variant:normal;font-weight:bold;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri-Bold;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,149.37,124.72)">
+            <tspan
+               id="tspan354"
+               y="0"
+               x="0 5.2225919 9.0038157 13.488192 15.296832 20.343672 24.6366 28.929527 30.738169 35.781193 39.808514 43.593552 45.558434 48.905998">USB Hub Device</tspan>
+          </text>
+          <text
+             id="text360"
+             style="font-variant:normal;font-weight:bold;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri-Bold;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,149.37,24.473)">
+            <tspan
+               id="tspan358"
+               y="0"
+               x="0 5.2225919 9.0038157 13.488192 15.296832 19.554552 23.581873 26.425655 28.390535 32.683464 36.976391 41.003712 43.847496 47.796841 49.761719 51.570358 56.613384 60.640705 64.425743 66.390625 69.73819">USB Peripheral Device</tspan>
+          </text>
+          <path
+             id="path362"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 185.87,218.12 h -4.5 l -31.5,-18" />
+          <path
+             id="path364"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 151.66,201.15 c -0.56,0.99 -1.83,1.34 -2.82,0.77 -0.99,-0.57 -1.34,-1.83 -0.77,-2.82 0,0 0,0 0,0 0.56,-1 1.83,-1.34 2.82,-0.77 0.99,0.56 1.34,1.83 0.77,2.82 z" />
+          <text
+             id="text368"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,189.87,213.72)">
+            <tspan
+               id="tspan366"
+               y="0"
+               x="0 5.1328082 8.8085518 13.159944 14.968584 19.234297 23.453064 27.656136 31.859207 35.839584 39.222286 41.90184 46.120609">USB Connector</tspan>
+          </text>
+          <text
+             id="text372"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,238.77,213.72)">
+            <tspan
+               id="tspan370"
+               y="0"
+               x="0">(</tspan>
+          </text>
+          <text
+             id="text376"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,241.2,213.72)">
+            <tspan
+               id="tspan374"
+               y="0"
+               x="0">s</tspan>
+          </text>
+          <text
+             id="text380"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,244.33,213.72)">
+            <tspan
+               id="tspan378"
+               y="0"
+               x="0">)</tspan>
+          </text>
+          <path
+             id="path382"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 172.37,177.62 h -4.5 l -13.5,4.5" />
+          <path
+             id="path384"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 156.33,181.47 c 0.36,1.08 -0.23,2.26 -1.31,2.62 -1.08,0.36 -2.26,-0.23 -2.62,-1.31 0,0 0,0 0,0 -0.36,-1.09 0.23,-2.26 1.31,-2.62 1.08,-0.36 2.26,0.22 2.62,1.31 z" />
+          <text
+             id="text388"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,176.37,173.22)">
+            <tspan
+               id="tspan386"
+               y="0"
+               x="0 5.1328082 8.8085518 13.159944">USB</tspan>
+          </text>
+          <text
+             id="text392"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,191.33,173.22)">
+            <tspan
+               id="tspan390"
+               y="0"
+               x="0">2</tspan>
+          </text>
+          <text
+             id="text396"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,195.39,173.22)">
+            <tspan
+               id="tspan394"
+               y="0"
+               x="0">.</tspan>
+          </text>
+          <text
+             id="text400"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,197.41,173.22)">
+            <tspan
+               id="tspan398"
+               y="0"
+               x="0 4.0547519">0</tspan>
+          </text>
+          <text
+             id="text404"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,203.27,173.22)">
+            <tspan
+               id="tspan402"
+               y="0"
+               x="0 4.3513918 8.5544643">Bus</tspan>
+          </text>
+          <path
+             id="path406"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 120.62,191.12 c 1.86,0 3.37,-3.02 3.37,-6.75 0,-3.72 -1.51,-6.75 -3.37,-6.75 0,0 0,0 0,0" />
+          <path
+             id="path408"
+             style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 120.62,191.12 c -1.87,0 -3.38,-3.02 -3.38,-6.75 0,-3.72 1.51,-6.75 3.38,-6.75 0,0 0,0 0,0" />
+          <path
+             id="path410"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 163.37,161.87 h -4.5 l -33.75,13.5" />
+          <path
+             id="path412"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 127.04,174.6 c 0.42,1.07 -0.09,2.27 -1.16,2.7 -1.06,0.42 -2.26,-0.1 -2.69,-1.16 0,0 0,0 0,0 -0.42,-1.06 0.09,-2.26 1.16,-2.69 1.06,-0.42 2.26,0.09 2.69,1.15 z" />
+          <text
+             id="text416"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,167.37,157.47)">
+            <tspan
+               id="tspan414"
+               y="0"
+               x="0 4.2657118 8.4844799 14.874984 19.078056 23.296824 26.425728 28.261513 30.941065 34.92144 36.73008 40.112785 43.944839 48.147911 49.983696">Composite cable</tspan>
+          </text>
+          <path
+             id="path418"
+             style="fill:none;stroke:#000000;stroke-width:0.23999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 68.865,188.87 h 4.5 l 6.75,-3.37" />
+          <path
+             id="path420"
+             style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+             d="m 78.264,186.42 c 0.511,1.03 1.754,1.44 2.777,0.93 1.022,-0.51 1.437,-1.76 0.925,-2.78 0,0 0,0 0,0 -0.511,-1.02 -1.754,-1.43 -2.777,-0.92 -1.022,0.51 -1.437,1.75 -0.925,2.77 z" />
+          <text
+             id="text424"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,32.952,184.47)">
+            <tspan
+               id="tspan422"
+               y="0"
+               x="0 3.9062159 8.1092882 12.31236 16.144417 20.347488 23.730192 27.710567 31.913639">Enhanced</tspan>
+          </text>
+          <text
+             id="text428"
+             style="font-variant:normal;font-weight:normal;font-size:7.99991989px;font-family:Calibri;-inkscape-font-specification:Calibri;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+             transform="matrix(1,0,0,-1,12.479,173.27)">
+            <tspan
+               id="tspan426"
+               y="0"
+               x="0 3.6757441 7.8788161 12.081888 16.062263 18.8514 22.527143 26.730215 30.710592 34.690968 38.894039 40.702679 45.054073 49.257145">SuperSpeed Bus</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
