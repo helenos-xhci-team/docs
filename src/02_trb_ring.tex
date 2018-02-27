@@ -1,6 +1,6 @@
 \section{TRB Ring}
 
-One of the primary means of communication with the HC, apart from register
+One of the primary means of communication with the HC, apart from the register
 interface, are the TRB rings. Their management is fully contained in the TRB
 ring module. Before we dive into the implementation details, let us first
 describe how these rings work.
@@ -29,11 +29,11 @@ the command interface is described in more depth in section \ref{sec:commands}.
 The event ring is asynchronously read to retrieve results of commands,
 completed transactions and so on, as the primary information channel from HC to
 host. Actually, there can be more than one instance of Event Ring, but that
-requires the host to be able to recognize multiple interrupts, which is not
+requires the host to be able to recognize multiple interrupters, which is not
 supported in the current version of HelenOS. The event subsystem is further
 discussed in the section \ref{sec:events}. The third type of a~ring,
 a~\emph{Transfer Ring}, is used for every pipe endpoint on the bus - either
-Endpoint or a Stream. These are used by the Transfer module, described in
+Endpoint or Stream. These are used by the Transfer module, described in
 section \ref{sec:transfers}. For now, let's discover the mechanics of the rings
 themselves, regardless of their type.
 
@@ -124,9 +124,9 @@ alignment. At the end, there is a small footer keeping the physical address of
 the segment and a link to the segment list. There are helper functions to
 manage segments.
 
-The main runtime interface to rings of this kind is the method
+The main runtime interface to rings of this kind is the function
 \fnc{xhci_trb_ring_enqueue_multiple}, used to enqueue a contiguous array of
-TRBs (referred to as Transfer Descriptor, TD) onto the ring. As this method
+TRBs (referred to as Transfer Descriptor, TD) onto the ring. As this function
 must not block to be usable in atomic contexts, it first performs a dry run to
 check if there is enough space on the ring, then rollbacks and actually
 emplaces the TRBs. Because it might be needed to interleave the Transfer
@@ -151,7 +151,7 @@ mixed with the initial Consumer Cycle State.
 
 The implementation of the event ring is fairly simple, with the main
 interaction point being the function \fnc{xhci_event_ring_dequeue}. This
-method, symmetrically to the TRB ring enqueue, does not block if the ring is
+function, symmetrically to the TRB ring enqueue, does not block if the ring is
 empty, but returns \macro{ENOENT} instead. This structure also contains the
 Event Ring Segment Table.
 

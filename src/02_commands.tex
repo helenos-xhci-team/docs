@@ -43,7 +43,7 @@ executed. While the high-level command parameters are kept directly in this
 structure, the hardware-related internals are kept in a substructure, which is
 commonly referred to as \textit{command header}. The purpose of this separation
 is to stress that the header contents are to be exclusively accessible to the
-command subsystem only, while the rest of the structure remains accessible to
+command subsystem, while the rest of the structure remains accessible to
 the entire xHC driver.
 
 Besides data structures, the command subsystem offers a centralized command
@@ -74,7 +74,7 @@ of issuing, the information required can be broken down into three groups:
 	\item[Command Type]
 		One of the 15 commands supported by the xHC command interface.
 	\item[Command-specific Parameters]
-		The number, type and semantics of these parameters depends on the
+		The number, type and semantics of these parameters depend on the
 		specified command type.
 	\item[Completion Semantics]
 		This is the desired behavior of command execution.
@@ -125,14 +125,14 @@ memory.
 
 The command subsystem defined by xHCI contains a mechanism to trigger early
 command abortion. It is not guaranteed to be effective for all commands, just
-for commands which control is out of HC's hands. A good example might be the
+for commands control of which is out of HC's hands. A good example might be the
 \macro{SET_ADDRESS} command, which issues the USB control request
 \emph{SetAddress}, and waits for the device's response. Such command blocks
 until the response is received. If the software, for any reason, wants the
 command to be aborted, it can write 1 to the \macro{CA} bit of the
 \emph{Command Ring Control Register}.
 
-When the HC is triggered a command abortion, it places a \emph{Command Ring
+When the HC is triggered by a command abortion, it places a \emph{Command Ring
 Stopped} event on the primary event ring and halts command processing. The ring
 can be started again by ringing its doorbell. If a command was actually
 aborted, a corresponding \emph{Command Completion Event} with status
@@ -143,27 +143,27 @@ possibility to block, arbitrarily chosen as 10 seconds. That gives a generous
 amount of time for the HC to finish a command. When this timeout is over,
 a command is aborted.
 
-There comes the catch: the driver is not able to choose which command is to be
+Here comes the catch: the driver is not able to choose which command is to be
 aborted -- it is always the one currently processed. Usually, it's the one that
 blocks the pipe, but it means that the driver cannot simply place a timed
 constraint on a command execution. To reflect the hardware semantics, all
 fibrils that expire the timeout behave the same: they trigger a command
-abortion, wait for the command ring to be stopped, then starts it again.
+abortion, wait for the command ring to be stopped, then start it again.
 
 To orchestrate several fibrils trying to schedule new commands, waiting for
 commands to be completed and also the one handling an interrupt, a simple state
-machine with a synchronization is incorporated. In case the command ring is
+machine with synchronization is incorporated. In case the command ring is
 being restarted, newly issued commands are delayed to prevent the doorbell from
-being rung unexpectedly. When there are multiple fibrils with an expired timeout,
+being rung unexpectedly. When there are multiple fibrils with an expired timeout
 while the abort is already triggered but not yet finished, they retract and
 wait for the full timeout period again.
 
 That common execution path is enclosed within a function called
-\fnc{try_abort_current_command}, static for the command subsystem. As it's hard
+\fnc{try_abort_current_command} (static for the command subsystem). As it's hard
 to force a command to stall, we haven't had many opportunities to test the
 behavior. Usually, the mechanism was triggered by a deadlock in our code, which
 didn't magically disappear when a command was aborted. Also, the commands
-always finish on time in a virtual environment. At the time of writing the
+always finish on time in a virtual environment. At the time of writing this
 documentation, there has been only one observed legitimate occurrence of
 a command stall on real hardware. The abort mechanism did its job well that day.
 

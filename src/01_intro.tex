@@ -3,15 +3,15 @@
 You are reading the main documentation of the HelUSB3 project. The main goal of
 the project was to extend the existing USB support in HelenOS with support for
 USB 3, namely implementing the driver for host controllers compliant with the
-Extensible Host Controller Interface (xHCI), extending the USB device driver
-framework to USB work with USB 3 devices and overall refactoring and cleanup of
+eXtensible Host Controller Interface (xHCI), extending the USB device driver
+framework to USB work at USB 3 speeds, xHCI-only devices and overall refactoring and cleanup of
 the USB subsystem in HelenOS. The previous support for USB was implemented as
 a software project back in 2011, then was maintained and extended by HelenOS
 developers (mostly by one team member of the project).
 
 \section{Structure of This Document}
 
-In the first chapter, we try to build a context needed to understand the
+In the first chapter, we try to build context needed to understand the
 following chapters. You can get an idea of what HelenOS is and how drivers work
 there. Then, we try to introduce the reader to idioms and paradigms used in the
 USB world, as the rest of the documentation assumes the reader has this basic
@@ -22,7 +22,7 @@ and supportive only, and follow on topics in their respective documentations.
 
 In the second chapter, we focus on the xHCI driver, which is a major part of
 the project. We describe its overall architecture and discuss implementation
-details. This chapter, together with in-code documentation and knowledge of the
+decisions. This chapter, together with in-code documentation and knowledge of the
 xHCI specification, shall provide reader enough information to modify and
 extend our implementation without much trouble.
 
@@ -33,12 +33,13 @@ leave the table clean, we had to change some design decisions of the previous
 authors. Some of the changes introduce more systematic approach, some were
 needed to implement additional parts of the assignment without using a duct
 tape. Some of them are just optimizations towards better performance or
-usability. Also, the documentation of the previous project was obsolete, so we
-try to document the current state of the USB subsystem.
+usability. Also, the documentation of the previous project was obsoletes by
+recent develepments in HelenOS, so we try to document the current state of
+the USB subsystem.
 
 As the USB subsystem is mostly useless without drivers for actual USB devices,
 we would like to lessen the initial barrier that stands in the way of
-implementing new USB device drivers. The chapter \ref{chap:usb-drivers} is
+implementing new USB device drivers. The chapter~\ref{chap:usb-drivers} is
 written as a complete guide to writing device drivers, hiding implementation
 details of the stack and focusing on how to use it only. It still requires the
 reader to understand the USB architecture and mechanics though, as well as
@@ -54,7 +55,7 @@ HelenOS is a microkernel operating system. Contrary to operating systems with
 monolithic kernels, key operating system functionality (including device
 drivers, filesystems and networking) is implemented in user-space processes (or
 servers) that interact via message passing interface. The rationale of this
-decision is that the failure of one component, e.g. a faulty driver, does not
+decision is that the failure of one component, e.g.\ a faulty driver, does not
 result in the crash of the entire system. It also allows a more modular system
 design.
 
@@ -69,6 +70,7 @@ HelenOS supports several architectures (among them ia32, amd64, 32-bit ARM and
 big endian MIPS) and is released under the BSD license.
 
 \subsection{xHCI support in operating systems}
+\label{subsect:support-in-oses}
 
 Extensible Host Controller Interface was first drafted in 2008 and the final
 version of the specification was released in 2010. Since then, xHCI support
@@ -79,6 +81,14 @@ Regarding special-purpose, microkernel and research OSes, xHCI support is not
 yet widespread.  Most notably, xHCI support is included in Google's
 microkernel-based Fuchsia and in bare-metal iPXE.  Haiku Project is currently
 developing xHCI driver for their OS.
+
+In HelenOS, the support for USB was started by the HelUSB project defended in 2011. In that
+time, the USB driver framework was designed, and delivered with a few USB
+drivers. From the Host Controller side, UHCI and OHCI were supported almost
+completely. As for the device drivers, only a generic HID driver was provided
+to demonstrate the functionality of the framework. Since the project was
+delivered, the USB stack evolved a little and new drivers were implemented.
+The EHCI support was rather rudimentary and there was no support for xHCI.
 
 \section{Drivers in HelenOS}
 
@@ -97,10 +107,10 @@ it needs to make the device operating, eventually creating \emph{functions} --
 nodes that are passed back to devman to be taken care of. The function can be
 either an \emph{exposed} function, being a leaf node usable directly by the user
 (keyboard, disk partition, \dots), or an \emph{inner} function, essentially
-being a device for another driver.
+being a \textit{device} for another driver.
 
 Drivers then communicate with each other using \emph{interfaces}. Every
-function is provided with an interface it provides to the child driver. The
+function is provided with a set of interfaces it provides to the child driver. The
 driver itself then serves as a mediator or translator of operations called on
 its functions to yet another operations called on its device. For example, the
 \emph{PCI} driver exposes a function for every card physically attached to the
@@ -123,20 +133,23 @@ system.
 
 \section{Existing USB Subsystem}
 
-The support for USB was started by the HelUSB project defended in 2011. In that
-time, the USB driver framework was designed, and delivered with a few USB
-drivers. From the Host Controller side, UHCI and OHCI were supported almost
-completely. As for the device drivers, only a generic HID driver was provided
-to demonstrate the functionality of the framework. Since the project was
-delivered, the USB stack evolved a little and new drivers were implemented.
+As mentioned in subsection~\ref{subsect:support-in-oses}, HelenOS already supported
+UHCI, OHCI and to some extent EHCI.
 
-This document does not aim to replace the original documentation of HelUSB
-project. As such, we will focus more on the things that changed since the
-documentation was written, and they are pretty much not documented anywhere.
-And by all means, information in this chapter is written with regard to the
-state before our project was implemented. Thus, great part of the information
-given in this section is already obsolete, but it's needed to assess the damage
-we're personally responsible for.
+The original documentation of the HelUSB project described the state of affairs
+as the project ended. Since then, several improvements in both USB support
+and in HelenOS driver framework in general were made, for example new USB
+drivers like mass-storage were added. Unfortunately, these changes are pretty
+much not documented anywhere. In this section, we will focus on the things that changed since the
+documentation was written. We do not aim to replace the original documentation
+of HelUSB project.
+
+\vspace{1.5em}
+\textsl{By all means, information in this chapter is written with
+regard to the state before \emph{our} project was implemented. Thus, great part
+of the information given in this section is already obsolete, but it's needed to
+assess the damage we're personally responsible for.}
+\vspace{1.5em}
 
 The USB framework defines two classes of drivers -- the host controller drivers
 and USB function drivers. For the first class, there is a library called
@@ -220,8 +233,8 @@ driver. The interesting part is that the hub driver has no access to the
 created device, as the logical topology presented to the DDF is flat.
 
 All USB device drivers specify the endpoints they expect from the device in
-a form of static description, which they pass to the \lib{libusbdev} library
-during the driver initialization. Once a new device is added, the library
+a form of a static description, which they pass to the \lib{libusbdev} library
+during driver initialization. Once a new device is added, the library
 fetches the device descriptor and matches available endpoints against the
 specification provided by the driver. Then the library creates \emph{pipes} --
 an abstraction of endpoints based on their properties, not their exact numbers,
@@ -254,11 +267,11 @@ Bus 37: /hw/pci0/00:04.0/ctl
 	Device 65: /hw/pci0/00:04.0/usb2-ls
 \end{bdsh}
 
-Other use cases for this utility include descriptor dumping and examination of
+Other use-cases for this utility include descriptor dumping and examination of
 device status.
 
-It needs to be said, that whole structure of the USB framework (and also the
-DDF framework in general) expects the drivers to behave correctly and does not
+It needs to be said that whole structure of the USB framework (and also the
+DDF in general) expects the drivers to behave correctly and does not
 implement any countermeasures against malicious behaviour of drivers. For
 example, the \texttt{usbinfo} utility connects directly to the HC in the same
 way as the device driver does, and fetches the device descriptor. In fact, any

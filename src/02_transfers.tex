@@ -26,7 +26,7 @@ initialized during the endpoint configuration. This transfer ring is passed to
 the xHC by the endpoint context. The software is not allowed to modify the
 transfer ring except when it wants to enqueue more transfer descriptors. If the
 software requires to modify the ring, it has to first stop the endpoint using
-the command interface, and after the modification is done, it has to use the
+the command interface, and after the modification is done it has to use the
 evaluate context command to communicate the changes to the xHC.
 
 After the software puts a transfer descriptor on the transfer ring, it rings

@@ -7,7 +7,7 @@ other HC drivers. It came out that this library needs a lot of changes to
 support us in this goal, but that's for chapter \ref{usb-refactoring}.
 
 The USB host controller driver using \lib{libusbhost}, xHCI included, serves as
-a connecting layer between the hardware and library, and exposes its bus
+a connecting layer between the hardware and the library, and exposes its bus
 interface.
 
 \begin{figure}[h]
@@ -47,7 +47,7 @@ implemented as Memory-Mapped I/O space. They can be divided into four categories
 	\item[Runtime and Operational registers]
 		These specify the current xHC configuration and runtime modifiable state.
 	\item[Extended capabilities]
-		These specify optional features of the current xHC implementation.
+		These specify optional features of the particular controller.
 	\item[Doorbell array]
 		An array of up to 256 doorbell registers, which supports up to 255 USB devices
 		or hubs. Each doorbell register provides the software with a mechanism for
@@ -92,7 +92,7 @@ common solutions to this problem.
 Probably the most common one, which we also considered at first, is defining
 two constants for every such field: mask and shift. When one needs to read
 a field, they read the value of the register, use the mask to select bits, and
-then shift the value according to the shift macro. To write a field, one reads
+then shift the value according to the shift constant. To write a field, one reads
 the value of the whole register, uses the bitwise negation of the mask to copy
 surrounding bits, then shift the value to be written into its place. This
 solution is simple to understand, yet hard to use correctly. There's a lot of
@@ -151,15 +151,16 @@ showcase of what are preprocessor macros capable of.
 
 \subsection{Contexts}
 
-Contexts (defined in \file{uspace/drv/bus/usb/xhci/hw\_struct/context.h}{context.h})
+Contexts (defined in \file{uspace/drv/bus/usb/xhci/hw\_struct/context.h}{hw\_struct/context.h})
 are control structures that represent devices and their configuration as well
 as the parameters of the communication between the xHC and system software. The
 \struct{xhci_hc_t} structure contains the \textit{Device Context Base Address Array} (DCBAA), which
 holds up to 255 pointers to device contexts at indices 1 through 255 and a pointer to
-the scratchpad array (see \ref{sec:scratchpads}). Each device context contains a slot
+the scratchpad array at index 0 (see \ref{sec:scratchpads}). Each device context contains a slot
 context (used to describe the device as a whole, represented by \struct{xhci_slot_ctx_t}) and
-31 contexts for each endpoint (represented by \struct{xhci_ep_ctx_t}). Most of these contexts
-will be described in more detail in the following sections.
+31 endpoint contexts (represented by \struct{xhci_ep_ctx_t}).
+
+Most of these contexts will be described in more detail in the following sections.
 
 \section{Debug}
 
@@ -208,7 +209,7 @@ Once the xHCI driver finishes its execution, the scratchpad buffers are dealloca
 
 \section{Host Controller Module}
 
-This module contains the mixture of things that didn't fit anywhere else or
+This module contains a mixture of things that didn't fit anywhere else or
 didn't deserve their own submodule. We tried to move the ``xHCI specification
 quirks'' here, so that other modules rely only on the semantics and overview of
 the xHCI, and don't care that much about the exact technical details. Of
@@ -295,8 +296,8 @@ them in order. The DDF callback \fnc{dev_add} is handled by the
 \end{enumerate}
 
 A symmetric reverse sequence is performed to make the HC stopped again. This
-functionality is however not tested because PCI devices are not hotpluggable,
-not even in QEMU.
+functionality is however not tested, because neither QEMU nor hardware that was
+available during development of our project supports PCIe hotplugging.
 
 \subsection{Events}
 \label{sec:events}
@@ -306,7 +307,7 @@ events. Events are the primary information channel from the device to the host.
 Every synchronous operation needs to be finished by waiting for an event.
 
 The tricky part in handling events is, again, the synchronization. Event
-handlers must not issue operations, which would wait for other events. The
+handlers must not issue operations which would wait for other events. The
 problem is that this event dependency is inevitable in some cases. Let us
 describe two scenarios which will explain the complexity of the final solution.
 
@@ -331,7 +332,7 @@ The last dependency is between Command Completion Events and Transfer Events,
 forming a dependency triangle. This one might not be that obvious, but it is
 there and cannot be avoided easily. The handler of the Transfer Event needs to
 obtain a reference to an endpoint. To ensure coherency, the reference must be
-created while the endpoint is still registered, in a critical section. The same
+created while the endpoint is still registered, i.e.\ in a critical section. The same
 critical section that protects the endpoint unregistration -- which needs to
 abort currently running transfers.
 
@@ -360,7 +361,7 @@ The purpose of this module is very simple -- take care of the root hub. Before
 we explain how our roothub works, let's have a look at why and how other HC
 drivers handle it.
 
-The main problem a hub driver faces is a synchronization one. When a new device
+The main problem a hub driver faces is synchronization one. When a new device
 is detected, it needs to be enumerated. Enumeration process in the case of USB 2.0
 devices requires the hub to reset the port the device is attached to in order to move
 it to the \state{Default} state when it's listening on the default address 0.
@@ -373,7 +374,7 @@ fibrils and nontrivial synchronization.
 
 All four HC drivers (UHCI, OHCI, EHCI, and VHC) are using a virtual roothub. In
 principle that means that they create a virtual USB device, which is listening
-on the default address in the beginning, and trigger an enumeration process.
+on the default address in the beginning, and triggers an enumeration process.
 Then there is a little branch in transfer scheduling, that takes transfers
 directed to the same address as the virtual device's, and delivers them by
 calling a function instead. The virtual device behaves exactly like a real USB
@@ -394,7 +395,7 @@ comes with bugs. Also, while having no real performance impact, it requires
 several context switches, IPC calls, bouncing memory buffers and a lot of
 unnecessary allocations to clear one bit in the register space (USB hubs
 operate by setting and clearing so-called Features, indicating e.g.\ that
-a connection on port changed). But it needs to be stressed more that this
+a connection on a port changed). But it needs to be stressed more that this
 performance impact is mitigated by the fact that real hubs use real USB transactions
 above that and that hub interaction is very sparse.
 
@@ -413,7 +414,7 @@ port is disabled by writing a 1 to it. Even worse, this bit is in the same
 field as the change bits with RW1C semantics are -- which means that the
 standard approach of reading and writing back the value read fails hard. This
 took us several hours to discover because the port reset was completed
-successfully, but right after that, the device was inaccessible, even when we
+successfully, but right after that the device was inaccessible, even when we
 didn't do anything with it yet. To make matters more complicated, QEMU ignores
 this bit completely so the code worked fine in a virtual environment.
 
@@ -436,8 +437,8 @@ specification, the \textit{Context Size} field in the \textit{HCCPARAMS1} regist
 a device context contains 32 or 64-byte members (the size of the individual members does
 not change, but the 64-byte version adds 32 bytes wide padding to each of them). Because
 of this, the device context structure cannot be represented statically and instead had to be
-implemented as a DMA buffer (see section \ref{sec:dma_bufs}) and its members have to
-be accessed dynamically at runtime.
+implemented as a DMA buffer (see section \ref{sec:dma_bufs}) and its members offsets
+need to be computed at runtime with macros.
 
 A device is initialized during a process called device enumeration, which begins when
 the system detects a new device and calls \fnc{xhci_device_enumerate} defined in

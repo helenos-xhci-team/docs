@@ -139,7 +139,7 @@ HID devices.
 
 The third type of transfers are \textit{bulk transfers}. Bulk transfers are
 used to send large chunks of data over the bus when the requirements are to
-have correct data and no requirements on the delay is acceptable. Typical
+have correct data, but there are no strict requirements on latency. Typical
 devices include printers, scanners or external disks. USB 3 also introduces
 streams as an another layer of abstraction over bulk transfers.
 
@@ -194,7 +194,7 @@ type and endpoint number.
 
 In case of USB 3, an endpoint descriptor is followed by a \textit{superspeed
 endpoint companion descriptor}. This defines USB 3 specific features such as
-burst transfer support or bulk streams.
+bulk streams.
 
 The descriptors can be viewed as a tree, where the device descriptor is the
 root node that has several descendants — configurations. Each configuration
@@ -274,7 +274,7 @@ consists of several transactions. USB specification distinguishes the four
 types of transfers already described above: control transfers, interrupt
 transfers, bulk transfers and isochronous transfers.
 
-These transfers have their specifics which are not exposed by the xHC.
+These transfers have their specifics which are not exposed by the HC.
 Therefore, the only transfer type requiring special behavior is control
 transfer type.
 
@@ -308,8 +308,8 @@ Bandwidth that is left unused after periodic and control transfers requests
 were satisfied is used by bulk transfers. Bulk transfers work in best effort
 mode and if there is no available bandwidth they are postponed.
 
-It is the role of host controller driver scheduler to guarantee bus access
-constraints.
+In USB version 2 and lower, It is the role of host controller driver scheduler
+to guarantee bus access constraints.
 
 \subsection{USB 3 features}
 
@@ -317,12 +317,12 @@ constraints.
 
 The USB 3 bus and USB 3 devices are backwards compatible with USB 2. As the
 protocol is completely different this was done by splitting the bus into two
-parts. The physical implementation is best shown by the following figure.
+parts. The physical implementation is best shown in Figure~\ref{fig:dual-bus}.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.6\textwidth]{dual-bus}
-	\caption{Dual bus architecture, \cite{usb3}, Figure 3-1}
+	\caption{Dual bus architecture, (Figure 3-1 from \cite{usb3})}
 	\label{fig:dual-bus}
 \end{figure}
 
