@@ -198,7 +198,7 @@ occupies the first index of the \textit{Device Context Base Address Array} (dcba
 Our implementation originally implemented these as a standalone structure \struct{xhci_scratchpad_t},
 which served mainly for the purposes of resource management by keeping both the physical addresses
 for the xHC and the virtual addresses for deallocation. This was, however, later refactored to use
-\struct{dma_buffer_t}, which is part of \lib{libusbhost} and was created for the same purpose.
+\struct{dma_buffer_t}, which is part of \lib{libusb} and was created for the same purpose.
 
 Once the xHCI driver finishes its execution, the scratchpad buffers are deallocated by a call to
 \fnc{xhci_scratchpad_free} as part of \fnc{hc_fini}.
