@@ -393,7 +393,7 @@ callbacks, not mentioning the virthub module itself. And a lot of code always
 comes with bugs. Also, while having no real performance impact, it requires
 several context switches, IPC calls, bouncing memory buffers and a lot of
 unnecessary allocations to clear one bit in the register space (USB hubs
-operate by setting and clearing so-called Features, indicating e.g. that
+operate by setting and clearing so-called Features, indicating e.g.\ that
 a connection on port changed). But it needs to be stressed more that this
 performance impact is mitigated by the fact that real hubs use real USB transactions
 above that and that hub interaction is very sparse.

@@ -124,7 +124,7 @@ system.
 \section{Existing USB Subsystem}
 
 The support for USB was started by the HelUSB project defended in 2011. In that
-time, the USB driver framework was designed, and delivered with few USB
+time, the USB driver framework was designed, and delivered with a few USB
 drivers. From the Host Controller side, UHCI and OHCI were supported almost
 completely. As for the device drivers, only a generic HID driver was provided
 to demonstrate the functionality of the framework. Since the project was
@@ -183,14 +183,14 @@ methods various drivers use.
 
 When the driver enumerates a USB function, it is usually taken care of by the
 \lib{usbmid} driver. This driver scans the device descriptor for provided
-interfaces, and create children functions for them. These functions are then
+interfaces, and creates child functions for them. These functions are then
 driven by class drivers. Notable exception being the \lib{usbhub} driver,
 taking care of the device directly, as hubs are not allowed to have multiple
 interfaces.
 
 The USB function drivers are well supported by the \lib{libusbdev} library.
 This library builds an abstraction layer above \lib{libdrv}, used by other
-drivers directly, to better suit needs of USB devices. It does a complete
+drivers directly, to better suit the needs of USB devices. It does a complete
 initialization of the USB device, including initiating a separate IPC
 connection to the HC driver directly -- to avoid bouncing all operations in the
 \lib{usbmid} driver. For this purpose, the \texttt{usb\_iface} contains two
@@ -200,7 +200,7 @@ with a value of $-1$ by the HC driver if the driver serves the whole device.
 The \fnc{get_my_interface_handle} call is recursive, until it reaches the HC
 driver -- which answers it with devman handle of the USB device function. The
 device driver then uses it to initiate connection to the HC driver, the same
-way as the usbmid driver do.
+way as the usbmid driver does.
 
 Although this is sort-of hacky solution (the devman handle is supposed to be
 private), it is currently the only one. Ideally, the drivers would use
@@ -244,7 +244,7 @@ debugging purposes.
 
 Not to forget, there are two userspace utilities related to the USB stack. One
 of them, \texttt{mkbd}, is not so important, as it is used only to demonstrate
-functionality of multimedia keys HID driver. The other one, \texttt{usbinfo}
+functionality of multimedia keys HID driver. The other one, \texttt{usbinfo},
 can be used to list available USB devices:
 
 \begin{bdsh}

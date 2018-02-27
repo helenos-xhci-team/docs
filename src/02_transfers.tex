@@ -156,7 +156,7 @@ the buffer on the ring, if possible. If there is no free buffer yet (so all the
 buffers are on the ring), the call blocks until at least one transfer is
 finished and its buffer is freed.
 
-Unlike with IN endpoints, we need to track, which buffers are filled and which
+Unlike with IN endpoints, we need to track which buffers are filled and which
 are empty, and schedule only filled buffers. Other than that, the scheduling is
 the same. When scheduling the buffers at the start, we also need to make sure
 some of those are already ready on the ring, so we postpone the execution of
