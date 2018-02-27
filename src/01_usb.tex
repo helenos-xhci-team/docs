@@ -64,16 +64,27 @@ device attachment. Typically, the ports provided by the host controller are
 provided by its own hub, called \textit{root hub}.
 
 Although physically, the topology is a tree rooted in the host controller,
-device addressing uses a flat structure and under certain abstraction, hubs can
-be viewed as transparent splitters that add no logic to the bus.
+the topology is abstracted by the HC. In USB~1, hubs are just transparent
+splitters that add no logic to the bus. USB~2 adds high-speed hubs, which can
+isolate environments of different speeds. USB 3 with its dual-bus topology is
+even more complex -- every USB~3 hub behaves as two almost-separate hubs,
+a regular high-speed one and another super-speed only. When a device is
+connected, a decision is made on which one it will show up. Furthermore, USB~3
+allows to control separate bus instances for arbitrary subsets of roothub
+ports. Also, every link is now separate full-duplex link, so that hubs now must
+be smarter and employ a Store and Forward paradigm. The difference is similar
+to the difference between Ethernet hubs and switches -- a virtual bus topology
+has changed to a routed star topology.
 
-Each device connected to a host controller receives an unique address (a
+Each device connected to a bus instance receives a unique address (a
 positive integer) and reacts only to communication that is targeted to it.
 Before the device receives this address, it listens on the \textit{default
 address} (number zero). To prevent situation when more devices would listen on
 the default address simultaneously, each hub must provide means to disable
 communication forwarding to certain ports (USB terminology says that hub does
-not \textit{signal} on given downstream port).
+not \textit{signal} on given downstream port). USB 3 with separated instances
+uses a different mechanism, a \emph{Route String}, which contains the number of
+downstream port on every tier to route the packet to its destination.
 
 \subsection{Device configurations, interfaces and endpoints}
 
@@ -154,15 +165,13 @@ initiate the transfer), it gives the payload to the host controller together
 with information about target device (address) and endpoint. It must also
 provide information about transfer type and data direction. For incoming
 transfers, it instead reserves the data buffers to which the device can send
-the data. The host controller then encapsulates these information. In case of
-USB 2, it creates three packets. The first packet informs about data direction
-and it's called the token packet. The second packet transfers the actual data.
-The last packet is a handshake packet and it is used to acknowledge the
-transaction. In case of USB 3, the same parts are used differently. For
-outgoing transactions, the token is incorporated in the data packet; while for
-incoming transactions, the token is replaced by a handshake.
+the data. The host controller then encapsulates these information and issues
+USB packets on the bus. This is already part of the abstraction xHCI provides,
+the xHCI driver only instructs the hardware to do so. Former HC interfaces had
+to schedule the individual transfers into USB \emph{frames} (a time unit on
+which USB is synchronized).
 
-This protocol is roughly the same for bulk, interrupt and isochronous
+The protocol is roughly the same for bulk, interrupt and isochronous
 transfers. Control transfers are a bit different because they have a special
 preamble — a setup packet. The setup packet contains commands that might
 change the device state and this packet might be optionally followed by a data
@@ -326,19 +335,23 @@ parts. The physical implementation is best shown in Figure~\ref{fig:dual-bus}.
 	\label{fig:dual-bus}
 \end{figure}
 
-% TODO: 3.2 contains vector version, use it
+There are three cases of a pair of devices connecting. The simplest one is
+a USB 3 device/hub connecting to a USB 3 hub. Both devices handshake and use
+only the Enhanced Superspeed Bus. When a USB 2 device is plugged into USB~3
+hub, the hub will recognize it, and use only the USB 2 bus. The last case, USB
+2 device connecting to USB 2 hub, follows the specification of USB 2.
 
-Every USB 3 device can be seen as both USB 3 and USB 2 device. If an USB 3
-device is plugged into USB 2 hub, the device will recognize that and start
-communicating using its USB 2 bus and exposing only USB 2 function.
-% FIXME I got lost here
-If on the other hand a USB 3 device is plugged into USB 2 hub (that is plugged
-into USB 3 compatible host controller), the device cannot communicate using USB
-3 bus as the parent hub doesn't support it.
+The key idea is that every USB 3 device is essentialy two devices with a shared
+port -- an Enhanced Superspeed device and a USB 2 device, of which only one is
+active at the same time. The specification doesn't require the device to have
+the same function in both USB 2 and USB 3 modes. For example, the USB~2
+function may be used to only describe that the device can only operate in USB 3 mode.
 
-The specification doesn't require the device to have the same function in both
-USB 2 and USB 3 modes. For example, the USB 2 function may be used to only
-describe that the device can only operate in USB 3 mode.
+Hubs are a notable exception from the single-mode rule as they are actually
+two independent hubs in one box. The inner USB 2 hub connects as an USB
+2 device and the USB 3 hub connects as a USB 3 device. When a downstream
+device is connected physically it is decided to which inner hub it will be
+connected based on the device actual speed.
 
 \subsubsection{Differences from USB 2}
 
@@ -362,9 +375,9 @@ targeted device should accept the packet. In USB 3, the communication is
 routed directly to the receiver. This introduces the need for route strings,
 which describe the ports of the hubs on the way to the device.
 
-In USB 2, the drivers are required to use polling as a way to find out that the
-transfer has finished. USB 3 introduces asynchronous notifications to reduce
-the overhead and simplify the driver design.
+In USB 2, the controller is required to poll the device to offer it an
+opportunity to finish an interrupt transfer. Using the full-duplex links, USB~3
+introduces asynchronous notifications to reduce the overhead of polling.
 
 At last but not least, USB 3 introduces more complex power management
 features. For example, an USB 3 device may initiate link power state change at
