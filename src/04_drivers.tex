@@ -88,7 +88,7 @@ Framework:
 	Device} event. Since the device is no longer reachable, the driver is to
 	force interrupt all user operations, which were running at the time of
 	receiving the event and report failure to the callers.
-	
+
 	\item[Offline Function] By receiving this event, the driver is asked by the
 	system to explicitly transition a specific function exposed by one of its
 	controlled devices into the \textit{Offline} state. The meaning of such
@@ -328,7 +328,7 @@ driver's convenience. A complete example of pipe write is shown in Listing
 \subsection{Automated Polling}
 
 In USB devices which often interact with a human user, it is important to wait
-for user input by spinning (or polling) on some \textit{Interrupt In} endpoint.
+for user input by spinning (or polling) on some \textit{Interrupt IN} endpoint.
 In the abstraction used, this translates to calling \fnc{usb_pipe_read} in a
 perpetual loop and responding to incoming data or errors. Since this behavior is
 common to a significant class of drivers, a reusable unified implementation is
@@ -454,9 +454,9 @@ severity, the presented logging macros are named as follows:
 Prior to printing the first log message, the \fnc{log_init} function must be
 called. During runtime, the default HelenOS log level can be adjusted by a
 call to the \fnc{logctl_set_log_level} function. Keep in mind that in the
-current implementation of HelenOS, every call to a logging macro results in a
+current implementation of HelenOS, every call to a logging macro results in an
 IPC call. For that reason, it is not advisable to perform logging in
-performance-sensitive parts of code, even if the log level is sufficiently high.
+performance-sensitive parts of the code, even if the log level is sufficiently high.
 
 For more information about logging in HelenOS, consult the HelenOS
 Documentation.
@@ -505,7 +505,7 @@ Next, it expects that each descriptor has its length stored in the first byte
 and the descriptor type in the second byte. That corresponds to standard
 descriptor layout. The parser determines the nesting from a list of parent-child
 pairs that is given to it during parser initialization. This list is terminated
-with pair where both parent and child are set to -1.
+with a pair where both parent and child are set to -1.
 
 The parser uses the \struct{usb_dp_parser_t} structure, which contains array
 with possible descriptor nesting (\struct{usb_dp_descriptor_nesting_t}). The
@@ -513,8 +513,8 @@ data for the parser are stored in the \struct{usb_dp_parser_data_t}, the arg
 field is intended for custom data.
 
 For processing the actual data, two functions are available. The
-\fnc{usb_dp_get_nested_descriptor} function takes parser, parser data and
-pointer to parent as parameters. For retrieving the sibling descriptor (i.e.
+\fnc{usb_dp_get_nested_descriptor} function takes a parser, parser data and
+a pointer to parent as parameters. For retrieving the sibling descriptor (i.e.
 descriptor at the same depth) one can use \fnc{usb_dp_get_sibling_descriptor}.
 Whereas this function takes the same arguments, it also requires two extra
 arguments — pointer to the parent descriptor (i.e. parent of both nested ones)
@@ -522,9 +522,7 @@ and a pointer to the preceding descriptor. Such pointer must always point to
 the first byte of the descriptor (i.e. to the length of the descriptor, not to
 its type).
 
-In addition, there exists also a simple iterator over the descriptors. The
+Additionally, there exists also a simple iterator over the descriptors. The
 function \fnc{usb_dp_walk_simple} takes a callback as a parameter, which is
 executed for each found descriptor and receives thee current depth (starting
 with 0) and a pointer to current descriptor.
-
-
