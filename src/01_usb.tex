@@ -122,7 +122,7 @@ endpoint number, packet type and data needed for packet integrity checks.
 Before moving on to describing packet types, it is necessary to mention
 transfer types. In order to allow devices with different transfer requirements
 (e.g. web camera that supplies a continuous stream of data vs. keyboard with
-few bytes several times minute) the transfers (and therefore endpoints) are
+a few bytes several times a minute) the transfers (and therefore endpoints) are
 divided into four different types.
 
 The first type of transfers are \textit{control transfers}. These are used for
@@ -160,7 +160,7 @@ and it's called the token packet. The second packet transfers the actual data.
 The last packet is a handshake packet and it is used to acknowledge the
 transaction. In case of USB 3, the same parts are used differently. For
 outgoing transactions, the token is incorporated in the data packet; while for
-ingoing transactions, the token is replaced by a handshake.
+incoming transactions, the token is replaced by a handshake.
 
 This protocol is roughly the same for bulk, interrupt and isochronous
 transfers. Control transfers are a bit different because they have a special
@@ -173,9 +173,9 @@ either in or out).
 \subsection{Device descriptors and device classes}
 
 In previous sections querying USB device for its capabilities was mentioned.
-This sections will describe this querying in more detail. Each USB device must
+This section will describe this querying in more detail. Each USB device must
 provide several data blocks, called \textit{descriptors}, describing its
-configuration and capabilities. Some descriptors are device dependent while
+configuration and capabilities. Some descriptors are device-dependent while
 others are generic for any USB device.
 
 The roughest description of a device is provided in a \textit{device
@@ -185,7 +185,7 @@ below), number of possible configurations and several other details.
 Each configuration is then described by a \textit{configuration descriptor}.
 This descriptor also contains the number of interfaces the configuration
 provides. Each interface is then described by an interface descriptor. The
-interface descriptor specifies to which class the interface belongs and how
+interface descriptor specifies which class the interface belongs to and how
 many endpoints it specifies.
 
 Unsurprisingly, each endpoint is described by an \textit{endpoint descriptor}.
@@ -199,7 +199,7 @@ burst transfer support or bulk streams.
 The descriptors can be viewed as a tree, where the device descriptor is the
 root node that has several descendants — configurations. Each configuration
 then groups interfaces and endpoint descriptors are leaves. Device may provide
-its own descriptors (e.g. vendor specific ones) that may stand aside of this
+its own descriptors (e.g. vendor-specific ones) that may stand aside of this
 tree or be part of it (then they are typically inserted somewhere between
 interfaces or endpoints).
 
@@ -214,7 +214,7 @@ common attributes into so called \textit{device classes}. Each class deals with
 devices of certain kind, e.g. HID devices, printers, scanners, audio or a
 special vendor class for any device that would not fit into any other one. Some
 classes define \textit{subclasses} for fine-grained resolution (e.g. HID class
-offers subclass for keyboards and mice).
+offers subclasses for keyboards and mice).
 
 The class is reported as a part of device and interface descriptor. That is
 because a single physical device may provide functionality of several classes
@@ -224,10 +224,10 @@ with meaning ‘no class, see interface’.
 
 \subsection{Bus enumeration}
 
-USB was designed with possibility of hot-plugging and thus it has to have well
-defined actions when a new device is added. The following is a simplified
+USB was designed with possibility of hot-plugging and thus it has to have
+well-defined actions when a new device is added. The following is a simplified
 sequence of what all the involved drivers and devices must go through. The
-setup is that new device is attached to some hub, that is already initialized
+setup is that new device is attached to some hub that is already initialized
 and configured.
 
 \begin{enumerate}
@@ -239,7 +239,7 @@ was added or removed, etc.).
 \item The hub driver requests reservation of default address (to prevent having
 more devices listening on the same address).
 \item The hub driver tells the hub to enable the port.
-\item The port is enabled (i. e. signaling is open), the driver then must wait
+\item The port is enabled (i. e., signalling is open), the driver then must wait
 again for stabilization of currents.
 \item The driver queries the device for its device descriptor and assigns a new
 address to it.
@@ -252,7 +252,7 @@ The new driver is then told the address of the device and it is up to it to
 configure and finish the initialization of the device.
 As stated above, the sequence is simplified and due to errors in devices (not
 all USB devices obey the specification exactly) some steps (e.g. setting new
-address) have to be tried several times or in specific ordering.
+address) have to be tried several times or in a specific order.
 
 \subsection{USB communication}
 
@@ -263,8 +263,8 @@ information sent to device or host is translated into packet form before it
 reaches the bus.
 
 However, packet level is not accessible to the software and drivers are not
-able to sent separate packets. The smallest communication entity available is
-called a \textit{transaction}. These differ between various USB version and
+able to send separate packets. The smallest communication entity available is
+called a \textit{transaction}. These differ between various USB versions and
 therefore won't be described here. See USB specifications for different
 transaction types of each USB version.
 
@@ -295,7 +295,7 @@ interleave, it will result in failure of the interrupted transfers.
 \subsubsection{Bus access constraints}
 
 Different transfer types have different bus access limitations. Periodic
-transfers (isochronous and interrupt),are limited to 90\% of the available
+transfers (isochronous and interrupt) are limited to 90\% of the available
 bandwidth. Interrupt and isochronous communication happens regularly (hence
 periodic) and maximum requested bandwidth has to be reserved in advance.
 Failure to reserve the bandwidth results in an error. The driver may then
@@ -304,7 +304,7 @@ choose another interface setting or it can report an initialization failure.
 At least 10\% of bandwidth has to be available for control transfers. It might
 be less if there are not enough control transfers pending.
 
-Bandwidth, that is left unused after periodic and control transfers requests
+Bandwidth that is left unused after periodic and control transfers requests
 were satisfied is used by bulk transfers. Bulk transfers work in best effort
 mode and if there is no available bandwidth they are postponed.
 
@@ -330,8 +330,8 @@ parts. The physical implementation is best shown by the following figure.
 
 Every USB 3 device can be seen as both USB 3 and USB 2 device. If an USB 3
 device is plugged into USB 2 hub, the device will recognize that and start
-communicating using its USB 2 hub and exposing only USB 2 function.
-
+communicating using its USB 2 bus and exposing only USB 2 function.
+% FIXME I got lost here
 If on the other hand a USB 3 device is plugged into USB 2 hub (that is plugged
 into USB 3 compatible host controller), the device cannot communicate using USB
 3 bus as the parent hub doesn't support it.
@@ -352,7 +352,7 @@ Companion descriptor. When a transfer is initiated the sender may send multiple
 packets in a row before it has to wait for an explicit handshake. This
 eliminates the wait time and improves the communication efficiency.
 
-Unlike USB 2 and previous version where the bus was half-duplex, the bus in USB
+Unlike USB 2 and previous versions where the bus was half-duplex, the bus in USB
 3 is full duplex. This means that a device using USB 3 may use both IN and OUT
 transactions concurrently.
 
@@ -366,6 +366,6 @@ In USB 2, the drivers are required to use polling as a way to find out that the
 transfer has finished. USB 3 introduces asynchronous notifications to reduce
 the overhead and simplify the driver design.
 
-At last but not the least, USB 3 introduces more complex power management
+At last but not least, USB 3 introduces more complex power management
 features. For example, an USB 3 device may initiate link power state change at
 the device while in USB 2, this could be only initiated by the host.
