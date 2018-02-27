@@ -16,11 +16,11 @@ forming a \textit{Command Descriptor}.
 After placing the respective TRBs and writing to the xHC command doorbell
 register, the descriptors on the command ring are sequentially processed by the
 xHC, resulting in either failure or successful completion. The result of every
-command descriptor is reported back to the xHC driver in the form of a
+command descriptor is reported back to the xHCI driver in the form of a
 \textit{Command Completion Event} placed onto the primary event TRB ring.
 
 After writing into the xHC command doorbell register and before receiving the
-respective command completion event, the xHC driver can attempt to abort the
+respective command completion event, the xHCI driver can attempt to abort the
 issued command. Such action might be of use for instance if the command
 completion event does not arrive within a set time period.
 
@@ -31,9 +31,9 @@ documentation of the xHC command interface, refer to \xhci{4.6}.
 
 \subsection{Structure}
 
-The xHC driver command subsystem instance is represented by the
+The xHCI driver command subsystem instance is represented by the
 \struct{xhci_cmd_ring_t} structure which exists throughout the entire duration
-of the xHC driver's lifecycle. The purpose of this structure is to maintain and
+of the xHCI driver's lifecycle. The purpose of this structure is to maintain and
 manage the command TRB ring and to keep track of enqueued command descriptors.
 
 Individual command descriptors are represented by the \struct{xhci_cmd_t}
@@ -44,7 +44,7 @@ structure, the hardware-related internals are kept in a substructure, which is
 commonly referred to as \textit{command header}. The purpose of this separation
 is to stress that the header contents are to be exclusively accessible to the
 command subsystem, while the rest of the structure remains accessible to
-the entire xHC driver.
+the entire xHCI driver.
 
 Besides data structures, the command subsystem offers a centralized command
 completion event handler function -- \fnc{xhci_handle_command_completion} --
@@ -67,7 +67,7 @@ By design, the internal logic of the command subsystem is kept opaque with
 respect to other components of the driver. A notable example of this is the
 mechanism for command scheduling.
 
-Commands are usually issued by the HC component of the xHC driver. At the time
+Commands are usually issued by the HC component of the xHCI driver. At the time
 of issuing, the information required can be broken down into three groups:
 %
 \begin{description}
@@ -190,8 +190,8 @@ Listing \ref{lst:command-usage}.
 
 		/* At this point, the command is completed with `result`. */
 	\end{code}
-	\caption[Usage example of xHC driver inline command syntax.]{Usage example
-	of the xHC driver command subsystem inline  syntax. This snippet issues a
+	\caption[Usage example of xHCI driver inline command syntax.]{Usage example
+	of the xHCI driver command subsystem inline  syntax. This snippet issues a
 	\textit{Set TR Dequeue Pointer} command to the HC in blocking mode. Note
 	that the command initialization, configuration and finalization is handled
 	by the inline macro syntax.}

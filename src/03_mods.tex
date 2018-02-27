@@ -21,7 +21,7 @@ synchronous RPC built upon asynchronous IPC mechanisms in kernel. The
 scope of USB stack is limited to the USB device driver tasks, and to the USB
 Host Controller driver tasks. Because the USB Device Framework hasn't changed much
 in USB 3, our primary focus related to implementing USB 3 support was the HC
-driver. The xHC driver itself was exhaustively explained in the previous
+driver. The xHCI driver itself was exhaustively explained in the previous
 chapter, this chapter explains the modifications needed to implement it.
 Furthermore, it contains the modifications needed or supporting the
 implementation of other key requirements of the project.
@@ -287,7 +287,7 @@ would allocate a 16~MB buffer that is in the lower 4 gigabytes of memory, and
 every 32KB chunk of it is physically contiguous. Then it would share the buffer
 using IPC memory sharing capabilities, so that the hard drive driver loads the
 data in it. Then, without any copying, the VFS server would share the buffer
-all the way down to the xHC driver, which would issue 32 KB transfers as
+all the way down to the xHCI driver, which would issue 32 KB transfers as
 ordered by the mass storage driver with the data directly, again without any
 further copying.
 
@@ -310,7 +310,7 @@ policy a buffer is allocated with is passed along, for the HC driver to check.
 Because we generally trust the driver, there is no further checking. We do not
 trust the human writing it though so the policy is not automatically assumed
 but must be passed explicitly with the buffer pointer. This has another benefit
--- in case the policy is not exactly satisfied (e.g. the xHC driver is given
+-- in case the policy is not exactly satisfied (e.g. the xHCI driver is given
 a non-contiguous buffer), it may decide that instead of bouncing it, which is
 expensive, it just uses a page-sized chunks for scatter-gather.
 

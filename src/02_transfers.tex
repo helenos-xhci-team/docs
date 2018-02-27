@@ -74,10 +74,10 @@ where 1 microframe is exactly 125 microseconds. The current time in microframes
 can be read at any time from the \texttt{MFINDEX} register. This register has only
 14 bits and therefore it overflows every 2.048 seconds. The xHC can notify the
 software about the overflow by generating a \textit{MFINDEX Wrap Event} on the
-event ring. This feature is disabled by default and activated at the xHC driver startup.
+event ring. This feature is disabled by default and activated at the xHCI driver startup.
 
 Every isochronous transfer descriptor must have a set schedule time. This time
-is calculated by the xHC driver and depends on the isochronous endpoint interval.
+is calculated by the xHCI driver and depends on the isochronous endpoint interval.
 Two following transfer descriptors must be always exactly the interval apart.
 Since isochronous endpoints can have up to 4-second interval, we need to
 track the \textit{MFINDEX Wrap Events} to correctly determine the schedule.
@@ -99,8 +99,8 @@ If the xHC accesses an isochronous transfer ring to retrieve a transfer
 descriptor and the transfer ring is empty, the xHC generates a \textit{Transfer Event}
 with the completion code set to \textit{Ring Overrun} for IN endpoints, and
 \textit{Ring Underrun} for OUT endpoints. This also removes the endpoint from
-the schedule and lets xHC driver clean the structure and report the error to the device
-driver, if needed. To reschedule the endpoint, the xHC driver needs to ring a
+the schedule and lets xHCI driver clean the structure and report the error to the device
+driver, if needed. To reschedule the endpoint, the xHCI driver needs to ring a
 doorbell.
 
 \subsubsection{Implementation}
@@ -229,7 +229,7 @@ Every stream has its own transfer ring, which must be made
 accessible to the xHC. For regular endpoints, the dequeue pointer of the
 transfer ring is passed by the endpoint context. With streams, there are many
 transfer rings that need to be passed to the xHC. To accomplish that, the
-xHC driver needs to use stream contexts.
+xHCI driver needs to use stream contexts.
 
 A stream context is a simple structure used by the xHC to store transfer ring
 dequeue pointers. There are two possible approaches to setting up stream
@@ -276,13 +276,13 @@ streams, we encounter a problem. There is no way to determine the stream, which
 generated the transfer event, solely from the dequeued TRB.
 
 Luckily, the xHC gives us a way to pass custom data in the transfer event.
-A xHC driver may create a TRB with the TRB Type set to
+A xHCI driver may create a TRB with the TRB Type set to
 \textit{Event Data TRB}, which is chained to the previous TRB it is associated
 with. This TRB has the IOC bit set instead of the previous TRB and it can bear
 any custom 64-bit value. The previous TRB also needs to have
 \textit{Evaluate Next TRB} bit set which forces the xHC to always process the
 \textit{Event Data TRB} immediately before another stream is selected.
 
-Our xHC driver uses \textit{Event Data TRBs} to store the pointer of the transfer
+Our xHCI driver uses \textit{Event Data TRBs} to store the pointer of the transfer
 structure creating this transfer. This allows us to access the transfer
 structure in the transfer event handler and determine the selected stream.
