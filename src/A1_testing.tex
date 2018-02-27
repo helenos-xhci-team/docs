@@ -164,7 +164,7 @@ four functions:
 \begin{description}
 	\item[\fnc{usbdiag_connect}] Open an IPC session with a diagnostic device.
 	\item[\fnc{usbdiag_disconnect}] Close IPC session with a diagnostic device.
-	\item[\fnc{usbdiag_test_in}] Initiate a synchonous test on an IN endpoint.
+	\item[\fnc{usbdiag_test_in}] Initiate a synchronous test on an IN endpoint.
 	\item[\fnc{usbdiag_test_out}] Initiate a synchronous test on an OUT
 		endpoint.
 \end{description}
@@ -390,7 +390,7 @@ In this test, the following sequence of events is simulated:
 This test scenario simulates the correct user behavior for device detachment. The
 only difference with respect to that described in the previous section is that
 prior to physically disconnecting the device, the offline signal is issued,
-giving the HC and device drivers an opportunity to set their interal affairs in
+giving the HC and device drivers an opportunity to set their integral affairs in
 order prior to terminating communications.
 
 The purpose of this test is to check whether both the HC and the device driver
@@ -417,7 +417,7 @@ temporary device suspension.
 
 The purpose of this test is to verify whether the offline signal is fully
 reversible both in the HC and the device driver, and whether both drivers handle
-corrently not only the offline signal, but the online signal as well.
+currently not only the offline signal, but the online signal as well.
 
 
 \section{Try it yourself}
@@ -497,7 +497,7 @@ $ tmon test-bulk-in
 
 Our work has been tested on a desktop with Teratrend $\mu$DP720202 Rev. 1.0
 PCIe card and on a ThinkPad x240 laptop with Intel 8 series xHC (PCI ID
-8086:9C31).  Regarding peripherials, several noname and branded USB2 and USB3
+8086:9C31).  Regarding peripherals, several no-name and branded USB2 and USB3
 hubs, mice, keyboards, multi-interface keyboards (with multimedia keys) and
 flash drives have been tested.
 
