@@ -229,9 +229,9 @@ of the USB2 specifics hardwired -- like the bandwidth management. The impulse
 to create the bus interface was the lack of systematic approach in the previous
 solution, so it was a bit hard to understand. So we first did a refactoring
 process, which moved all callbacks to the bus. For a long time, there was
-a kind of runtime virtual binding of methods -- the older HCs used
+a kind of runtime virtual binding of functions -- the older HCs used
 \struct{usb2_bus_t} as their bus implementation, and overrode some of its
-methods. As time passed by, we were able to identify and isolate parts that
+functions. As time passed by, we were able to identify and isolate parts that
 could be separated cleanly and reduce the bus interface to its current state.
 
 The result is not that much different from the former state -- only extended by

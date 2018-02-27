@@ -130,8 +130,8 @@ aborted in various Host Controllers, let us describe the lifecycle of
 a transfer batch, a structure representing a transfer in HC drivers.
 
 Currently, USB stack in HelenOS only supports synchronous interface to interact
-with pipes. The two methods are called \fnc{dev_read} and \fnc{dev_write}.
-Driver calls these methods on pipes, and provides a buffer -- either filled
+with pipes. The two functions are called \fnc{dev_read} and \fnc{dev_write}.
+Driver calls these functions on pipes, and provides a buffer -- either filled
 with data, or to be filled. Once the call crosses the IPC barrier, it is joined
 to a call to \fnc{bus_device_send_batch}. This function finds the target
 endpoint structure, and passes control to \fnc{endpoint_send_batch}.
