@@ -1,11 +1,14 @@
-\chapter{Future Development}
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+
+\section{Future Development}
 
 This chapter outlines features, which were considered optional extensions of
 the project but were not realized due to time, complexity or other constraints.
 These features provide good starting points for the future development of the
 USB stack.
 
-\section{Power Management}
+\subsection{Power Management}
 
 The xHCI Specification focuses a lot on power management. Devices have multiple
 states corresponding to the amount of power used, and links between devices
@@ -20,7 +23,7 @@ driver suspend the device.
 We consider power management a topic that needs to be addressed on the
 system level, and as such we did not pay much attention to it.
 
-\section{Asynchronous I/O}
+\subsection{Asynchronous I/O}
 
 The aspect we care about though is performance. Although the primary goal of
 this project was to allow users to use USB on machines equipped only with xHC,
@@ -45,7 +48,7 @@ work with, asynchronous would offer much better performance though. However, as 
 a single driver using bulk endpoints, we have decided not to complicate matters and stay
 with synchronous-only API for bulk pipes.
 
-\section{Isochronous Transfers in UHCI+OHCI+EHCI}
+\subsection{Isochronous Transfers in UHCI+OHCI+EHCI}
 
 The isochronous module implemented in xHCI can be thought of as a generic scheduling
 framework for isochronous transfers. The scheduler behaves like a leaky bucket,
