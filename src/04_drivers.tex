@@ -27,7 +27,7 @@ layer -- specific to USB devices -- was added above the generic one. This layer
 mainly serves as a middleware for easy communication with USB host controller
 drivers, performing USB specific resource management and enabling device drivers
 to initialize endpoint pipes and interact with USB devices. For those reasons,
-USB device drivers are recommended to link with \lib{libdrv} and
+USB device drivers are recommended to be linked with \lib{libdrv} and
 \lib{libusbdev}, which contain both aforementioned layers respectively.
 
 It is expected that USB device drivers specify in advance not only their
@@ -93,7 +93,7 @@ Framework:
 	system to explicitly transition a specific function exposed by one of its
 	controlled devices into the \textit{Offline} state. The meaning of such
 	transition might depend on the interpretation of the function. For more
-	information, see the Device Driver Framework Documentation.
+	information, see the Device Driver Framework Documentation\cite{helenos:dds}.
 
 	\item[Online Function] By receiving this event, the driver is asked by the
 	system to explicitly transition a specific function exposed by one of its
@@ -261,7 +261,7 @@ driver can schedule data transfers to a device.
 
 Pipes offer a very simple synchronous command interface similar to that of an
 open file descriptor, namely \fnc{usb_pipe_read} and \fnc{usb_pipe_write} for
-reading from \textit{In} endpoints and writing to \textit{Out} endpoints
+reading from IN endpoints and writing to OUT endpoints
 respectively. While semantics of these functions depends on endpoint types
 (consult USB specification for details), their basic usage is as follows:
 %
@@ -281,7 +281,7 @@ buffer is transferred to the device, the read function might return successfully
 with a lower number of bytes read than the actual data size requested, and may
 thus have to be called multiple times.
 
-In addition, due to multiplatform nature of HelenOS, it is not advisable to
+In addition, due to the multiplatform nature of HelenOS, it is not advisable to
 assume endianity of the host system. Instead, the \macro{uint{16|32}_host2usb}
 and \macro{uint{16|32}_usb2host} macros serve to convert host system endianity
 to and from the transfer endianity defined in the USB Protocol Specification at

@@ -128,7 +128,7 @@ a device is still connected. It might happen that there is a subtree of devices
 and hubs being removed because the subtree root $R$ has been unexpectedly
 removed. In that case, a port disconnect is delivered to the parenting hub,
 which triggers the device removal process. The hub $R$ then receives the DDF
-signal \fnc{device_offline}, and starts removal if his own children. But
+signal \fnc{device_offline}, and starts removal of its own children. But
 there's a catch: USB hierarchy is presented as a flat one to the DDF framework.
 That means that the devman has no clue about hubs (it sees them as ordinary USB
 devices), and considers that all of them are connected to the HC directly.
