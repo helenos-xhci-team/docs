@@ -453,22 +453,22 @@ Every device can have up to 31 different endpoints. Every endpoint is represente
 called \struct{xhci_endpoint_ctx_t} which is a part of \struct{xhci_device_ctx_t}. Every endpoint
 has its number and direction and this information is used together as an index to the endpoint
 context array. The structure is initialized by the xHCI driver during endpoint initialization
-and most of its contents are set accordingly to the contents of endpoint descriptor reported by the device.
+and most of its contents are set accordingly to the contents of its endpoint descriptor reported by the device.
 This structure is used to communicate the endpoint settings to the xHC.
 The xHC can also report the current endpoint state by setting the fields in endpoint context.
 
-The xHCI driver uses \struct{xhci_endpoint_t} for actual representation of the endpoint.
+The xHCI driver uses \struct{xhci_endpoint_t} for the actual representation of the endpoint.
 This structure contains all information acquired from the endpoint descriptors with some
 additional information required by the implementation such as TRB ring or mutex.
 The stored data is needed to fill the endpoint context
 because the xHCI driver does not have access to endpoint descriptors.
 The endpoint structure also contains a zero-sized array called \texttt{isoch}
-and the rationale behind it is described in the section \ref{sec:transfers}.
+and the rationale behind it is described in section \ref{sec:transfers}.
 
 The endpoint initialization is initiated by the device driver. This sets up
 the endpoint structures and initializes its TRB ring. This is not true for default
 control endpoint which is initialized automatically during device initialization.
 After the initialization the endpoint can be immediately used by the driver
-by putting TRBs on the endpoint's ring.
+by putting TRBs on the endpoint's TRB ring.
 
 \input{02_transfers}
