@@ -428,7 +428,7 @@ Devices in the xHCI are represented by structures called device contexts, these 
 managed by the xHC and used to report device configuration and current state. A device
 context consists of a slot context, which represents the device as a whole (e.g. contains
 information about addressing or power management) and is implemented in the \struct{xhci_slot_ctx_t}
-structure, and 31 endpoint contexts (which are described in the following section)
+structure, and 31 endpoint contexts (which are described in the following section), one
 for each of the device's possible endpoints (though most of them may never be used).
 
 Note that one will not find a specific structure used to represent a device context. We had
