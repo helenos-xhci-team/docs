@@ -1,4 +1,4 @@
-\section{Briefly about USB}
+\section{Briefly About USB}
 \label{sec:usb_briefly}
 
 Disclaimer: This chapter is heavily copied from the documentation of the
@@ -11,7 +11,7 @@ also viewed as a summary of what the reader of this document must already know.
 If you are new to USB, you can use this chapter as a starting point for further
 reading.
 
-\subsection{The ‘big’ picture}
+\subsection{The ‘Big’ Picture}
 
 USB is a technology used for connecting peripherals to host computer. Its main
 advantages are simplicity of usage for end users, pretty good scalability (in
@@ -39,7 +39,7 @@ common prefix (e.g.\ USB device), second in its original meaning, describing the
 bus itself (when the word ‘bus’ is used, it will always refer to the Universal
 Serial Bus unless explicitly stated otherwise).
 
-\subsection{Bus topology}
+\subsection{Bus Topology}
 
 USB uses a tree-like physical bus topology. In the root of the tree there is
 the host computer with a hardware chip — host controller — controlling all
@@ -86,7 +86,7 @@ not \textit{signal} on given downstream port). USB 3 with separated instances
 uses a different mechanism, a \emph{Route String}, which contains the number of
 downstream port on every tier to route the packet to its destination.
 
-\subsection{Device configurations, interfaces and endpoints}
+\subsection{Device Configurations, Interfaces and Endpoints}
 
 USB was designed to be as flexible regarding device configurations as possible.
 Because of this, each device can provide several \textit{configurations}. Each
@@ -118,7 +118,7 @@ control endpoint) — is present on each device and is used for configuration
 purposes and for standard requests (e.g. for querying the device for
 generic capabilities).
 
-\subsection{Bus protocol and transfer types}
+\subsection{Bus Protocol and Transfer Types}
 
 The USB defines how data that are supposed to be sent to (or received from) a
 device shall be encoded and treated prior to their sending over the wire. This
@@ -179,7 +179,7 @@ phase. The control transfers are the only ones that are actually bidirectional
 (because the setup packet is always outgoing, while the data phase could be
 either in or out).
 
-\subsection{Device descriptors and device classes}
+\subsection{Device Descriptors and Device Classes}
 
 In previous sections querying USB device for its capabilities was mentioned.
 This section will describe this querying in more detail. Each USB device must
@@ -231,7 +231,7 @@ simultaneously, depending which interface the software communicates with. In
 such cases the class reported through the device descriptor is a special value
 with meaning ‘no class, see interface’.
 
-\subsection{Bus enumeration}
+\subsection{Bus Enumeration}
 
 USB was designed with possibility of hot-plugging and thus it has to have
 well-defined actions when a new device is added. The following is a simplified
@@ -263,9 +263,9 @@ As stated above, the sequence is simplified and due to errors in devices (not
 all USB devices obey the specification exactly) some steps (e.g. setting new
 address) have to be tried several times or in a specific order.
 
-\subsection{USB communication}
+\subsection{USB Communication}
 
-\subsubsection{Packets, transactions, transfers}
+\subsubsection{Packets, Transactions, Transfers}
 
 The communication on USB bus is \textit{packet} oriented. Every piece of
 information sent to device or host is translated into packet form before it
@@ -301,7 +301,7 @@ Control transfers must complete all stages without being interrupted by another
 control transfer to the same endpoint. If two or more control transfers
 interleave, it will result in failure of the interrupted transfers.
 
-\subsubsection{Bus access constraints}
+\subsubsection{Bus Access Constraints}
 
 Different transfer types have different bus access limitations. Periodic
 transfers (isochronous and interrupt) are limited to 90\% of the available
@@ -320,9 +320,9 @@ mode and if there is no available bandwidth they are postponed.
 In USB version 2 and lower, It is the role of host controller driver scheduler
 to guarantee bus access constraints.
 
-\subsection{USB 3 features}
+\subsection{USB 3 Features}
 
-\subsubsection{Bus duality}
+\subsubsection{Bus Duality}
 
 The USB 3 bus and USB 3 devices are backwards compatible with USB 2. As the
 protocol is completely different this was done by splitting the bus into two

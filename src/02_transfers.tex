@@ -128,7 +128,7 @@ maintain permanently allocated data buffers. Size of the dynamic array depends o
 the IST and the endpoint interval as we need to make sure we put the transfer
 descriptors on the transfer ring in advance but not schedule data, which is too old.
 
-\subsubsection{IN endpoints}
+\subsubsection{IN Endpoints}
 
 For IN endpoints, the semantics of \fnc{usbhc_transfer} is changed so that instead
 of triggering a read transfer, the call to \fnc{usb_pipe_read} retrieves previously read data and
@@ -146,7 +146,7 @@ which takes care of putting the transfer descriptors on the ring when the time
 is right. After every call to \fnc{usbhc_transfer} and withdrawing the received data,
 the processed buffer is recycled and scheduled back on the transfer ring.
 
-\subsubsection{OUT endpoints}
+\subsubsection{OUT Endpoints}
 
 For OUT endpoints, the \fnc{usbhc_transfer} is modified, so that it doesn't ensure that the transfer
 finishes. Instead, it only copies the data to the internal buffer and attempts to put
@@ -160,7 +160,7 @@ the same. When scheduling the buffers at the start, we also need to make sure
 some of those are already present on the ring, so we postpone the execution of
 the first transfer descriptor by a short delay.
 
-\subsubsection{Error handling}
+\subsubsection{Error Handling}
 
 Transfer errors in isochronous transfers are very often considered not to be fatal
 and thus are skipped. Therefore, we have decided not to deliver them to device drivers
@@ -223,7 +223,7 @@ available to the device drivers. The current implementation is described in the
 next few paragraphs in case there is a need to write a driver using bulk
 streams and debug their support.
 
-\subsubsection{Stream contexts}
+\subsubsection{Stream Contexts}
 
 Every stream has its own transfer ring, which must be made
 accessible to the xHC. For regular endpoints, the dequeue pointer of the

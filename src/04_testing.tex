@@ -296,7 +296,7 @@ Other HC drivers handled this test fairly well, because they do not maintain
 a soft state in the hardware, they just poll transfers for completion. Thus
 they know when it's safe to abort the transfer manually.
 
-\subsection{Balloon test}
+\subsection{Balloon Test}
 
 We used a scenario with a large number of \texttt{repeats}, large \texttt{count},
 and long enough delays (like 15 seconds). We simulate a lot of devices connecting,
@@ -321,7 +321,7 @@ too) has an interrupt endpoint, it is added to the periodic queue. QEMU makes
 OHCI fail with an unrecoverable error after it reaches this limit of hops.
 Because of it, you can connect at most 30 devices to OHCI under QEMU.
 
-\subsection{Burst test}
+\subsection{Burst Test}
 
 The last parameter combination we tried was a bursting one. Using
 \texttt{repeats = 1}, \texttt{count = 60}, and \texttt{in\_delay = out\_delay

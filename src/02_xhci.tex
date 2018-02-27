@@ -82,7 +82,7 @@ manipulated freely by the system, some impose restrictions:
 
 This is not an exhaustive list of access attributes, for the entire list, see \xhci{5.1.1}.
 
-\subsubsection{Register access macros}
+\subsubsection{Register Access Macros}
 
 Registers are accessed very often in all hardware-related modules. We felt that
 there is a need to centralize the information defined in the specification,
@@ -342,7 +342,7 @@ Completion, MFINDEX Wrap) in the interrupt handler, and route the Port Change
 Events and Transfer Events to two Software TRB Rings (see section \ref{sec:sw-rings}),
 from which two other worker fibrils dequeue and handle the events independently.
 
-\subsection{Commands abstraction}
+\subsection{Commands Abstraction}
 
 Although the command interface has a module on its own, there are situations
 where the specific commands used are a technical detail hiding the actual
