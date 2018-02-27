@@ -125,7 +125,62 @@ add \texttt{"-device usb-tmon"} to their QEMU startup command.
 
 \section{Driver}
 
-% TODO
+The diagnostic device driver (known as \texttt{usbdiag}) is a proprietary device
+driver. Although it matches with all devices of the \textit{Diagnostic} class,
+its main purpose is to communicate with the \texttt{usb-tmon} virtual device
+described in the previous section through a simple protocol.
+
+To the rest of the system, the driver offers a simple interface, which allows to
+schedule tests to various endpoints of the diagnostic device. The output of such
+tests is a performance measurement (number of transfers performed and duration
+of all transfers) and optionally, a verification signalling that the data has
+not been malformed by the communication channel.
+
+
+\subsection{Structure}
+
+The \texttt{usbdiag} driver consists of the following source files:
+%
+\begin{description}
+	\item[\file{uspace/drv/bus/usb/usbdiag/main.c}{main.c}]
+		Main entry point, hooks for the USB device driver interface.
+	\item[\file{uspace/drv/bus/usb/usbdiag/device.h}{device.h},
+		  \file{uspace/drv/bus/usb/usbdiag/device.c}{device.c}]
+		Diagnostic device descendant of the \struct{usb_device_t} structure,
+		endpoint mapping.
+	\item[\file{uspace/drv/bus/usb/usbdiag/tests.h}{tests.h},
+		  \file{uspace/drv/bus/usb/usbdiag/tests.c}{tests.c}]
+		IN and OUT diagnostic tests, data verification, hooks for RPC.
+\end{description}
+
+\subsection{Usage}
+
+Although the driver interface is open to all system applications, it is expected
+to be used only from the frontend application described in the next section. The
+exposed API is in detail described in
+\file{uspace/lib/drv/include/usbdiag\_iface.h}{usbdiag\_iface.h} and consists of
+four functions:
+%
+\begin{description}
+	\item[\fnc{usbdiag_connect}] Open an IPC session with a diagnostic device.
+	\item[\fnc{usbdiag_disconnect}] Close IPC session with a diagnostic device.
+	\item[\fnc{usbdiag_test_in}] Initiate a synchonous test on an IN endpoint.
+	\item[\fnc{usbdiag_test_out}] Initiate a synchronous test on an OUT
+		endpoint.
+\end{description}
+
+Quite obviously, the API follows a simple communication session paradigm. After
+a communication session is initiated, the user application can initiate multiple
+tests on the diagnostic device before closing the session and terminating the
+communication channel.
+
+Since in order to initiate a session, the caller must already have a specific
+diagnostic device in mind, the \texttt{usbdiag} driver defines a
+\macro{USBDIAG_CATEGORY}, which marks all DDF functions exposing the
+corresponding interface. This category can also be used to query the list of
+device functions using the \fnc{loc_category_get_svcs} function provided by the
+system \textit{Location Service}.
+
 
 \section{Frontend}
 
