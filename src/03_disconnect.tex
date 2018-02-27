@@ -28,8 +28,8 @@ The disconnection routine for explicit device removal is implemented as follows:
 %
 \begin{enumerate}
 	\item The user signals the intention to disconnect a USB device.
-	\item The respective device drivers are notified to end their business (e.
-		g. flush buffers or close files), possibly scheduling a multitude of
+	\item The respective device drivers are notified to end their business
+		(e.g.\ flush buffers or close files), possibly scheduling a multitude of
 		transfers to the device.
 	\item The HC driver disables the capability to schedule new transfers to the
 		device.
@@ -110,7 +110,7 @@ for functions corresponding to HC's child devices. Their handling is forwarded
 to the bus module, which executes the disconnection or the reconnection routine
 for the \textit{offline} and \textit{online} signal respectively. In addition,
 the transfer scheduling mechanism of the bus module has been extended to permit
-scheduling new transfers only to devices, which are in the online state.
+scheduling new transfers only to devices which are currently online.
 
 The general scheme of stopping communication with a device breaks down to
 unregistering all its registered endpoints. The biggest challenge the driver
@@ -187,7 +187,7 @@ critical section ends, the batch must be considered already finished.
 In the meantime, there are two possible execution flows that are related. First
 of all, there is the interrupt handler finishing transfers. Once it decides
 a transfer is to be finished, it is supposed to have the mutex already locked
-(to avoid racing with the scheduling fibril), and calls function
+(to avoid racing with the scheduling fibril), and calls function named
 \fnc{endpoint_deactivate_locked}. This function allows another batch to use the
 endpoint, and transfers the ownership of the batch to the caller.
 
@@ -249,7 +249,7 @@ finishing the current transfer and waiting for it to finish, the mutex $E$ must
 be taken first. Also, $E$ cannot be released before taking $H$, because after
 $E$ is released the transfer can be aborted immediately. On the other hand, when
 an interrupt comes, there is no way how to get a pointer to the endpoint without
-taking $H$ first. Neither $H$ cannot be released before taking $E$, because
+taking $H$ first. Neither $H$ can be released before taking $E$, because
 we cannot access the batch unless holding $E$, and even transferring a pointer
 to an endpoint does not help -- in between the critical sections the current
 transfer transfer can be aborted and a new one scheduled, resulting in
@@ -305,8 +305,8 @@ driver started managing the device. When the device was unplugged, the polling
 operation failed with an error, waking up and effectively terminating the fibril in
 the process. Since no explicit joining mechanism was available, the
 implementation of \fnc{device_gone} merely spinned a limited number of times,
-waiting for the polling fibril to die. This mechanism was however unsuitable for
-\fnc{device_remove}, since the fibril would not awaken due to an error caused
+waiting for the polling fibril to die on repeated error on pipe read. This mechanism was however unsuitable for
+\fnc{device_remove}, since the fibril would not be awaken due to an error caused
 by the physical disconnect, which has not happened yet.
 
 This lead to complete refactoring and extension of the USB device polling

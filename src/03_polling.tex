@@ -3,11 +3,19 @@
 As hinted by the previous section, the USB device endpoint polling mechanism has
 been completely refactored.
 
+The polling mechanism was originally introduced to simplify repeated scenario
+in USB device drivers: handling interrupt IN endpoints. Instead of them
+interrupting the flow of the device driver, the driver has to poll them --
+which includes sleeping the vast majority of time waiting for the transfer to
+finish (signalling an interrupt from the device). In order not to block the
+fibril handling connection from \texttt{devman}, the driver must start a new
+fibril just for the polling. To avoid repetition, the polling subsystem offers
+the driver a more interrupt-like interface.
 
 \subsection{Before State}
 
 In the original state, USB device drivers had to configure polling using a
-configuration structure \struct{usb_device_auto_polling_t}, then pass this
+configuration structure named \struct{usb_device_auto_polling_t}, then pass this
 structure to one of four functions:
 
 \begin{itemize}
@@ -80,7 +88,7 @@ parameters are assigned their default values and device driver can override only
 those desired.
 
 All four of the original polling initialization functions were unified into a
-single function \fnc{usb_polling_start}. Since there is now a clear structure,
+single function called \fnc{usb_polling_start}. Since there is now a clear structure,
 which represents the polling instance, the arguments of the original four
 functions were moved to \struct{usb_polling_t}, where they are clearly named and
 documented, preventing any possible errors from their misinterpretation. Suffice

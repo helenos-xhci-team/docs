@@ -35,7 +35,7 @@ implementation of other key requirements of the project.
 
 We introduced a new module to support writing hub drivers:
 \file{uspace/lib/usb/include/usb/port.h}{usb/port.h}. It solves the problem of
-hub drivers, that events are announced through a single channel, even though
+hub drivers that events are announced through a single channel, even though
 they need to wait for each other. The implementation of this module was
 motivated not only by the need of refactoring, nor because we wanted to share
 the functionality with the xHCI driver, but because the previous implementation

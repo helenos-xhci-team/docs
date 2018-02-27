@@ -23,7 +23,7 @@ structures stored inside DDF function nodes. The device structures were however
 private for the library, and apart from two callbacks \fnc{ep_add_hook} and
 \fnc{ep_remove_hook} the driver had no information about the devices. Also,
 every endpoint could have two callbacks assigned by the driver, which were
-called in situation where the toggle of USB packets had to be reset.
+called to alter maintenance of the Toggle bit (\fnc{toggle_get/set}).
 
 The main work to be done by the driver is transfer management. For this
 purpose, the library defined a structure \struct{usb_transfer_batch_t}, which
@@ -68,7 +68,8 @@ runtime callbacks the library calls are contained in a single structure,
 recommended) that the instance of this structure is \mintinline{c}{static
 const}, and a pointer to it is shared between all HC's the driver controls. The
 names of the callbacks are ``namespaced'' by their first word, to clearly
-distinct which entity the operation works with.
+distinct which entity the operation works with (\fnc{device_enumerate},
+\fnc{endpoint_register}, \fnc{batch_schedule}, \dots).
 
 Moreover, we defined a bunch of structures the library shares with the driver.
 All of them use pointers and arrays to build a tree of entities the driver
@@ -124,7 +125,7 @@ operations in different drivers. Lets walk through the entities one by one.
 	\item[\struct{hc_device_t}]
 		Created by the library for every HC controlled. Contains pointers to
 		the DDF device, control function, interrupt-replacement fibril. Shall
-		be treated opaque by the driver.
+		be treated as opaque by the driver.
 	\item[\struct{bus_t}]
 		Created by the driver for every HC it controls. Manages the reservation
 		of default address, keeps the pointer to bus operations. Strictly
@@ -156,7 +157,7 @@ implemented by the HC driver.
 \begin{description}
 	\item[\fnc{interrupt}]
 		Process a hardware IRQ. Is passed a bus instance and a 32-bit status
-		retrieved from bottom half.
+		retrieved from the top half.
 	\item[\fnc{status}]
 		When the library fails to enable the IRQ, it starts a polling fibril
 		instead. The polling fibril calls the status method to retrieve the
@@ -213,7 +214,7 @@ asynchronous batches from IPC, there needs to be a distinction. However, the
 callback is no longer abused to implement additional functionality when the
 transfer is finished.
 
-To avoid duplicating functionality that was previously in the library, now is
+To avoid duplicating functionality that was previously in the library and now is
 supposed to be implemented by the driver, we created a module
 \header|<usb/host/usb2_bus.h>|, which contains an implementation of some
 operations relevant for USB2 and below. It implements address allocation, as
@@ -226,7 +227,7 @@ a separate module \header|<usb/host/bandwidth.h>|.
 At first revisions, the bus interface was a bit richer. Also, it contained more
 of the USB2 specifics hardwired -- like the bandwidth management. The impulse
 to create the bus interface was the lack of systematic approach in the previous
-solution, so it was bit hard to understand. So we first did a refactoring
+solution, so it was a bit hard to understand. So we first did a refactoring
 process, which moved all callbacks to the bus. For a long time, there was
 a kind of runtime virtual binding of methods -- the older HCs used
 \struct{usb2_bus_t} as their bus implementation, and overrode some of its
