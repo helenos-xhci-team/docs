@@ -1,4 +1,4 @@
-personal_ws-1.1 en 650 
+personal_ws-1.1 en 652 
 bez
 který
 dostupném
@@ -113,8 +113,8 @@ povinných
 Tento
 volitelných
 netboot
-HCs
 HC's
+HCs
 UHCI
 resení
 insmod
@@ -128,8 +128,8 @@ usbmid
 HCSPARAMS
 pocítace
 transportu
-HelenOS
 helenos
+HelenOS
 utils
 Nastudování
 neocekávaného
@@ -160,6 +160,7 @@ img
 predem
 nativní
 frontend
+TMon
 tmon
 IOC
 jejich
@@ -178,16 +179,16 @@ cdrom
 jiz
 operacním
 týmem
-implementaci
 implementací
+implementaci
 sjednocení
 unmap
 libdrv
 implementovány
 uint
 naopak
-superspeed
 SuperSpeed
+superspeed
 IRQ
 iso
 vylepsení
@@ -197,8 +198,8 @@ poslouzily
 dcbaa
 SetAddress
 subclasses
-ive
 IST
+ive
 ovladace
 prípadne
 printf
@@ -225,8 +226,8 @@ nejvyssí
 spinned
 zcela
 architekturu
-nec
 loc
+nec
 omezení
 plyne
 rychlostí
@@ -373,6 +374,7 @@ urldate
 mikrojádrového
 odhad
 nebude
+bootable
 submodule
 iPXE
 nezávisle
@@ -401,8 +403,8 @@ uPD
 souvislosti
 usbhost
 MASSSTOR
-xHCI
 xhci
+xHCI
 typu
 middleware
 vyuzít
@@ -507,8 +509,8 @@ ew
 CAPLENGTH
 drívejsího
 fs
-systému
 systemu
+systému
 zarízení
 integrované
 addr
@@ -547,8 +549,8 @@ isochronního
 lt
 odhaleny
 pc
-cástí
 cásti
+cástí
 libubshost
 existující
 ns
@@ -559,8 +561,8 @@ rc
 initializer
 okolností
 softmmu
-revizí
 revizi
+revizí
 periferních
 se
 bezne
@@ -610,8 +612,8 @@ systém
 devman's
 starsími
 odpojování
-spolehlive
 spolehlivé
+spolehlive
 BeagleBone
 nejsou
 casovou
@@ -622,12 +624,12 @@ filesystems
 dosud
 tedy
 aby
-HelUSB
 helusb
+HelUSB
 norem
 logctl
-HCIs
 HCI's
+HCIs
 devman
 správy
 mkbd
