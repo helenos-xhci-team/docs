@@ -11,8 +11,6 @@ developers (mostly by one team member of the project).
 
 \section{Structure of This Document}
 
-% TODO: Update after shuffling
-
 In the first chapter, we try to build context needed to understand the
 following chapters. You can get an idea of what HelenOS is and how drivers work
 there. Then, we try to introduce the reader to idioms and paradigms used in the
@@ -39,18 +37,27 @@ usability. Also, the documentation of the previous project was obsoletes by
 recent developments in HelenOS, so we try to document the current state of
 the USB subsystem.
 
+To support the implementation process and to allow us to test it in
+a semi-automatic way, we have developed a standalone testing mechanism that
+tests the USB stack end-to-end by using modified virtual environment. This is
+the topic of Chapter~\ref{appendix:testing}.
+
+The last chapter concludes the documentation with a brief summary of the
+accomplished project goals, instructions on how to access the materials stored
+online and on the attached CD. In addition, it outlines possible future
+development of the USB framework following the project end.
+
 As the USB subsystem is mostly useless without drivers for actual USB devices,
 we would like to lessen the initial barrier that stands in the way of
-implementing new USB device drivers. The chapter~\ref{chap:usb-drivers} is
+implementing new USB device drivers. The Appendix~\ref{chap:usb-drivers} is
 written as a complete guide to writing device drivers, hiding implementation
 details of the stack and focusing on how to use it only. It still requires the
 reader to understand the USB architecture and mechanics though, as well as
 understanding the device they are writing the driver for.
 
-To support the implementation process and to allow us to test it in
-a semi-automatic way, we developed a standalone testing mechanism that tests
-the USB stack end-to-end by using modified virtual environment. This is the
-topic of chapter~\ref{appendix:testing}.
+The Appendix~\ref{sec:spec} includes the official project specification (in
+Czech) and a concise timeline of the project realization throughout the years
+2017 and 2018.
 
 \section{About HelenOS}
 HelenOS is a microkernel operating system. Contrary to operating systems with
