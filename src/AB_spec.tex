@@ -16,25 +16,25 @@ The actual project realization timeline is also included.
 	\item[Vedoucí] Martin Děcký \email{decky@d3s.mff.cuni.cz}
 	\item[Konzultanti] --
 	\item[Anotace]
-		Rozšíření podpory sběrnice USB a USB zařízení v mikrojádrovém multiserverovém operačním systému HelenOS o revizi 3.0 (resp. 3.1), sjednocení této podpory s dříve implementovanou funkcionalitou pro USB 1.0, 1.1 a 2.0 a další vylepšení.
+		Rozšíření podpory sběrnice USB a USB zařízení v mikrojádrovém multiserverovém operačním systému HelenOS o revizi 3.0 (resp.\ 3.1), sjednocení této podpory s dříve implementovanou funkcionalitou pro USB 1.0, 1.1 a 2.0 a další vylepšení.
 \end{description}
 
 \subsection{Motivace}
 
 Podpora sběrnice USB v revizi 1.0 a 1.1, která byla naimplementována v rámci Softwarového
-projektu v roce 2011 (HelUSB), výrazně rozšířila praktickou použitelnost operačního systému
-HelenOS v souvislosti s periferními zařízeními. Na tuto funkcionalitu bylo později navázáno
-podporou USB 2.0. V současné době je poslední specifikovaná revize USB 3.0 (z hlediska
+projektu v~roce 2011 (HelUSB), výrazně rozšířila praktickou použitelnost operačního systému
+HelenOS v~souvislosti s periferními zařízeními. Na tuto funkcionalitu bylo později navázáno
+podporou USB 2.0. V~současné době je poslední specifikovaná revize USB 3.0 (z hlediska
 hardwarového transportu potom 3.1) a začínají se objevovat počítače, které implementují pouze tuto
 revizi (tedy z pohledu operačního systému nejsou zpětně kompatibilní se staršími revizemi). Proto
-je vhodné, aby byl operační systém HelenOS doplněn o nativní podporu pro USB 3.0 (resp. 3.1).
+je vhodné, aby byl operační systém HelenOS doplněn o nativní podporu pro USB 3.0 (resp.\ 3.1).
 Tento projekt je pochopitelně také vhodnou příležitostí pro provedení sjednocení s předchozími
 implementacemi a provedení dalších souvisejících vylepšení.
 
 \subsection{Popis projektu}
 
 Primárním předmětem projektu je rozšířit generický framework pro použití USB sběrnic a
-implementaci ovladačů USB zařízení v systému HelenOS o podporu USB revize 3.0 (resp. 3.1), při
+implementaci ovladačů USB zařízení v systému HelenOS o podporu USB revize 3.0 (resp.\ 3.1), při
 zachování plné podpory předchozích revizí 1.0, 1.1 a 2.0. Cílem je, aby bylo možné na běžně
 dostupném hardwaru využít nejvyšší možnou revizi USB s přihlédnutím k možnostem daných
 periferních zařízení. Součástí projektu je také implementace základního demonstrátoru – ovladače

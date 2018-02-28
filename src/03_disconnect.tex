@@ -246,10 +246,10 @@ a lock protecting the HC structures (lists, interrupt handling, \dots) called
 $H$ and a lock protecting the endpoint $E$. When a transfer is scheduled, it
 must first wait until the endpoint is available. To avoid a deadlock between
 finishing the current transfer and waiting for it to finish, the mutex $E$ must
-be taken first. Also, $E$ cannot be released before taking $H$, because after
+be taken first. Also, $E$ cannot be released before taking~$H$, because after
 $E$ is released the transfer can be aborted immediately. On the other hand, when
 an interrupt comes, there is no way how to get a pointer to the endpoint without
-taking $H$ first. Neither $H$ can be released before taking $E$, because
+taking $H$ first. Neither~$H$ can be released before taking $E$, because
 we cannot access the batch unless holding $E$, and even transferring a pointer
 to an endpoint does not help -- in between the critical sections the current
 transfer transfer can be aborted and a new one scheduled, resulting in

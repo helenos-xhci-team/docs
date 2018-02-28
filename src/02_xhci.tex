@@ -17,12 +17,10 @@ interface.
 \end{figure}
 
 The scheme is not at all strict, we're in a C world, there are dependencies
-almost everywhere -- take it as an informal overview to get an idea.
-
+almost everywhere -- take it as an informal overview to get an idea. 
 The whole driver can be split into two parts. The left one takes care of the
 hardware perception of what's going on, the right one is about managing the
 software structures and memory.
-
 We start with describing the modules in the hardware part, as their
 functionality is clear. Their order follows the order in which they were
 implemented.
@@ -156,7 +154,7 @@ are control structures that represent devices and their configuration as well
 as the parameters of the communication between the xHC and system software. The
 \struct{xhci_hc_t} structure contains the \textit{Device Context Base Address Array} (DCBAA), which
 holds up to 255 pointers to device contexts at indices 1 through 255 and a pointer to
-the scratchpad array at index 0 (see \ref{sec:scratchpads}). Each device context contains a slot
+the scratchpad array at index 0 (see~\ref{sec:scratchpads}). Each device context contains a slot
 context (used to describe the device as a whole, represented by \struct{xhci_slot_ctx_t}) and
 31 endpoint contexts (represented by \struct{xhci_ep_ctx_t}).
 
