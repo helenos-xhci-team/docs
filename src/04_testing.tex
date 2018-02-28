@@ -219,10 +219,12 @@ Usage: tmon command [device] [options]
       test-isoch-in - Read from isochronous endpoint as fast as possible.
       test-isoch-out - Write to isochronous endpoint as fast as possible.
 
-      -n --cycles
-            Set the number of read/write cycles.
+      -t --duration
+            Set the minimum test duration (in seconds).
       -s --size
-            Set the data size transferred in a single cycle.
+            Set the data size (in bytes) transferred in a single cycle.
+      -v --validate
+            Validate the correctness of transferred data (impacts performance).
 
 If no device is specified, the first device is used provided that it is the
 only one connected. Otherwise, the command fails.
