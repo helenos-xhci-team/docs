@@ -19,7 +19,9 @@ implemented to control various xHC models (among others, NEC Renesas
 uPD720200). The driver is capable of initiating and maintatining proper
 communication with the xHC in full compliance with \cite{xhci}. Its features
 include responding to port events, enumerating new devices, and scheduling data
-transfers at a multitude of speed levels ranging from USB 1.0 to USB 3.0.
+transfers at a multitude of speed levels ranging from USB 1.0 to USB 3.1.
+USB~3.2 released in september 2017 (during the project) is supported only
+partially as we had no opportunities to test it yet.
 
 As explained in Section~\ref{sec:bus}, the developed driver has been successfully
 integrated with the existing USB framework, allowing it to utilize a whole range
@@ -43,7 +45,7 @@ both of these features had no prior demonstrators, the existing USB device
 drivers have been modified to enable device removal and a new diagnostic device
 has been implemented to schedule isochronous transfers (along with its device
 driver and an application to control it). Lastly, bandwidth counting has been
-implemented to track the utilization of the USB bus.
+extended to track utilization of EHCI-controlled buses at High speeds.
 
 The entire project implementation has been tested with success in a simulated
 environment as well as on real-world computers, achieving results comparable
@@ -61,15 +63,15 @@ development following the end of this project.
 
 \section{Attached Materials}
 
-Apart from the attached CD, our work can be retrieved from a Git repository
-hosted at \href{https://github.com/helenos-xhci-team}{https://github.com/helenos-xhci-team}.
+Apart from the attached CD, our work can be retrieved from a public Git repositories
+hosted at Github\footnote{\href{https://github.com/helenos-xhci-team}{https://github.com/helenos-xhci-team}}.
 
 \begin{itemize}
-\item the \texttt{helenos} directory contains the main product of our work,
+\item the \texttt{helenos} repository contains the main product of our work,
 sources of the operating system itself
-\item the \texttt{qemu} directory contains Qemu 2.10 with the \texttt{usb-tmon} virtual device
-\item the \texttt{tests} directory contains automated tests described in 
-\item the \texttt{docs} directory contains sources of this document
+\item the \texttt{qemu} repository contains Qemu 2.10 with the \texttt{usb-tmon} virtual device
+\item the \texttt{tests} repository contains automated tests described in sec. \ref{sec:removal-testing}.
+\item the \texttt{docs} repository contains sources of this document
 \item the \textbf{attached CD} contains a ZIP archive with snapshots of \texttt{helenos},
 \texttt{qemu} and \texttt{tests} repositories. It is also a bootable CD with
 ready-to-run HelenOS build with xHCI support. You can also run the system in
@@ -79,8 +81,6 @@ qemu-system-x86_64 -enable-kvm -device nec-usb-xhci,id=xhci -device usb-tablet -
 \end{bdsh}
 The HelenOS image contains the sources of itself.
 \end{itemize}
-
-% TODO: Make a quine joke.
 
 \section{Try It Yourself}
 
@@ -122,7 +122,9 @@ $ edit /log/xhci
 \end{bdsh}
 
 Other related logfiles are \texttt{/log/usbhub}, \texttt{/log/usbhid} and
-\texttt{/log/usbmid}.
+\texttt{/log/usbmid}. You might want to raise the verbosity of log messages for
+the individual components, which is usually done by changing a log-level
+constant in \texttt{/uspace/drv/bus/*/main.c}.
 
 \subsection{Testing with TMon}
 
@@ -228,7 +230,7 @@ the performance benefit of USB 3 is not negligible, and could be well worth it.
 Every transfer type of USB focuses on different characteristics of the
 transfer. Interrupt pipes strive for the lowest latency possible -- in this
 field, the synchronous semantics works very well. The latency between receiving
-interrupts and delivering them as fast as an IPC reply to a call.
+interrupts and delivering them is as fast as an IPC reply to a call.
 
 Considering isochronous endpoints, it is simply not possible to satisfy them
 with a synchronous API. For that reason, we decided to change the semantics to asynchronous
