@@ -171,7 +171,7 @@ values in a human-readable form. The \file{uspace/drv/bus/usb/xhci/debug.h}{debu
 functions that use the register reading macros described in the previous section to print
 the values of all the bit sets contained in a register to the driver's log. They also contain
 auxiliary functions that are used to convert numeric codes to their meaning in a string form and
-functions that dump the contents of a hardware structure (such as \struct{xhci_endpoint_ctx}).
+functions that dump the contents of a hardware structure (such as \struct{xhci_endpoint_ctx_t}).
 
 These functions have proved to be of great use and should any future maintainer of the
 HelenOS xHC stack find themselves in a bug-ridden situation, putting these functions to
@@ -184,11 +184,11 @@ the areas of code they suspect of mischievous deeds might be a good starting poi
 
 Scratchpads are buffers that an xHC implementation can request from the system software
 for its internal needs. The size of these buffers is specified in the \textit{PAGESIZE} register
-found in the operational register set defined in \struct{xhci_op_regs}.
+found in the operational register set defined in \struct{xhci_op_regs_t}.
 
 The amount of buffers requested by the xHC is specified in the \textit{Max Scratchpad Bufs Hi} and
 \textit{Max Scratchpad Bufs Lo} registers of the second set of structural parameters (\textit{HCSPARAMS2},
-see \xhci{5.3.4}) defined in \struct{xhci_cap_regs}.
+see \xhci{5.3.4}) defined in \struct{xhci_cap_regs_t}.
 
 The allocation of these buffers takes place as part of the host controller initialization,
 specifically in \fnc{hc_init_memory}, which calls \fnc{xhci_scratchpad_alloc}. The pointers
