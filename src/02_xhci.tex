@@ -118,7 +118,7 @@ XHCI_REG_WR(hc->op_regs, XHCI_SOME_FIELD, 42);
 \end{listing}
 
 All the definitions of macros like \macro{XHCI_SOME_FIELD} relevant for xHCI
-are contained in the header file \header|hw_struct/regs.h|. The definition
+are contained in the header file \file{uspace/drv/bus/usb/xhci/hw_struct/regs.h}{hw\_struct/regs.h}. The definition
 contains all the information necessary to access the field. It says that the
 register field is contained in a field \struct{usbreg} of an operational
 register structure (the one \mintinline{c}{hc->op_regs} points to), the

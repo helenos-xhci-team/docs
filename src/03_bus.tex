@@ -217,11 +217,12 @@ transfer is finished.
 
 To avoid duplicating functionality that was previously in the library and now is
 supposed to be implemented by the driver, we created a module
-\header|<usb/host/usb2_bus.h>|, which contains an implementation of some
+\file{uspace/lib/usbhost/include/usb/host/usb2_bus.h}{<usb/host/usb2\_bus.h>},
+which contains an implementation of some
 operations relevant for USB2 and below. It implements address allocation, as
 only xHC assigns addresses in hardware, older HCs leaves this responsibility on
 software. The same holds for bandwidth management, which is further moved to
-a separate module \header|<usb/host/bandwidth.h>|.
+a separate module \file{/uspace/lib/usbhost/include/usb/host/bandwidth.h}{<usb/host/bandwidth.h>}.
 
 \subsubsection{Development of the Bus Interface Throughout the Project}
 
