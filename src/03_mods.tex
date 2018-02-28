@@ -298,7 +298,7 @@ unikernel systems. But for an unknown reason we were too enthusiastic to let
 it be and decided to do a little experiment, designing a system which would
 allow this scenario to happen even in HelenOS.
 
-The answer to all these issues is surprisingly simple. We use a pointer-sized
+The answer to all these issues is simple. We use a pointer-sized
 bitmap called \struct{dma_policy_t} to carry flags. The flag on bit $i$ denotes
 that the buffer may be split into $2^{i+1}$B-sized chunks that are physically
 contiguous. As the minimal granularity is \macro{PAGE_SIZE}, the lower bits can
