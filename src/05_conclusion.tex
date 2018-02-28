@@ -1,9 +1,65 @@
 \chapter*{Conclusion}
 \addcontentsline{toc}{chapter}{Conclusion}
 
-% TODO: Conclude here.
+This chapter concludes the body of the project documentation. Following up to
+this point, its purpose has been to outline in detail all basic facts relevant
+to the HelUSB3 project. While the bulk of this text has been mainly concerned
+with the means of accomplishing the set project goals and implementation details
+leading up to it, the subsequent paragraphs only briefly list the
+accomplishments themselves for a quick and concise project summary.
 
-\section{The Output} % Feel free to rename
+In the introduction, the main goal of the project is stated as to bring xHCI and
+USB 3 support to HelenOS, and to generally refactor, fix, extend and clean up the
+existing USB framework implemented in HelenOS since 2011. In the official
+project specification (see Appendix~\ref{sec:spec}), these fairly general tasks
+are broken down into more specific requirements.
+
+Throughout the duration of this project, a new host controller driver has been
+implemented to control various xHC models (among others, NEC Renesas
+uPD720200). The driver is capable of initiating and maintatining proper
+communication with the xHC in full compliance with \cite{xhci}. Its features
+include responding to port events, enumerating new devices, and scheduling data
+transfers at a multitude of speed levels ranging from USB 1.0 to USB 3.0.
+
+As explained in Section~\ref{sec:bus}, the developed driver has been successfully
+integrated with the existing USB framework, allowing it to utilize a whole range
+of USB device drivers previously implemented in the system (for instance, HID
+such as mice, keyboards or tablets, mass storage devices and others). In order
+to maintain compatibility with previous HC versions as well as USB version
+abstraction from the point of device drivers, the USB framework has been heavily
+refactored. During this process, a large number of race conditions and other
+bugs were fixed not only in the USB framework, but also in older HC and USB
+device driver implementations. Consequently, the HelenOS USB framework is now
+up-to-date with USB 3, providing very similar interfaces to both device and HC
+drivers in the spirit of the original design.
+
+Furthermore, the presented project has accomplished to implement the isochronous
+data transfer mode for time-critical devices and the explicit device removal
+feature, which allows device drivers to consistently terminate communication
+upon user signal before actual device detachment occurs. This feature can also
+be used to temporarily suspend operation of any connected USB device for an
+arbitrary time period without blocking the corresponding device driver. Since
+both of these features had no prior demonstrators, the existing USB device
+drivers have been modified to enable device removal and a new diagnostic device
+has been implemented to schedule isochronous transfers (along with its device
+driver and an application to control it). Lastly, bandwidth counting has been
+implemented to track the utilization of the USB bus.
+
+The entire project implementation has been tested with success in a simulated
+environment as well as on real-world computers, achieving results comparable
+with other operating systems. In addition, critical components of the system
+have been thoroughly tested for high volume of incoming events and common user
+behaviors. The introduced and refactored source code is documented in in-code
+comments, documentation strings next to function declarations and this very
+document (and its referenced literature).
+
+The accomplishments listed above satisfy all primary and some of the optional
+goals of the HelUSB3 project, as defined by its specification. The following
+sections describe how to access the attached CD, and discuss the possible future
+development following the end of this project.
+
+
+\section{Attached Materials}
 
 Apart from the attached CD, our work can be retrieved from a Git repository
 hosted at \href{https://github.com/helenos-xhci-team}{https://github.com/helenos-xhci-team}.
