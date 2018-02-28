@@ -207,12 +207,12 @@ the next line. These two pointers were then stored inside the same structure.
 
 Being aware of this use-case, we created a different submodule for allocation
 of DMA buffers. Instead of a plain pointer, the caller uses a structure called
-\struct{dma_buffer_t}. This structure can store both the virtual and physical
-address of the buffer, accessible through fields \struct{virt} and
-\struct{phys}. The buffer allocation is made simply by using a function called
-\fnc{dma_buffer_alloc}, which fills the specified buffer with pointers to
-a properly sized allocated space. When the buffer is no longer needed, it is
-freed by calling \fnc{dma_buffer_free}.
+\struct{dma_buffer_t}. When the buffer is no longer needed, it is freed by
+calling \fnc{dma_buffer_free}. As the translation to physical address is
+usually needed in a sequential manner shortly after allocation, we cache the
+physical address of the base of a contiguous chunk and compute the resulting
+physical address ourselves. Therefore, \fnc{dma_buffer_phys} might be used to
+efficiently translate a virtual pointer to a physical one.
 
 When the buffer is contiguous in memory, it's easy to calculate the physical
 address ourselves, without a help of the kernel. To obtain a physical address
