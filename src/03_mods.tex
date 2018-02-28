@@ -195,7 +195,7 @@ The authors of the former USB stack addressed the complexity by creating
 utility functions in
 \file{uspace/lib/usbhost/include/usb/host/utils/malloc32.h}{<usb/host/utils/malloc32.h>}.
 These functions offer
-a familiar interface of \fnc{malloc}/\fnc{free}. The \fnc{malloc32} function
+a familiar interface of \fnc{malloc} and \fnc{free}. The \fnc{malloc32} function
 intentionally discards the physical address provided by
 \fnc{dma_map_anonymous}, in order to be simple to use. To retrieve the physical
 address later, one can use another utility function, \fnc{addr_to_phys}. This
