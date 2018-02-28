@@ -63,6 +63,32 @@ connected. The host controller must always provide at least one port to allow
 device attachment. Typically, the ports provided by the host controller are
 provided by its own hub, called \textit{root hub}.
 
+All USB versions must be backwards compatible in a sense that if you connect
+the latest-version USB device to a most recent USB host controller through
+USB 1.0 hub, the communication will use the protocol as specified by USB 1.0.
+For the drivers, the precise protocol version used usually does not mean much,
+differences are described in terms of different \emph{speeds}. Knowledge of the
+speed the device operates on is important for proper scheduling.
+%
+\begin{itemize}
+	\item \textbf{USB 1} defines \emph{low} and \emph{full} speeds (OHCI, UHCI, xHCI)
+	\item \textbf{USB 2} defines \emph{high} speed (EHCI, xHCI)
+	\item \textbf{USB 3} defines \emph{super} speed (xHCI only)
+\end{itemize}
+
+Looking at the list of controllers supporting individual speeds you can see
+that EHCI is missing for low and full speeds. EHCI supports only high-speed
+devices on its root hub ports. There must be either a companion controller
+sharing physical plugs or an embedded high-speed hub to support low- and
+full-speed devices too.
+
+The correlation between speeds and USB protocol version resulted in unclear
+distinction between them. Unless explicitly stated, a ``high-speed device''
+refers to a device compatible with USB 2.0 that is able to communicate at high,
+full, and low speeds. Counterintuitively, ``super-speed device'' is a device
+that operates using the USB 3 protocol. This is due to the dual-bus topology
+explained in section \ref{sec:dual-bus}.
+
 Although physically, the topology is a tree rooted in the host controller,
 the topology is abstracted by the HC. In USB~1, hubs are just transparent
 splitters that add no logic to the bus. USB~2 adds high-speed hubs, which can
@@ -323,6 +349,7 @@ to guarantee bus access constraints.
 \subsection{USB 3 Features}
 
 \subsubsection{Bus Duality}
+\label{sect:dual-bus}
 
 The USB 3 bus and USB 3 devices are backwards compatible with USB 2. As the
 protocol is completely different this was done by splitting the bus into two
@@ -352,6 +379,12 @@ two independent hubs in one box. The inner USB 2 hub connects as an USB
 2 device and the USB 3 hub connects as a USB 3 device. When a downstream
 device is connected physically it is decided to which inner hub it will be
 connected based on the device actual speed.
+
+You can see that USB 3 sort of breaks the rule of backwards compatibility. The
+protocol is not backwards compatible on its own, but the specification forces
+all USB 3-compliant devices to be USB 2-compliant as well. The majority of
+compatibility breaks are on the hardware level though, the protocols are very
+similar from the perspective of drivers.
 
 \subsubsection{Differences from USB 2}
 
