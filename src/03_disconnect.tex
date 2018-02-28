@@ -130,7 +130,7 @@ aborted in various Host Controllers, let us describe the lifecycle of
 a transfer batch, a structure representing a transfer in HC drivers.
 
 Currently, USB stack in HelenOS only supports synchronous interface to interact
-with pipes. The two functions are called \fnc{dev_read} and \fnc{dev_write}.
+with pipes. The two functions are called \fnc{usb_pipe_read} and \fnc{usb_pipe_write}.
 Driver calls these functions on pipes, and provides a buffer -- either filled
 with data, or to be filled. Once the call crosses the IPC barrier, it is joined
 to a call to \fnc{bus_device_send_batch}. This function finds the target
@@ -145,7 +145,7 @@ finally, schedules the transfer to the hardware.
 Since then, an interrupt may come and finish the transfer in a different
 fibril. A transfer is finished by copying the data out from the hardware buffer
 to the batch buffer, setting the error code and calling a completion callback.
-This callbacks answers the original incoming IPC call, causing the \fnc{dev_read/write}
+This callbacks answers the original incoming IPC call, causing the \fnc{usb_pipe_read/write}
 function to return. After that, the transfer batch is destroyed.
 
 But that's not the only scenario that may happen. From the moment a transfer is
