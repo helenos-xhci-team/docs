@@ -1,0 +1,35 @@
+Ahoj, jsme lidi a dělali jsme xhci do helenosu.
+
+Co je to xhci - že to není jenom „rychlejší USB“, finální specifikace
+
+Co je HelenOS
+
+Praktická demonstrace:
+ na reálném HW nabootovat s LVL_DEBUG, přepnout do kconu, připojit myš
+ přepnout zpátky, ukázat, že se kurzor hýbe
+ odpojit myš
+ připojit hub, nasázet do něj flashku a myš
+ namountovat a z flashky otevřít obrázek, ukázat, že jsou v hubu dvě zařízení a obě fungují
+
+A zase přednáška:
+Co tam v USB subsystému bylo
+Vysvětlit, co po nás chce xhci, zdůraznit rozdíly oproti předchozí implementaci
+A z toho bude vidět, co se muselo změnit, aby to mohlo fungovat - co jsme s tím dělali (asi ideálně Ondra), že tam byly quirky a on to zrefactoroval do mezivrstvy
+adresování, superspeed descriptor
+Isoch!!
+BW counting USB2
+Že jsme aktualizovali dokumentaci i ohledně psaní driverů
+
+Explicitně věci co jsme přidali:
+ disconnect
+ abort - že se to zkomplikovalo tím, že xhci má abort event, ale ehci/uhci/ohci má humus, asi nezabrušovat do scanování těch struktur hardwarem
+ tmon
+ tablet
+ refactoring kopírování - scather gather
+Portabilita (Yaghob se explicitně zeptal) - podle specifikace, qemu není podle specifikace, běží na na NECu a Intelu, i na 32bit
+
+Že se to testovalo na race conditiony
+Ukázat tmon
+
+Conclusion
+Questions
