@@ -1,8 +1,7 @@
-Ahoj, jsme lidi a dělali jsme xhci do helenosu.
-
-Co je to xhci - že to není jenom „rychlejší USB“, finální specifikace
-
-Co je HelenOS
+Úvod:
+ Ahoj, jsme lidi a dělali jsme xhci do helenosu.
+ Co je to xhci - že to není jenom „rychlejší USB“, finální specifikace
+ Co je HelenOS
 
 Praktická demonstrace:
  na reálném HW nabootovat s LVL_DEBUG, přepnout do kconu, připojit myš
@@ -12,13 +11,13 @@ Praktická demonstrace:
  namountovat a z flashky otevřít obrázek, ukázat, že jsou v hubu dvě zařízení a obě fungují
 
 A zase přednáška:
-Co tam v USB subsystému bylo
-Vysvětlit, co po nás chce xhci, zdůraznit rozdíly oproti předchozí implementaci
-A z toho bude vidět, co se muselo změnit, aby to mohlo fungovat - co jsme s tím dělali (asi ideálně Ondra), že tam byly quirky a on to zrefactoroval do mezivrstvy
-adresování, superspeed descriptor
-Isoch!!
-BW counting USB2
-Že jsme aktualizovali dokumentaci i ohledně psaní driverů
+ Co tam v USB subsystému bylo
+ Vysvětlit, co po nás chce xhci, zdůraznit rozdíly oproti předchozí implementaci
+ A z toho bude vidět, co se muselo změnit, aby to mohlo fungovat - co jsme s tím dělali (asi ideálně Ondra), že tam byly quirky a on to zrefactoroval do mezivrstvy
+ adresování, superspeed descriptor
+ Isoch!!
+ BW counting USB2
+ Že jsme aktualizovali dokumentaci i ohledně psaní driverů
 
 Explicitně věci co jsme přidali:
  disconnect
@@ -26,10 +25,22 @@ Explicitně věci co jsme přidali:
  tmon
  tablet
  refactoring kopírování - scather gather
+
 Portabilita (Yaghob se explicitně zeptal) - podle specifikace, qemu není podle specifikace, běží na na NECu a Intelu, i na 32bit
 
-Že se to testovalo na race conditiony
-Ukázat tmon
+Pokud zbyde čas:
+ Zmínit, že se to testovalo na race conditiony
+ Popsat / ukázat tmon
 
 Conclusion
 Questions
+
+---
+
+Co mít připraveno:
+ mirroring na projektor
+ NetBoot HelenOS s LVL_DEBUG
+ xHC, hub, flashku a myš - na flashce nějaký *čitelný* obrázek
+ laptop s QEMU + HelenOS s LVL_WARNING+ pro případné demo tmonu (vyřešit mirroring a data transfer size)
+ umět mountovat FAT v HelenOSu když tě někdo probudí o půlnoci
+
