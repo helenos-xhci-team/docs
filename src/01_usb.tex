@@ -141,7 +141,7 @@ and they have several attributes that must be obeyed by the driver.
 
 A special endpoint — \textit{control endpoint zero} (also called default
 control endpoint) — is present on each device and is used for configuration
-purposes and for standard requests (e.g. for querying the device for
+purposes and for standard requests (e.g.\ for querying the device for
 generic capabilities).
 
 \subsection{Bus Protocol and Transfer Types}
@@ -158,7 +158,7 @@ endpoint number, packet type and data needed for packet integrity checks.
 
 Before moving on to describing packet types, it is necessary to mention
 transfer types. In order to allow devices with different transfer requirements
-(e.g. web camera that supplies a continuous stream of data vs. keyboard with
+(e.g.\ web camera that supplies a continuous stream of data vs. keyboard with
 a few bytes several times a minute) the transfers (and therefore endpoints) are
 divided into four different types.
 
@@ -234,7 +234,7 @@ bulk streams.
 The descriptors can be viewed as a tree, where the device descriptor is the
 root node that has several descendants — configurations. Each configuration
 then groups interfaces and endpoint descriptors are leaves. Device may provide
-its own descriptors (e.g. vendor-specific ones) that may stand aside of this
+its own descriptors (e.g.\ vendor-specific ones) that may stand aside of this
 tree or be part of it (then they are typically inserted somewhere between
 interfaces or endpoints).
 
@@ -246,9 +246,9 @@ ordering in the serialized form implies the logical tree it represents.
 USB was designed with flexibility of offered functionality in mind but to
 prevent total chaos, devices (or rather their functionality) were divided by
 common attributes into so called \textit{device classes}. Each class deals with
-devices of certain kind, e.g. HID devices, printers, scanners, audio or a
+devices of certain kind, e.g.\ HID devices, printers, scanners, audio or a
 special vendor class for any device that would not fit into any other one. Some
-classes define \textit{subclasses} for fine-grained resolution (e.g. HID class
+classes define \textit{subclasses} for fine-grained resolution (e.g.\ HID class
 offers subclasses for keyboards and mice).
 
 The class is reported as a part of device and interface descriptor. That is
@@ -286,7 +286,7 @@ device is found and started.
 The new driver is then told the address of the device and it is up to it to
 configure and finish the initialization of the device.
 As stated above, the sequence is simplified and due to errors in devices (not
-all USB devices obey the specification exactly) some steps (e.g. setting new
+all USB devices obey the specification exactly) some steps (e.g.\ setting new
 address) have to be tried several times or in a specific order.
 
 \subsection{USB Communication}

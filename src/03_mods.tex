@@ -312,7 +312,7 @@ policy a buffer is allocated with is passed along, for the HC driver to check.
 Because we generally trust the driver, there is no further checking. We do not
 trust the human writing it though so the policy is not automatically assumed
 but must be passed explicitly with the buffer pointer. This has another benefit
--- in case the policy is not exactly satisfied (e.g. the xHCI driver is given
+-- in case the policy is not exactly satisfied (e.g.\ the xHCI driver is given
 a non-contiguous buffer), it may decide that instead of bouncing it, which is
 expensive, it just uses a page-sized chunks for scatter-gather.
 

@@ -156,7 +156,7 @@ transfer is scheduled to the hardware, the buffers must not be deallocated
 until the driver is sure that the hardware won't use them anymore.
 
 This synchronization problem might be resolved by locking the batch and
-reference counting, but then different problems would arise (e.g. a transfer
+reference counting, but then different problems would arise (e.g.\ a transfer
 could be finished after the endpoint was successfully unregistered, just
 because we cannot know if there's any). So, we decided to take a different
 approach.
@@ -342,7 +342,7 @@ we came up with three more options:
 
 \begin{enumerate}
 \setcounter{enumi}{2}
-	\item Introduce a new callback, e.g. \fnc{device_removed}, to be called
+	\item Introduce a new callback, e.g.\ \fnc{device_removed}, to be called
 		after the pipes are closed. The removal would be split into two phases:
 		first, in \fnc{device_remove} the loose ends are closed and the
 		device is brought to a state expecting removal, then in

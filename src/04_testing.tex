@@ -104,7 +104,7 @@ the official QEMU repository. It contains several key structures and functions:
 
 These are the structures and functions one needs to modify in order to modify
 the behavior of the device. Additionally, the source code contains helper
-functions (e.g. time measurement with \fnc{get_now_sec} and \fnc{get_now_usec})
+functions (e.g.\ time measurement with \fnc{get_now_sec} and \fnc{get_now_usec})
 and QEMU debugging/informational functions and structures (e.g.
 \struct{desc_strings}, \struct{vmstate_usb_tmon}, \struct{usb_tmon_info} and
 \fnc{usb_tmon_register_types}). These should seldom require modification.
@@ -272,7 +272,7 @@ several combinations which we consider interesting.
 
 In this test, we used a ridiculously big value of \texttt{repeats}, and very
 short value of \texttt{in\_delay}, something like a tenth of a second. Running
-the script then simulates e.g. a bad cable, which stays connected only for
+the script then simulates e.g.\ a bad cable, which stays connected only for
 a short while.
 
 This test does not work correctly with xHCI, because of a bug in QEMU that cannot

@@ -34,7 +34,7 @@ address, pointer to the data buffer and its size, direction of the transfer and
 so on. Along with this data, it carried one of two callbacks (in/out) to be
 called after the transfer is finished. This particular callback was set by the
 library, depending on the context from which a transfer was scheduled. Transfer
-could be initiated either by the HC itself (e.g. reading the device descriptors
+could be initiated either by the HC itself (e.g.\ reading the device descriptors
 to determine match IDs for the DDF), or by the driver of the device via the IPC
 interface methods (\fnc{usb_read} or \fnc{usb_write}).
 
@@ -45,7 +45,7 @@ fibril polled the completion flag until the transfer was completed. In a case
 of a bus transaction issued by the device driver, the callback answered the IPC
 call. The asynchronicity of HelenOS IPC fits this scheme perfectly.
 
-Sometimes, if the request modified the internal state of the device (e.g. USB
+Sometimes, if the request modified the internal state of the device (e.g.\ USB
 ResetEndpoint request), the callback was wrapped in another callback, which
 reset the endpoint's toggle after completion, and called the original callback.
 
